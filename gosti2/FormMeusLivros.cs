@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 namespace gosti2
 {
     public partial class FormMeusLivros : Form
@@ -37,27 +41,34 @@ namespace gosti2
                         {
                             using (var ms = new System.IO.MemoryStream(livro.Capa))
                             {
-                                capaImage = Image.FromStream(ms);
+                                // Corrigindo a exibição da imagem
+                                var originalImage = Image.FromStream(ms);
+
+                                // Redimensionar mantendo a proporção
+                                capaImage = RedimensionarImagem(originalImage, 100, 150);
                             }
                         }
                         else
                         {
                             // Imagem padrão quando não há capa
-                            capaImage = Properties.Resources.default_book_cover;
+                            capaImage = RedimensionarImagem(Properties.Resources.default_book_cover, 100, 150);
                         }
 
                         int rowIndex = dataGridViewLivros.Rows.Add(
                             capaImage,
                             livro.Titulo,
                             livro.Autor,
-                            livro.CategoriaId,
+                            livro.CategoriaId, // ou livro.Categoria, dependendo do seu modelo
                             livro.Lido ? "Lido" : "Não Lido",
                             livro.UsuarioId,
                             livro.Usuario.Nome
                         );
 
-                        // Define a altura da linha para acomodar a imagem maior
-                        dataGridViewLivros.Rows[rowIndex].Height = 120;
+                        // Define a altura da linha para acomodar a imagem
+                        dataGridViewLivros.Rows[rowIndex].Height = 160;
+
+                        // Define o estilo da célula para centralizar a imagem
+                        dataGridViewLivros.Rows[rowIndex].Cells["colCapa"].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
 
                     // Esconde as colunas de ID do usuário
@@ -70,6 +81,32 @@ namespace gosti2
                 MessageBox.Show($"Erro ao carregar livros: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // Método para redimensionar imagem mantendo a proporção
+        private Image RedimensionarImagem(Image imagem, int largura, int altura)
+        {
+            var destRect = new Rectangle(0, 0, largura, altura);
+            var destImage = new Bitmap(largura, altura);
+
+            destImage.SetResolution(imagem.HorizontalResolution, imagem.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(imagem, destRect, 0, 0, imagem.Width, imagem.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
 
         private void btnAdicionar_Click(object sender, EventArgs e)
@@ -202,12 +239,19 @@ namespace gosti2
 
         private void dataGridViewLivros_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Se clicou na coluna da imagem (índice 0)
-            if (e.RowIndex >= 0 && e.ColumnIndex == 0)
+            // Se clicou na coluna da imagem (índice 0) ou em qualquer célula da linha
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                // Aqui você pode abrir o form de detalhes no futuro
-                MessageBox.Show("Funcionalidade de detalhes do livro em desenvolvimento!",
-                    "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                int livroId = ObterIdLivroSelecionado();
+                if (livroId > 0)
+                {
+                    using (var formLivroAberto = new FormLivroAberto(livroId))
+                    {
+                        formLivroAberto.ShowDialog();
+                        // Recarrega os livros após fechar o form de detalhes
+                        CarregarLivros();
+                    }
+                }
             }
         }
 

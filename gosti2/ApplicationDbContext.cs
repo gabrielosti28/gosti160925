@@ -17,7 +17,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Livro> Livros { get; set; }
     public DbSet<CategoriaTier> CategoriasTier { get; set; }
     public DbSet<Mensagem> Mensagens { get; set; }
-
+    public DbSet<Comentario> Comentarios { get; set; }
+    public DbSet<LikeDislike> LikesDislikes { get; set; }
+    
     protected override void OnModelCreating(DbModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Usuario>().ToTable("Usuarios");
@@ -62,6 +64,28 @@ public class ApplicationDbContext : DbContext
             .WillCascadeOnDelete(false);
 
         base.OnModelCreating(modelBuilder);
-    
+
+        // Configuração para Comentario
+        modelBuilder.Entity<Comentario>()
+            .HasRequired(c => c.Livro)
+            .WithMany()
+            .HasForeignKey(c => c.LivroId)
+            .WillCascadeOnDelete(true);
+
+        modelBuilder.Entity<Comentario>()
+            .HasRequired(c => c.Usuario)
+            .WithMany()
+            .HasForeignKey(c => c.UsuarioId)
+            .WillCascadeOnDelete(false);
+
+        // Configuração para LikeDislike
+        modelBuilder.Entity<LikeDislike>()
+            .HasKey(ld => ld.LikeDislikeId);
+
+        modelBuilder.Entity<LikeDislike>()
+            .HasIndex(ld => new { ld.LivroId, ld.UsuarioId })
+            .IsUnique(); // Um usuário só pode dar like/dislike uma vez por livro
+
+
     }
 }

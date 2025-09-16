@@ -21,6 +21,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMeusLivros));
             this.panelTopo = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
+            this.panelContainer = new System.Windows.Forms.Panel();
             this.dataGridViewLivros = new System.Windows.Forms.DataGridView();
             this.colCapa = new System.Windows.Forms.DataGridViewImageColumn();
             this.colTitulo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -35,6 +36,7 @@
             this.btnRemover = new System.Windows.Forms.Button();
             this.btnFechar = new System.Windows.Forms.Button();
             this.panelTopo.SuspendLayout();
+            this.panelContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLivros)).BeginInit();
             this.panelBotoes.SuspendLayout();
             this.SuspendLayout();
@@ -60,13 +62,22 @@
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "📚 Meus Livros";
             // 
+            // panelContainer
+            // 
+            this.panelContainer.BackColor = System.Drawing.Color.White;
+            this.panelContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelContainer.Controls.Add(this.dataGridViewLivros);
+            this.panelContainer.Location = new System.Drawing.Point(20, 80);
+            this.panelContainer.Name = "panelContainer";
+            this.panelContainer.Padding = new System.Windows.Forms.Padding(10);
+            this.panelContainer.Size = new System.Drawing.Size(960, 500);
+            this.panelContainer.TabIndex = 3;
+            // 
             // dataGridViewLivros
             // 
             this.dataGridViewLivros.AllowUserToAddRows = false;
             this.dataGridViewLivros.AllowUserToDeleteRows = false;
-            this.dataGridViewLivros.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewLivros.AllowUserToResizeRows = false;
             this.dataGridViewLivros.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewLivros.BackgroundColor = System.Drawing.Color.White;
             this.dataGridViewLivros.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -98,9 +109,10 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewLivros.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridViewLivros.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewLivros.EnableHeadersVisualStyles = false;
             this.dataGridViewLivros.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.dataGridViewLivros.Location = new System.Drawing.Point(20, 80);
+            this.dataGridViewLivros.Location = new System.Drawing.Point(10, 10);
             this.dataGridViewLivros.MultiSelect = false;
             this.dataGridViewLivros.Name = "dataGridViewLivros";
             this.dataGridViewLivros.ReadOnly = true;
@@ -114,9 +126,9 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridViewLivros.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridViewLivros.RowHeadersVisible = false;
-            this.dataGridViewLivros.RowTemplate.Height = 120;
+            this.dataGridViewLivros.RowTemplate.Height = 160;
             this.dataGridViewLivros.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewLivros.Size = new System.Drawing.Size(960, 500);
+            this.dataGridViewLivros.Size = new System.Drawing.Size(938, 478);
             this.dataGridViewLivros.TabIndex = 1;
             this.dataGridViewLivros.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewLivros_CellClick);
             this.dataGridViewLivros.SelectionChanged += new System.EventHandler(this.dataGridViewLivros_SelectionChanged);
@@ -126,11 +138,11 @@
             this.colCapa.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.colCapa.FillWeight = 120F;
             this.colCapa.HeaderText = "Capa";
-            this.colCapa.MinimumWidth = 120;
+            this.colCapa.MinimumWidth = 100;
             this.colCapa.Name = "colCapa";
             this.colCapa.ReadOnly = true;
             this.colCapa.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.colCapa.Width = 120;
+            this.colCapa.Width = 100;
             // 
             // colTitulo
             // 
@@ -173,14 +185,14 @@
             // panelBotoes
             // 
             this.panelBotoes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.panelBotoes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelBotoes.Controls.Add(this.btnAdicionar);
             this.panelBotoes.Controls.Add(this.btnEditar);
             this.panelBotoes.Controls.Add(this.btnRemover);
             this.panelBotoes.Controls.Add(this.btnFechar);
-            this.panelBotoes.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBotoes.Location = new System.Drawing.Point(0, 600);
+            this.panelBotoes.Location = new System.Drawing.Point(20, 600);
             this.panelBotoes.Name = "panelBotoes";
-            this.panelBotoes.Size = new System.Drawing.Size(1000, 70);
+            this.panelBotoes.Size = new System.Drawing.Size(960, 70);
             this.panelBotoes.TabIndex = 2;
             // 
             // btnAdicionar
@@ -190,7 +202,7 @@
             this.btnAdicionar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAdicionar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAdicionar.ForeColor = System.Drawing.Color.White;
-            this.btnAdicionar.Location = new System.Drawing.Point(20, 20);
+            this.btnAdicionar.Location = new System.Drawing.Point(20, 15);
             this.btnAdicionar.Name = "btnAdicionar";
             this.btnAdicionar.Size = new System.Drawing.Size(120, 35);
             this.btnAdicionar.TabIndex = 0;
@@ -205,7 +217,7 @@
             this.btnEditar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEditar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEditar.ForeColor = System.Drawing.Color.White;
-            this.btnEditar.Location = new System.Drawing.Point(160, 20);
+            this.btnEditar.Location = new System.Drawing.Point(160, 15);
             this.btnEditar.Name = "btnEditar";
             this.btnEditar.Size = new System.Drawing.Size(120, 35);
             this.btnEditar.TabIndex = 1;
@@ -220,7 +232,7 @@
             this.btnRemover.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRemover.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRemover.ForeColor = System.Drawing.Color.White;
-            this.btnRemover.Location = new System.Drawing.Point(300, 20);
+            this.btnRemover.Location = new System.Drawing.Point(300, 15);
             this.btnRemover.Name = "btnRemover";
             this.btnRemover.Size = new System.Drawing.Size(120, 35);
             this.btnRemover.TabIndex = 2;
@@ -236,7 +248,7 @@
             this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFechar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnFechar.ForeColor = System.Drawing.Color.White;
-            this.btnFechar.Location = new System.Drawing.Point(860, 20);
+            this.btnFechar.Location = new System.Drawing.Point(820, 15);
             this.btnFechar.Name = "btnFechar";
             this.btnFechar.Size = new System.Drawing.Size(120, 35);
             this.btnFechar.TabIndex = 3;
@@ -248,9 +260,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1000, 670);
-            this.Controls.Add(this.dataGridViewLivros);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(248)))), ((int)(((byte)(255)))));
+            this.ClientSize = new System.Drawing.Size(1000, 690);
+            this.Controls.Add(this.panelContainer);
             this.Controls.Add(this.panelBotoes);
             this.Controls.Add(this.panelTopo);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -261,6 +273,7 @@
             this.Text = "Minha Biblioteca - BookConnect";
             this.panelTopo.ResumeLayout(false);
             this.panelTopo.PerformLayout();
+            this.panelContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLivros)).EndInit();
             this.panelBotoes.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -270,6 +283,7 @@
 
         private System.Windows.Forms.Panel panelTopo;
         private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.Panel panelContainer;
         private System.Windows.Forms.DataGridView dataGridViewLivros;
         private System.Windows.Forms.Panel panelBotoes;
         private System.Windows.Forms.Button btnAdicionar;
