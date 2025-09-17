@@ -17,9 +17,20 @@ namespace gosti2
             InitializeComponent();
             _livroId = livroId;
             _usuarioLogadoId = UsuarioManager.UsuarioLogado?.UserId ?? 0;
+
+            // Configuração segura do ícone
+            try
+            {
+            }
+            catch
+            {
+                // Se não houver ícone, continua sem
+            }
+
             CarregarLivro();
             CarregarComentarios();
             CarregarLikesDislikes();
+            VerificarVotoUsuario();
         }
 
         private void CarregarLivro()
@@ -40,7 +51,6 @@ namespace gosti2
                         lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario.Nome}";
                         txtDescricao.Text = _livro.Descricao;
 
-                        // Carregar imagem ampliada
                         if (_livro.Capa != null && _livro.Capa.Length > 0)
                         {
                             using (var ms = new System.IO.MemoryStream(_livro.Capa))
@@ -80,12 +90,26 @@ namespace gosti2
                     {
                         AdicionarComentarioPanel(comentario);
                     }
+
+                    if (comentarios.Count == 0)
+                    {
+                        var lblSemComentarios = new Label
+                        {
+                            Text = "Nenhum comentário ainda. Seja o primeiro a comentar!",
+                            Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                            ForeColor = Color.Gray,
+                            TextAlign = ContentAlignment.MiddleCenter,
+                            Width = flowLayoutPanelComentarios.Width - 20,
+                            Height = 50
+                        };
+                        flowLayoutPanelComentarios.Controls.Add(lblSemComentarios);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -94,10 +118,11 @@ namespace gosti2
             var panel = new Panel
             {
                 Width = flowLayoutPanelComentarios.Width - 25,
-                Height = 120,
+                Height = 140,
                 BorderStyle = BorderStyle.FixedSingle,
                 Margin = new Padding(5),
-                BackColor = Color.White
+                BackColor = Color.White,
+                Padding = new Padding(10)
             };
 
             var lblUsuario = new Label
@@ -124,23 +149,26 @@ namespace gosti2
                 ReadOnly = true,
                 BorderStyle = BorderStyle.None,
                 Location = new Point(10, 35),
-                Size = new Size(panel.Width - 20, 50),
-                BackColor = Color.White
+                Size = new Size(panel.Width - 30, 60),
+                BackColor = Color.White,
+                Font = new Font("Segoe UI", 9)
             };
 
             var panelLikes = new Panel
             {
-                Location = new Point(10, 90),
-                Size = new Size(200, 25)
+                Location = new Point(10, 100),
+                Size = new Size(200, 30)
             };
 
             var btnLike = new Button
             {
                 Text = $"👍 {comentario.Likes}",
                 Tag = comentario.ComentarioId,
-                Size = new Size(60, 25),
+                Size = new Size(70, 25),
                 Location = new Point(0, 0),
-                Font = new Font("Segoe UI", 8)
+                Font = new Font("Segoe UI", 8),
+                BackColor = Color.LightGray,
+                FlatStyle = FlatStyle.Flat
             };
             btnLike.Click += BtnLikeComentario_Click;
 
@@ -148,9 +176,11 @@ namespace gosti2
             {
                 Text = $"👎 {comentario.Dislikes}",
                 Tag = comentario.ComentarioId,
-                Size = new Size(60, 25),
-                Location = new Point(70, 0),
-                Font = new Font("Segoe UI", 8)
+                Size = new Size(70, 25),
+                Location = new Point(80, 0),
+                Font = new Font("Segoe UI", 8),
+                BackColor = Color.LightGray,
+                FlatStyle = FlatStyle.Flat
             };
             btnDislike.Click += BtnDislikeComentario_Click;
 
@@ -176,8 +206,21 @@ namespace gosti2
 
                     lblLikes.Text = $"👍 {likes}";
                     lblDislikes.Text = $"👎 {dislikes}";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar likes: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-                    // Verificar se o usuário já votou
+        private void VerificarVotoUsuario()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
                     var userVote = context.LikesDislikes
                         .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
 
@@ -185,12 +228,24 @@ namespace gosti2
                     {
                         btnLikeLivro.Enabled = false;
                         btnDislikeLivro.Enabled = false;
+
+                        // Mudar cor para indicar que já votou
+                        if (userVote.IsLike)
+                        {
+                            btnLikeLivro.BackColor = Color.ForestGreen;
+                            btnLikeLivro.ForeColor = Color.White;
+                        }
+                        else
+                        {
+                            btnDislikeLivro.BackColor = Color.IndianRed;
+                            btnDislikeLivro.ForeColor = Color.White;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar likes: {ex.Message}", "Erro",
+                MessageBox.Show($"Erro ao verificar voto: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -210,7 +265,7 @@ namespace gosti2
                 {
                     var comentario = new Comentario
                     {
-                        Texto = txtNovoComentario.Text,
+                        Texto = txtNovoComentario.Text.Trim(),
                         LivroId = _livroId,
                         UsuarioId = _usuarioLogadoId,
                         DataComentario = DateTime.Now
@@ -271,8 +326,21 @@ namespace gosti2
                     context.LikesDislikes.Add(vote);
                     context.SaveChanges();
 
+                    // Desabilita os botões e muda a aparência
                     btnLikeLivro.Enabled = false;
                     btnDislikeLivro.Enabled = false;
+
+                    if (isLike)
+                    {
+                        btnLikeLivro.BackColor = Color.ForestGreen;
+                        btnLikeLivro.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        btnDislikeLivro.BackColor = Color.IndianRed;
+                        btnDislikeLivro.ForeColor = Color.White;
+                    }
+
                     CarregarLikesDislikes();
 
                     MessageBox.Show($"Você deu {(isLike ? "like" : "dislike")} no livro!", "Sucesso",
@@ -329,6 +397,15 @@ namespace gosti2
         private void btnFechar_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void txtNovoComentario_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter && !string.IsNullOrWhiteSpace(txtNovoComentario.Text))
+            {
+                btnComentar.PerformClick();
+                e.Handled = true;
+            }
         }
     }
 }

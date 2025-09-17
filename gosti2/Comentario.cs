@@ -38,17 +38,18 @@ namespace gosti2
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LikeDislikeId { get; set; }
+        public bool IsLike { get; set; } // true para like, false para dislike
+        public DateTime DataAcao { get; set; }
 
-        [Required]
+        // Chaves estrangeiras
         public int LivroId { get; set; }
+            public int UsuarioId { get; set; }
 
-        [Required]
-        public int UsuarioId { get; set; }
+            // Propriedades de navegação
+            public virtual Livro Livro { get; set; }
+            public virtual Usuario Usuario { get; set; }
 
-        [Required]
-        public bool IsLike { get; set; } // true = like, false = dislike
-
-        [Required]
-        public DateTime DataAcao { get; set; } = DateTime.Now;
+        
     }
+    
 }

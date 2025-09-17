@@ -11,6 +11,12 @@ namespace gosti2
         [STAThread]
         static void Main()
         {
+            // Inicializar o banco de dados
+            DatabaseInitializer.Initialize();
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            //
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

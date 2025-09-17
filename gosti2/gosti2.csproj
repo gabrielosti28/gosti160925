@@ -65,6 +65,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="CLASSTESTE.cs" />
     <Compile Include="Comentario.cs" />
+    <Compile Include="DatabaseInitializer.cs" />
     <Compile Include="FormAdicionarLivro.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormConfiguracaoBanco.resx">
       <DependentUpon>FormConfiguracaoBanco.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLivroAberto.resx">
+      <DependentUpon>FormLivroAberto.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>

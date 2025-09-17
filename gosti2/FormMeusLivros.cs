@@ -239,18 +239,27 @@ namespace gosti2
 
         private void dataGridViewLivros_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Se clicou na coluna da imagem (índice 0) ou em qualquer célula da linha
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                int livroId = ObterIdLivroSelecionado();
-                if (livroId > 0)
+                try
                 {
-                    using (var formLivroAberto = new FormLivroAberto(livroId))
+                    int livroId = ObterIdLivroSelecionado();
+                    if (livroId > 0)
                     {
-                        formLivroAberto.ShowDialog();
-                        // Recarrega os livros após fechar o form de detalhes
-                        CarregarLivros();
+                        // Garantir que o banco está inicializado
+                        DatabaseInitializer.Initialize();
+
+                        using (var formLivroAberto = new FormLivroAberto(livroId))
+                        {
+                            formLivroAberto.ShowDialog();
+                            CarregarLivros();
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao abrir livro: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}",
+                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -287,5 +296,8 @@ namespace gosti2
                 btnRemover.Enabled = false;
             }
         }
+
+       
+
     }
 }

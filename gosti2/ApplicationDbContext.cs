@@ -8,9 +8,9 @@ public class ApplicationDbContext : DbContext
     {
         // Desabilita inicializações automáticas para evitar conflitos
         Database.SetInitializer<ApplicationDbContext>(null);
-   
+
     }
-   
+
 
     // Tabelas
     public DbSet<Usuario> Usuarios { get; set; }
@@ -19,14 +19,38 @@ public class ApplicationDbContext : DbContext
     public DbSet<Mensagem> Mensagens { get; set; }
     public DbSet<Comentario> Comentarios { get; set; }
     public DbSet<LikeDislike> LikesDislikes { get; set; }
-    
+
     protected override void OnModelCreating(DbModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+       
+        modelBuilder.Entity<Comentario>().ToTable("Comentarios"); // ← Adicione esta linha
+        
 
         modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+        // Configuração para LikeDislike
+        modelBuilder.Entity<LikeDislike>()
+            .ToTable("LikesDislikes")
+            .HasKey(ld => ld.LikeDislikeId);
 
-        // Configuração específica para a entidade Livro
+        modelBuilder.Entity<LikeDislike>()
+            .HasRequired(ld => ld.Livro)
+            .WithMany(l => l.LikesDislikes) // Certifique-se que Livro tem ICollection<LikeDislike>
+            .HasForeignKey(ld => ld.LivroId)
+            .WillCascadeOnDelete(true);
+
+        //modelBuilder.Entity<LikeDislike>()
+            //.HasRequired(ld => ld.Usuario)
+           // .WithMany(u => u.LikesDislikes) // Certifique-se que Usuario tem ICollection<LikeDislike>
+            //.HasForeignKey(ld => ld.UsuarioId)
+           // .WillCascadeOnDelete(false);
+
+        modelBuilder.Entity<LikeDislike>()
+            .HasIndex(ld => new { ld.LivroId, ld.UsuarioId })
+            .IsUnique();
+        // Configuração para Usuario
+        modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+
+        // Configuração para Livro
         modelBuilder.Entity<Livro>()
             .Property(l => l.Titulo)
             .IsRequired()
@@ -43,9 +67,9 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Livro>()
             .Property(l => l.Descricao)
-            .HasMaxLength(1000);  
+            .HasMaxLength(1000);
 
-        modelBuilder.Entity<Livro>()  
+        modelBuilder.Entity<Livro>()
             .Property(l => l.DataAdicao)
             .IsRequired();
 
@@ -61,9 +85,7 @@ public class ApplicationDbContext : DbContext
             .HasRequired(l => l.Usuario)
             .WithMany(u => u.Livros)
             .HasForeignKey(l => l.UsuarioId)
-            .WillCascadeOnDelete(false);
-
-        base.OnModelCreating(modelBuilder);
+            .WillCascadeOnDelete(true);
 
         // Configuração para Comentario
         modelBuilder.Entity<Comentario>()
@@ -83,9 +105,21 @@ public class ApplicationDbContext : DbContext
             .HasKey(ld => ld.LikeDislikeId);
 
         modelBuilder.Entity<LikeDislike>()
+            .HasRequired(ld => ld.Livro)
+            .WithMany()
+            .HasForeignKey(ld => ld.LivroId)
+            .WillCascadeOnDelete(true);
+
+        modelBuilder.Entity<LikeDislike>()
+            .HasRequired(ld => ld.Usuario)
+            .WithMany()
+            .HasForeignKey(ld => ld.UsuarioId)
+            .WillCascadeOnDelete(false);
+
+        modelBuilder.Entity<LikeDislike>()
             .HasIndex(ld => new { ld.LivroId, ld.UsuarioId })
-            .IsUnique(); // Um usuário só pode dar like/dislike uma vez por livro
+            .IsUnique();
 
-
+        base.OnModelCreating(modelBuilder);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,6 +8,8 @@ namespace gosti2
     [Table("Livro")] // Força o nome da tabela
     public class Livro
     {
+        
+        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LivroId { get; set; }
@@ -45,5 +48,11 @@ namespace gosti2
         public int UsuarioId { get; set; }
 
         public virtual Usuario Usuario { get; set; }
+        public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
+
+
     }
+
+
+
 }
