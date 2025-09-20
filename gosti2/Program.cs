@@ -5,6 +5,7 @@ using gosti2.Data;
 using gosti2.Models;
 using System.Data.SqlClient;
 using gosti2.Tools;
+using Microsoft.Win32;
 
 namespace gosti2
 {
@@ -111,48 +112,131 @@ namespace gosti2
         }
     }
 }
+//USE[master]
+//GO
+
+//-- Criar banco se não existir (mantendo o nome requerido)
+//IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'CJ3027333PR2')
+//CREATE DATABASE [CJ3027333PR2]
+//GO
+
 //USE[CJ3027333PR2]
 //GO
 
-//-- Corrigir tabelas existentes
-//IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
-//BEGIN
-//    EXEC sp_rename 'Users', 'Usuarios';
-//END
+//-- =============================================
+//-- TABELA DE CONTROLE DE VERSÃO DO SCHEMA
+//-- =============================================
+//CREATE TABLE SchemaVersion (
+//    VersionId INT IDENTITY(1,1) PRIMARY KEY,
+//    VersionNumber VARCHAR(20) NOT NULL,
+//    Description NVARCHAR(500) NOT NULL,
+//    AppliedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+//    ScriptName NVARCHAR(255) NOT NULL
+//)
+//GO
 
-//IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Livroes')
-//BEGIN
-//    EXEC sp_rename 'Livroes', 'Livros';
-//END
+//-- =============================================
+//-- TABELAS PRINCIPAIS (VERSÃO 1.0)
+//-- =============================================
 
-//-- Garantir que todas as colunas necessárias existam
-//IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Livros' AND COLUMN_NAME = 'Genero')
-//BEGIN
-//    ALTER TABLE Livros ADD Genero NVARCHAR(50) NOT NULL DEFAULT 'Geral';
-//END
+//-- USUARIOS com bio básica (podemos expandir depois)
+//CREATE TABLE Usuarios (
+//    UsuarioId INT IDENTITY(1,1) PRIMARY KEY,
+//    Nome NVARCHAR(100) NOT NULL,
+//    Email NVARCHAR(100) NOT NULL UNIQUE,
+//    Senha NVARCHAR(255) NOT NULL,
+//    DataNascimento DATE NOT NULL,
+//    FotoPerfil VARBINARY(MAX) NULL,
+//    Bio NVARCHAR(500) NULL, -- ✅ Bio básica para começar
+//    DataCadastro DATETIME2 NOT NULL DEFAULT GETDATE(),
+//    UltimoLogin DATETIME2 NULL,
+//    Ativo BIT NOT NULL DEFAULT 1,
+    
+//    -- Campos para futuras expansões
+//    Website NVARCHAR(255) NULL,
+//    Localizacao NVARCHAR(100) NULL
+//)
+//GO
 
-//-- Criar tabelas que podem estar faltando
-//IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'LikesDislikes')
-//BEGIN
-//    CREATE TABLE LikesDislikes (
-//        LikeDislikeId INT IDENTITY(1,1) PRIMARY KEY,
-//        LivroId INT NOT NULL,
-//        UsuarioId INT NOT NULL,
-//        IsLike BIT NOT NULL,
-//        DataAcao DATETIME NOT NULL DEFAULT GETDATE(),
-//        FOREIGN KEY (LivroId) REFERENCES Livros(LivroId) ON DELETE CASCADE,
-//        FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UserId),
-//        CONSTRAINT UK_LivroUsuario UNIQUE (LivroId, UsuarioId)
-//    );
-//END
+//-- LIVROS
+//CREATE TABLE Livros (
+//    LivroId INT IDENTITY(1,1) PRIMARY KEY,
+//    Titulo NVARCHAR(200) NOT NULL,
+//    Autor NVARCHAR(100) NOT NULL,
+//    Genero NVARCHAR(50) NOT NULL,
+//    Descricao NVARCHAR(1000) NULL,
+//    Capa VARBINARY(MAX) NULL,
+//    DataAdicao DATETIME2 NOT NULL DEFAULT GETDATE(),
+//    Favorito BIT NOT NULL DEFAULT 0,
+//    Lido BIT NOT NULL DEFAULT 0,
+//    UsuarioId INT NOT NULL,
+    
+//    -- Novos campos para evolução futura
+//    ISBN NVARCHAR(20) NULL,
+//    AnoPublicacao INT NULL,
+//    Editora NVARCHAR(100) NULL,
+//    Paginas INT NULL,
 
-//-- Criar índices para performance
-//IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Usuarios_Email')
-//BEGIN
-//    CREATE UNIQUE INDEX IX_Usuarios_Email ON Usuarios(Email);
-//END
+//    CONSTRAINT FK_Livros_Usuarios FOREIGN KEY (UsuarioId) 
+//        REFERENCES Usuarios(UsuarioId) ON DELETE CASCADE
+//)
+//GO
 
-//IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Comentarios_LivroId')
-//BEGIN
-//    CREATE INDEX IX_Comentarios_LivroId ON Comentarios(LivroId);
-//END
+//-- COMENTARIOS
+//CREATE TABLE Comentarios (
+//    ComentarioId INT IDENTITY(1,1) PRIMARY KEY,
+//    Texto NVARCHAR(2000) NOT NULL,
+//    DataComentario DATETIME2 NOT NULL DEFAULT GETDATE(),
+//    Likes INT NOT NULL DEFAULT 0,
+//    Dislikes INT NOT NULL DEFAULT 0,
+//    LivroId INT NOT NULL,
+//    UsuarioId INT NOT NULL,
+    
+//    -- Campo para futuras funcionalidades
+//    Editado BIT NOT NULL DEFAULT 0,
+//    DataEdicao DATETIME2 NULL,
+
+//    CONSTRAINT FK_Comentarios_Livros FOREIGN KEY (LivroId) 
+//        REFERENCES Livros(LivroId) ON DELETE CASCADE,
+//    CONSTRAINT FK_Comentarios_Usuarios FOREIGN KEY (UsuarioId) 
+//        REFERENCES Usuarios(UsuarioId)
+//)
+//GO
+
+//-- LIKES/DISLIKES
+//CREATE TABLE LikesDislikes (
+//    LikeDislikeId INT IDENTITY(1,1) PRIMARY KEY,
+//    LivroId INT NOT NULL,
+//    UsuarioId INT NOT NULL,
+//    IsLike BIT NOT NULL,
+//    DataAcao DATETIME2 NOT NULL DEFAULT GETDATE(),
+
+//    CONSTRAINT FK_LikesDislikes_Livros FOREIGN KEY (LivroId) 
+//        REFERENCES Livros(LivroId) ON DELETE CASCADE,
+//    CONSTRAINT FK_LikesDislikes_Usuarios FOREIGN KEY (UsuarioId) 
+//        REFERENCES Usuarios(UsuarioId),
+
+//    CONSTRAINT UK_LivroUsuario UNIQUE (LivroId, UsuarioId)
+//)
+//GO
+
+//-- =============================================
+//-- ÍNDICES E PERFORMANCE
+//-- =============================================
+//CREATE UNIQUE INDEX IX_Usuarios_Email ON Usuarios(Email);
+//CREATE INDEX IX_Livros_Titulo ON Livros(Titulo);
+//CREATE INDEX IX_Livros_Autor ON Livros(Autor);
+//CREATE INDEX IX_Comentarios_LivroId ON Comentarios(LivroId);
+//GO
+
+//-- =============================================
+//--REGISTRAR VERSÃO INICIAL
+//-- =============================================
+//INSERT INTO SchemaVersion (VersionNumber, Description, ScriptName)
+//VALUES ('1.0.0', 'Schema inicial com estrutura básica para evolucao futura', 'CJ3027333PR2_Schema_Evolutivo.sql')
+//GO
+
+//PRINT '✅ Banco CJ3027333PR2 criado com estrutura evolutiva!';
+//PRINT '✅ Preparado para futuras atualizações';
+//PRINT '✅ Versionamento implementado';
+//GO
