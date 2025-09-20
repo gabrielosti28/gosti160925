@@ -7,30 +7,28 @@ using System.Data.SqlClient;
 
 namespace gosti2.Models
 {
-    [Table("Comentarios")]
-    public class Comentario
+    [Table("LikesDislikes")]
+    public class LikeDislike
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ComentarioId { get; set; }
+        public int LikeDislikeId { get; set; }
 
         [Required]
-        [MaxLength(2000)]
-        public string Texto { get; set; }
-
-        public DateTime DataComentario { get; set; } = DateTime.Now;
-
-        public int Likes { get; set; } = 0;
-        public int Dislikes { get; set; } = 0;
-
-        // Chaves estrangeiras CORRETAS
         [ForeignKey("Livro")]
         public int LivroId { get; set; }
 
+        [Required]
         [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
 
-        // Navegações CORRETAS
+        [Required]
+        public bool IsLike { get; set; } // true = like, false = dislike
+
+        [Required]
+        public DateTime DataAcao { get; set; } = DateTime.Now;
+
+        // Navegações
         public virtual Livro Livro { get; set; }
         public virtual Usuario Usuario { get; set; }
     }

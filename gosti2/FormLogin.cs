@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-
+using gosti2.Models;
+using gosti2.Data;
 namespace gosti2
 {
     public partial class FormLogin : Form

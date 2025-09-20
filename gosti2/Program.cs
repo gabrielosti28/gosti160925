@@ -1,83 +1,127 @@
 ﻿using System;
 using System.Windows.Forms;
 using gosti;
-// connectionString="Data Source=sqlexpress;Initial Catalog=CJ3027333PR2;Integrated Security=True;MultipleActiveResultSets=True"
-
+using gosti2.Data;
+using gosti2.Models;
+using System.Data.SqlClient;
+using gosti2.Tools;
 
 namespace gosti2
 {
-    static class Program
+    namespace gosti2
     {
-        [STAThread]
-        static void Main()
+        static class Program
         {
-            // Inicializar o banco de dados
-            DatabaseInitializer.Initialize();
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            //
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            // Verifica a estrutura do banco antes de tudo
-            DatabaseHelper.VerificarEstruturaBanco();
-
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            // 1️⃣ CONFIGURAÇÃO DO BANCO (se necessário)
-            if (!DatabaseTester.TestarConexao())
+            [STAThread]
+            static void Main()
             {
-                // Se não conseguiu conectar, abre tela de configuração
-                using (var formConfig = new FormConfiguracaoBanco())
+                //gosti2.Tools.ReferenceVerifier.VerificarTodasReferencias();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                // ✅ PRIMEIRO: Verificar todas as referências
+                ReferenceVerifier.VerificarTodasReferencias();
+
+                // ✅ DEPOIS: Continuar com a inicialização normal
+                if (!DatabaseSchemaValidator.ValidarEsquema())
                 {
-                    if (formConfig.ShowDialog() != DialogResult.OK)
+                    MessageBox.Show("O banco de dados precisa ser corrigido para continuar.",
+                        "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    // ✅ PRIMEIRO: Validar o esquema do banco
+                    if (!DatabaseSchemaValidator.ValidarEsquema())
                     {
-                        // Usuário cancelou a configuração
-                        Application.Exit();
+                        MessageBox.Show("O banco de dados precisa ser corrigido para continuar.",
+                            "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                }
-            }
 
-            // 2️⃣ TELA DE BOAS-VINDAS (FormMain)
-            using (var formMain = new FormMain())
-            {
-                if (formMain.ShowDialog() == DialogResult.OK)
-                {
-                    // 3️⃣ LOOP PRINCIPAL DA APLICAÇÃO
-                    ExecutarAplicacao();
-                }
-            }
-        }
+                    // ✅ DEPOIS: Garantir que o banco existe e está atualizado
+                    DatabaseManager.GarantirBancoCriado();
 
-        private static void ExecutarAplicacao()
-        {
-            while (true)
-            {
-                // 4️⃣ MENU PRINCIPAL
-                using (var formMenu = new FormMenu())
-                {
-                    var resultadoMenu = formMenu.ShowDialog();
-
-                    if (resultadoMenu == DialogResult.OK)
+                    // ✅ SÓ ENTÃO: Testar conexão
+                    if (!DatabaseManager.TestarConexao())
                     {
-                        // 5️⃣ TELA PRINCIPAL (após login bem-sucedido)
-                        using (var formPrincipal = new FormPrincipal())
+                        using (var formConfig = new FormConfiguracaoBanco())
                         {
-                            Application.Run(formPrincipal);
-                            UsuarioManager.Logout();
+                            if (formConfig.ShowDialog() != DialogResult.OK)
+                            {
+                                return;
+                            }
                         }
                     }
-                    else if (resultadoMenu == DialogResult.Cancel)
+
+                    // ✅ TELA DE BOAS-VINDAS
+                    using (var formMain = new FormMain())
                     {
-                        // Usuário quer sair
-                        break;
+                        if (formMain.ShowDialog() == DialogResult.OK)
+                        {
+                            ExecutarAplicacao();
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro inicial: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            private static void ExecutarAplicacao()
+            {
+                // ... implementação existente ...
             }
         }
     }
 }
+//USE[CJ3027333PR2]
+//GO
+
+//-- Corrigir tabelas existentes
+//IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
+//BEGIN
+//    EXEC sp_rename 'Users', 'Usuarios';
+//END
+
+//IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Livroes')
+//BEGIN
+//    EXEC sp_rename 'Livroes', 'Livros';
+//END
+
+//-- Garantir que todas as colunas necessárias existam
+//IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Livros' AND COLUMN_NAME = 'Genero')
+//BEGIN
+//    ALTER TABLE Livros ADD Genero NVARCHAR(50) NOT NULL DEFAULT 'Geral';
+//END
+
+//-- Criar tabelas que podem estar faltando
+//IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'LikesDislikes')
+//BEGIN
+//    CREATE TABLE LikesDislikes (
+//        LikeDislikeId INT IDENTITY(1,1) PRIMARY KEY,
+//        LivroId INT NOT NULL,
+//        UsuarioId INT NOT NULL,
+//        IsLike BIT NOT NULL,
+//        DataAcao DATETIME NOT NULL DEFAULT GETDATE(),
+//        FOREIGN KEY (LivroId) REFERENCES Livros(LivroId) ON DELETE CASCADE,
+//        FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UserId),
+//        CONSTRAINT UK_LivroUsuario UNIQUE (LivroId, UsuarioId)
+//    );
+//END
+
+//-- Criar índices para performance
+//IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Usuarios_Email')
+//BEGIN
+//    CREATE UNIQUE INDEX IX_Usuarios_Email ON Usuarios(Email);
+//END
+
+//IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Comentarios_LivroId')
+//BEGIN
+//    CREATE INDEX IX_Comentarios_LivroId ON Comentarios(LivroId);
+//END

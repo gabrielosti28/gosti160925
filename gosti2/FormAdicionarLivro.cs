@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using gosti2.Models;
+using gosti2.Data;
 
 namespace gosti2
 {
@@ -38,7 +40,7 @@ namespace gosti2
                     {
                         txtTitulo.Text = livro.Titulo;
                         txtAutor.Text = livro.Autor;
-                        cmbGenero.SelectedIndex = livro.CategoriaId;
+                        cmbGenero.Text = livro.Genero;
                         txtDescricao.Text = livro.Descricao;
                         checkBoxLido.Checked = livro.Lido;
                         checkBoxFavorito.Checked = livro.Favorito;
@@ -100,7 +102,7 @@ namespace gosti2
                     // Atualizar dados
                     livro.Titulo = txtTitulo.Text;
                     livro.Autor = txtAutor.Text;
-                    livro.CategoriaId = cmbGenero.SelectedIndex;
+                    livro.Genero = cmbGenero.Text;
                     livro.Descricao = txtDescricao.Text;
                     livro.Lido = checkBoxLido.Checked;
                     livro.Favorito = checkBoxFavorito.Checked;

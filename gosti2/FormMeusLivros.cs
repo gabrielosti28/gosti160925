@@ -8,6 +8,9 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using gosti2.Models;
+using gosti2.Data;
+
 namespace gosti2
 {
     public partial class FormMeusLivros : Form
@@ -58,7 +61,7 @@ namespace gosti2
                             capaImage,
                             livro.Titulo,
                             livro.Autor,
-                            livro.CategoriaId, // ou livro.Categoria, dependendo do seu modelo
+                            livro.Genero, // ou livro.Categoria, dependendo do seu modelo
                             livro.Lido ? "Lido" : "Não Lido",
                             livro.UsuarioId,
                             livro.Usuario.Nome

@@ -3,6 +3,9 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Data.Entity;
+using gosti2.Models;
+using gosti2.Models;
+using gosti2.Data;
 
 namespace gosti2
 {
@@ -47,7 +50,7 @@ namespace gosti2
                     {
                         lblTitulo.Text = _livro.Titulo;
                         lblAutor.Text = $"Autor: {_livro.Autor}";
-                        lblGenero.Text = $"Gênero: {_livro.CategoriaId}";
+                        lblGenero.Text = $"Gênero: {_livro.Genero}";
                         lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario.Nome}";
                         txtDescricao.Text = _livro.Descricao;
 
@@ -72,46 +75,7 @@ namespace gosti2
             }
         }
 
-        private void CarregarComentarios()
-        {
-            try
-            {
-                flowLayoutPanelComentarios.Controls.Clear();
-
-                using (var context = new ApplicationDbContext())
-                {
-                    var comentarios = context.Comentarios
-                        .Include(c => c.Usuario)
-                        .Where(c => c.LivroId == _livroId)
-                        .OrderByDescending(c => c.DataComentario)
-                        .ToList();
-
-                    foreach (var comentario in comentarios)
-                    {
-                        AdicionarComentarioPanel(comentario);
-                    }
-
-                    if (comentarios.Count == 0)
-                    {
-                        var lblSemComentarios = new Label
-                        {
-                            Text = "Nenhum comentário ainda. Seja o primeiro a comentar!",
-                            Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                            ForeColor = Color.Gray,
-                            TextAlign = ContentAlignment.MiddleCenter,
-                            Width = flowLayoutPanelComentarios.Width - 20,
-                            Height = 50
-                        };
-                        flowLayoutPanelComentarios.Controls.Add(lblSemComentarios);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        
 
         private void AdicionarComentarioPanel(Comentario comentario)
         {
@@ -298,61 +262,7 @@ namespace gosti2
             RegistrarVotoLivro(false);
         }
 
-        private void RegistrarVotoLivro(bool isLike)
-        {
-            try
-            {
-                using (var context = new ApplicationDbContext())
-                {
-                    // Verifica se já votou
-                    var existingVote = context.LikesDislikes
-                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
-
-                    if (existingVote != null)
-                    {
-                        MessageBox.Show("Você já votou neste livro.", "Aviso",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    var vote = new LikeDislike
-                    {
-                        LivroId = _livroId,
-                        UsuarioId = _usuarioLogadoId,
-                        IsLike = isLike,
-                        DataAcao = DateTime.Now
-                    };
-
-                    context.LikesDislikes.Add(vote);
-                    context.SaveChanges();
-
-                    // Desabilita os botões e muda a aparência
-                    btnLikeLivro.Enabled = false;
-                    btnDislikeLivro.Enabled = false;
-
-                    if (isLike)
-                    {
-                        btnLikeLivro.BackColor = Color.ForestGreen;
-                        btnLikeLivro.ForeColor = Color.White;
-                    }
-                    else
-                    {
-                        btnDislikeLivro.BackColor = Color.IndianRed;
-                        btnDislikeLivro.ForeColor = Color.White;
-                    }
-
-                    CarregarLikesDislikes();
-
-                    MessageBox.Show($"Você deu {(isLike ? "like" : "dislike")} no livro!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao registrar voto: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+       
 
         private void BtnLikeComentario_Click(object sender, EventArgs e)
         {
@@ -407,5 +317,70 @@ namespace gosti2
                 e.Handled = true;
             }
         }
+        // No método CarregarComentarios():
+        private void CarregarComentarios()
+        {
+            try
+            {
+                flowLayoutPanelComentarios.Controls.Clear();
+
+                using (var context = new ApplicationDbContext())
+                {
+                    // ✅ CORREÇÃO: Usar Include corretamente
+                    var comentarios = context.Comentarios
+                        .Include("Usuario") // ← String-based include para evitar erros
+                        .Where(c => c.LivroId == _livroId)
+                        .OrderByDescending(c => c.DataComentario)
+                        .ToList();
+
+                    // Resto do método...
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}");
+            }
+        }
+
+        // No método RegistrarVotoLivro():
+        private void RegistrarVotoLivro(bool isLike)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // ✅ Verifica se já votou
+                    var existingVote = context.LikesDislikes
+                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
+
+                    if (existingVote != null)
+                    {
+                        // ✅ Atualiza o voto existente
+                        existingVote.IsLike = isLike;
+                        existingVote.DataAcao = DateTime.Now;
+                    }
+                    else
+                    {
+                        // ✅ Cria novo voto
+                        var vote = new LikeDislike
+                        {
+                            LivroId = _livroId,
+                            UsuarioId = _usuarioLogadoId,
+                            IsLike = isLike,
+                            DataAcao = DateTime.Now
+                        };
+                        context.LikesDislikes.Add(vote);
+                    }
+
+                    context.SaveChanges();
+                    CarregarLikesDislikes();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao registrar voto: {ex.Message}");
+            }
+        }
+
     }
 }

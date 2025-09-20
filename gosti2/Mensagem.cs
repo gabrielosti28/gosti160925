@@ -1,5 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using gosti2.Models;
+using gosti2.Data;
+using System.Data.SqlClient;
 
 namespace gosti2
 {

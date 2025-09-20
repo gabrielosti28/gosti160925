@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using gosti2.Models;
+using gosti2.Data;
+using System.Data.SqlClient;
 
 namespace gosti2
 {

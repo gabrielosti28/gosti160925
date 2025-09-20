@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using gosti2.Models;
+using gosti2.Data;
+using System.Data.SqlClient;
 
 namespace gosti2
 {

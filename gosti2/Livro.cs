@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using gosti2.Models;
+using gosti2.Data;
+using System.Data.SqlClient;
 
-namespace gosti2
+namespace gosti2.Models
 {
-    [Table("Livro")] // Força o nome da tabela
+    [Table("Livros")]
     public class Livro
     {
-        
-        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LivroId { get; set; }
@@ -23,36 +24,35 @@ namespace gosti2
         public string Autor { get; set; }
 
         [Required]
-        //[MaxLength(50)]
-        public int CategoriaId { get; set; }
-        //public string Categoria { get; set; }
+        [MaxLength(50)]
+        public string Genero { get; set; }
 
         [MaxLength(1000)]
         public string Descricao { get; set; }
 
-        [Column(TypeName = "varbinary(max)")]
         public byte[] Capa { get; set; }
 
-        [Required]
         public DateTime DataAdicao { get; set; } = DateTime.Now;
 
-        [Required]
-        public bool Favorito { get; set; } = false;
+        public bool Favorito { get; set; }
 
-        [Required]
-        public bool Lido { get; set; } = false;
+        public bool Lido { get; set; }
 
-        // Chave estrangeira
-        [Required]
+        // Chave estrangeira CORRETA
         [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
 
+        // Navegação CORRETA
         public virtual Usuario Usuario { get; set; }
+
+        // Relações
+        public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
 
-
+        public Livro()
+        {
+            Comentarios = new HashSet<Comentario>();
+            LikesDislikes = new HashSet<LikeDislike>();
+        }
     }
-
-
-
 }
