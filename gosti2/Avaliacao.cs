@@ -4,32 +4,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace gosti2.Models
 {
-    [Table("Comentarios")]
-    public class Comentario
+    [Table("Avaliacoes")]
+    public class Avaliacao
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ComentarioId { get; set; }
+        public int AvaliacaoId { get; set; }
 
         [Required]
-        [MaxLength(2000)]
-        public string Texto { get; set; }
-
-        public DateTime DataComentario { get; set; } = DateTime.Now;
-
-        public int Likes { get; set; } = 0;
-        public int Dislikes { get; set; } = 0;
-
-        // ✅ ADICIONE ESTAS PROPRIEDADES:
-        public bool Editado { get; set; } = false;
-        public DateTime? DataEdicao { get; set; }
-
-        // Chaves estrangeiras
         [ForeignKey("Livro")]
         public int LivroId { get; set; }
 
+        [Required]
         [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
+
+        [Required]
+        [Range(0.0, 5.0)]
+        public decimal Nota { get; set; }
+
+        [MaxLength(500)]
+        public string Comentario { get; set; }
+
+        [Required]
+        public DateTime DataAvaliacao { get; set; } = DateTime.Now;
 
         // Navegações
         public virtual Livro Livro { get; set; }

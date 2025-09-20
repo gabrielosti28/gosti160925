@@ -3,7 +3,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Windows.Forms;
-using gosti2.Models;
+using gosti2.Data; // ✅ ADICIONE ESTE USING
+using gosti2.Models; // ✅ E ESTE TAMBÉM
 
 namespace gosti2.Tools
 {
@@ -15,10 +16,11 @@ namespace gosti2.Tools
 
             try
             {
+                // ✅ CORRIGIDO: Agora reconhece ApplicationDbContext
                 using (var context = new ApplicationDbContext())
                 {
                     var connection = context.Database.Connection as SqlConnection;
-                    if (connection.State != ConnectionState.Open)
+                    if (connection.State != System.Data.ConnectionState.Open)
                         connection.Open();
 
                     // Exportar tabelas
@@ -28,10 +30,6 @@ namespace gosti2.Tools
                     // Exportar colunas
                     estrutura.AppendLine("\n-- COLUNAS POR TABELA");
                     ExportarColunas(connection, estrutura);
-
-                    // Exportar índices
-                    estrutura.AppendLine("\n-- ÍNDICES");
-                    ExportarIndices(connection, estrutura);
 
                     MessageBox.Show("Estrutura exportada com sucesso! Copie o texto e envie para análise.",
                         "Exportação Concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -88,11 +86,11 @@ namespace gosti2.Tools
                 }
             }
         }
+
         private static void ExportarIndices(SqlConnection connection, StringBuilder estrutura)
         {
-            // Implementação simplificada - remover se não for usar
+            // Implementação simplificada
             estrutura.AppendLine("-- Exportação de índices não implementada");
         }
-
     }
 }

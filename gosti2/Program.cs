@@ -15,6 +15,37 @@ namespace gosti2
             [STAThread]
             static void Main()
             {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                try
+                {
+                    // ✅ VERIFICAR E ATUALIZAR BANCO PARA VERSÃO MAIS RECENTE
+                    DatabaseEvolutionManager.VerificarEAtualizarBanco();
+
+                    // ✅ VALIDAR ESQUEMA
+                    if (!DatabaseSchemaValidator.ValidarEsquema())
+                    {
+                        Application.Exit();
+                        return;
+                    }
+
+                    // ✅ INICIALIZAR APLICAÇÃO
+                    using (var formMain = new FormMain())
+                    {
+                        if (formMain.ShowDialog() == DialogResult.OK)
+                        {
+                            ExecutarAplicacao();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro na inicialização: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+
                 //gosti2.Tools.ReferenceVerifier.VerificarTodasReferencias();
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Data.Entity;
 using gosti2.Models;
-using gosti2.Models;
 using gosti2.Data;
 
 namespace gosti2

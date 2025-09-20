@@ -61,10 +61,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationDbContext.cs" />
+    <Compile Include="Avaliacao.cs" />
     <Compile Include="CategoriaTier.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="CLASSTESTE.cs" />
     <Compile Include="Comentario.cs" />
+    <Compile Include="DatabaseEvolutionManager.cs" />
     <Compile Include="DatabaseExporter.cs" />
     <Compile Include="DatabaseInitializer.cs" />
     <Compile Include="DatabaseManager.cs" />

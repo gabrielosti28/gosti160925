@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using gosti2.Models;
-using gosti2.Data;
-using System.Data.SqlClient;
 
 namespace gosti2.Models
 {
@@ -35,24 +32,30 @@ namespace gosti2.Models
         public DateTime DataAdicao { get; set; } = DateTime.Now;
 
         public bool Favorito { get; set; }
-
         public bool Lido { get; set; }
 
-        // Chave estrangeira CORRETA
+        // ✅ Campos para expansão futura
+        public string ISBN { get; set; }
+        public int? AnoPublicacao { get; set; }
+        public string Editora { get; set; }
+        public int? Paginas { get; set; }
+        public decimal? Avaliacao { get; set; }
+
+        // Chave estrangeira
         [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
 
-        // Navegação CORRETA
+        // ✅ NAVEGAÇÕES CORRETAS (INCLUINDO Avaliacoes)
         public virtual Usuario Usuario { get; set; }
-
-        // Relações
         public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
+        public virtual ICollection<Avaliacao> Avaliacoes { get; set; } // ✅ ESTA LINHA RESOLVE O ERRO
 
         public Livro()
         {
             Comentarios = new HashSet<Comentario>();
             LikesDislikes = new HashSet<LikeDislike>();
+            Avaliacoes = new HashSet<Avaliacao>(); // ✅ INICIALIZAÇÃO OBRIGATÓRIA
         }
     }
 }

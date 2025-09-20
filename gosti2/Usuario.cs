@@ -23,7 +23,7 @@ namespace gosti2.Models
         public string Email { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(255)] // ✅ Aumentado para hash de senha
         public string Senha { get; set; }
 
         [Required]
@@ -35,22 +35,47 @@ namespace gosti2.Models
         [MaxLength(500)]
         public string Bio { get; set; }
 
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
+        // ✅ CAMPOS PARA BIO PROFISSIONAL (com tamanhos adequados)
+        [MaxLength(1000)]
+        public string BioProfissional { get; set; }
 
-        // Relações CORRETAS
+        [MaxLength(100)]
+        public string Especialidade { get; set; }
+
+        [MaxLength(100)]
+        public string Twitter { get; set; }
+
+        [MaxLength(100)]
+        public string Instagram { get; set; }
+
+        // ✅ NOVOS CAMPOS PARA SISTEMA PROFISSIONAL
+        [MaxLength(100)]
+        public string Website { get; set; }
+
+        [MaxLength(100)]
+        public string Localizacao { get; set; }
+
+        public DateTime DataCadastro { get; set; } = DateTime.Now;
+        public DateTime? UltimoLogin { get; set; }
+        public bool Ativo { get; set; } = true;
+
+        // ✅ RELAÇÕES COMPLETAS
         public virtual ICollection<Livro> Livros { get; set; }
         public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<Mensagem> MensagensEnviadas { get; set; }
         public virtual ICollection<Mensagem> MensagensRecebidas { get; set; }
         public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
+        public virtual ICollection<Avaliacao> Avaliacoes { get; set; } // ✅ ADICIONADO
 
         public Usuario()
         {
+            // ✅ INICIALIZAÇÃO COMPLETA DE TODAS AS COLEÇÕES
             Livros = new HashSet<Livro>();
             Comentarios = new HashSet<Comentario>();
             MensagensEnviadas = new HashSet<Mensagem>();
             MensagensRecebidas = new HashSet<Mensagem>();
             LikesDislikes = new HashSet<LikeDislike>();
+            Avaliacoes = new HashSet<Avaliacao>(); // ✅ ADICIONADO
         }
     }
 }
