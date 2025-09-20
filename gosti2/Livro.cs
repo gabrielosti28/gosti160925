@@ -9,7 +9,7 @@ namespace gosti2.Models
     public class Livro
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int LivroId { get; set; }
 
         [Required]
