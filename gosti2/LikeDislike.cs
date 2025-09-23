@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using gosti2.Models;
-using gosti2.Data;
-using System.Data.SqlClient;
 
 namespace gosti2.Models
 {
@@ -31,5 +28,15 @@ namespace gosti2.Models
         // Navegações
         public virtual Livro Livro { get; set; }
         public virtual Usuario Usuario { get; set; }
+
+        // ✅ MÉTODOS DE NEGÓCIO (OPCIONAIS)
+        public bool PodeSerRealizado()
+        {
+            return Usuario != null && Livro != null && (Usuario.Ativo);
+        }
+
+        public string ObterTipoAcao() => IsLike ? "👍 Curtiu" : "👎 Não curtiu";
+
+        public bool EhRecente() => (DateTime.Now - DataAcao).TotalHours < 24;
     }
 }

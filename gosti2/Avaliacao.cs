@@ -20,10 +20,10 @@ namespace gosti2.Models
         public int UsuarioId { get; set; }
 
         [Required]
-        [Range(0.0, 5.0)]
-        public decimal Nota { get; set; }
+        [Range(1, 5, ErrorMessage = "A nota deve ser entre 1 e 5 estrelas")] // ✅ CORRIGIDO: INT (1-5)
+        public int Nota { get; set; } // ✅ CORRIGIDO: decimal → int
 
-        [MaxLength(500)]
+        [MaxLength(1000)] // ✅ CORRIGIDO: Tamanho compatível com SQL (1000)
         public string Comentario { get; set; }
 
         [Required]
@@ -32,5 +32,29 @@ namespace gosti2.Models
         // Navegações
         public virtual Livro Livro { get; set; }
         public virtual Usuario Usuario { get; set; }
+
+        // ✅ MÉTODOS DE NEGÓCIO (OPCIONAIS)
+        public string NotaEmEstrelas()
+        {
+            return new string('⭐', Nota) + new string('☆', 5 - Nota);
+        }
+
+        public bool EhAvaliacaoPositiva() => Nota >= 4;
+
+        public bool EhAvaliacaoRecente() => (DateTime.Now - DataAvaliacao).TotalDays < 30;
+
+        public string ResumoAvaliacao()
+        {
+            return $"{(Comentario?.Length > 50 ? Comentario.Substring(0, 47) + "..." : Comentario)}";
+        }
+
+        // ✅ VALIDAÇÃO PERSONALIZADA
+        public bool ValidarAvaliacao()
+        {
+            return Nota >= 1 && Nota <= 5 &&
+                   LivroId > 0 &&
+                   UsuarioId > 0 &&
+                   DataAvaliacao <= DateTime.Now;
+        }
     }
 }

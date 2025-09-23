@@ -63,8 +63,7 @@
     <Compile Include="ApplicationDbContext.cs" />
     <Compile Include="Avaliacao.cs" />
     <Compile Include="CategoriaTier.cs" />
-    <Compile Include="Class1.cs" />
-    <Compile Include="CLASSTESTE.cs" />
+    <Compile Include="DatabaseHelper.cs" />
     <Compile Include="Comentario.cs" />
     <Compile Include="DatabaseEvolutionManager.cs" />
     <Compile Include="DatabaseExporter.cs" />
@@ -179,7 +178,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="App1.Config" />
     <None Include="Application Configuration File.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

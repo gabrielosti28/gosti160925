@@ -166,7 +166,71 @@ namespace gosti2.Data
             return erros.ToString();
         }
 
-        // ✅ TABELAS ADICIONAIS DO NOSSO SCHEMA
+        // ✅ TABELA COMENTARIOS (MÉTODO FALTANTE ADICIONADO)
+        private static string VerificarTabelaComentarios(SqlConnection connection)
+        {
+            var erros = new StringBuilder();
+
+            if (!TabelaExiste(connection, "Comentarios"))
+            {
+                erros.AppendLine("❌ Tabela 'Comentarios' não existe");
+                return erros.ToString();
+            }
+
+            var colunasEsperadas = new[]
+            {
+                new { Nome = "ComentarioId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "Texto", Tipo = "nvarchar", Nulo = "NO", Tamanho = 2000 },
+                new { Nome = "DataComentario", Tipo = "datetime2", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "Likes", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "Dislikes", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "LivroId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "UsuarioId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "Editado", Tipo = "bit", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "DataEdicao", Tipo = "datetime2", Nulo = "YES", Tamanho = 0 }
+            };
+
+            foreach (var coluna in colunasEsperadas)
+            {
+                string erro = VerificarColuna(connection, "Comentarios", coluna.Nome, coluna.Tipo, coluna.Nulo, coluna.Tamanho);
+                if (!string.IsNullOrEmpty(erro))
+                    erros.AppendLine(erro);
+            }
+
+            return erros.ToString();
+        }
+
+        // ✅ TABELA LIKESDISLIKES (MÉTODO FALTANTE ADICIONADO)
+        private static string VerificarTabelaLikesDislikes(SqlConnection connection)
+        {
+            var erros = new StringBuilder();
+
+            if (!TabelaExiste(connection, "LikesDislikes"))
+            {
+                erros.AppendLine("❌ Tabela 'LikesDislikes' não existe");
+                return erros.ToString();
+            }
+
+            var colunasEsperadas = new[]
+            {
+                new { Nome = "LikeDislikeId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "LivroId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "UsuarioId", Tipo = "int", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "IsLike", Tipo = "bit", Nulo = "NO", Tamanho = 0 },
+                new { Nome = "DataAcao", Tipo = "datetime2", Nulo = "NO", Tamanho = 0 }
+            };
+
+            foreach (var coluna in colunasEsperadas)
+            {
+                string erro = VerificarColuna(connection, "LikesDislikes", coluna.Nome, coluna.Tipo, coluna.Nulo, coluna.Tamanho);
+                if (!string.IsNullOrEmpty(erro))
+                    erros.AppendLine(erro);
+            }
+
+            return erros.ToString();
+        }
+
+        // ✅ TABELA AVALIACOES
         private static string VerificarTabelaAvaliacoes(SqlConnection connection)
         {
             var erros = new StringBuilder();
@@ -197,6 +261,7 @@ namespace gosti2.Data
             return erros.ToString();
         }
 
+        // ✅ TABELA CATEGORIATIERS
         private static string VerificarTabelaCategoriaTiers(SqlConnection connection)
         {
             var erros = new StringBuilder();
@@ -226,6 +291,7 @@ namespace gosti2.Data
             return erros.ToString();
         }
 
+        // ✅ TABELA MENSAGENS
         private static string VerificarTabelaMensagens(SqlConnection connection)
         {
             var erros = new StringBuilder();

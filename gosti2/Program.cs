@@ -13,6 +13,17 @@ namespace gosti2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ReferenceVerifier.VerificarTodasReferencias();
+
+            // Para testes simples
+            if (ReferenceVerifier.VerificacaoRapida())
+            {
+                Console.WriteLine("✅ Sistema básico operacional");
+            }
+            else
+            {
+                Console.WriteLine("❌ Problemas críticos detectados");
+            }
 
             try
             {
