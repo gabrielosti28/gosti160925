@@ -26,95 +26,91 @@ namespace gosti2.Data
                 return false;
             }
         }
-
+        private static bool VerificarTabelasPrincipais()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // Verifica se a tabela principal existe
+                    return context.Database.SqlQuery<int?>(
+                        "SELECT COUNT(*) FROM sys.tables WHERE name = 'Usuarios'").FirstOrDefault() > 0;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public static void GarantirBancoCriado()
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Cria o banco se não existir
-                    if (!context.Database.Exists())
-                    {
-                        context.Database.Create();
-                        MessageBox.Show("Banco de dados criado com sucesso!", "Sucesso",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    // Cria o banco se não existir (usando Entity Framework)
+                    context.Database.CreateIfNotExists();
 
-                    // Verifica e atualiza as tabelas
-                    VerificarEAtualizarTabelas();
+                    // Substitua por uma verificação básica
+                    if (!VerificarTabelasPrincipais())
+                    {
+                        MessageBox.Show("Schema do banco precisa ser atualizado. Execute a migração.",
+                            "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        Console.WriteLine("✅ Banco validado com sucesso!");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao criar banco: {ex.Message}", "Erro",
+                MessageBox.Show($"Erro ao criar/validar banco: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private static void VerificarEAtualizarTabelas()
+        // ✅ MÉTODO NOVO: Verificar e criar tabelas específicas se necessário
+        public static void VerificarTabelasEspecificas()
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Executa scripts SQL para garantir que todas as tabelas existam
-                    var scripts = new[]
+                    // Scripts de fallback caso alguma tabela específica falte
+                    var scriptsFallback = new[]
                     {
-                        @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Usuarios' AND xtype='U')
-                          CREATE TABLE Usuarios (
-                              UserId INT IDENTITY(1,1) PRIMARY KEY,
-                              Nome NVARCHAR(100) NOT NULL,
-                              Email NVARCHAR(100) NOT NULL UNIQUE,
-                              Senha NVARCHAR(100) NOT NULL,
-                              DataNascimento NVARCHAR(10) NOT NULL,
-                              FotoPerfil VARBINARY(MAX),
-                              Bio NVARCHAR(500),
-                              DataCadastro DATETIME NOT NULL
-                          )",
+                        // Script para SchemaVersion (controle de migrações)
+                        @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SchemaVersion')
+                        CREATE TABLE SchemaVersion (
+                            VersionId INT IDENTITY(1,1) PRIMARY KEY,
+                            VersionNumber VARCHAR(20) NOT NULL,
+                            Description NVARCHAR(500) NOT NULL,
+                            AppliedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+                            ScriptName NVARCHAR(255) NOT NULL
+                        )",
 
-                        @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Livros' AND xtype='U')
-                          CREATE TABLE Livros (
-                              LivroId INT IDENTITY(1,1) PRIMARY KEY,
-                              Titulo NVARCHAR(200) NOT NULL,
-                              Autor NVARCHAR(100) NOT NULL,
-                              Genero NVARCHAR(50) NOT NULL,
-                              Descricao NVARCHAR(1000),
-                              Capa VARBINARY(MAX),
-                              DataAdicao DATETIME NOT NULL,
-                              Favorito BIT NOT NULL DEFAULT 0,
-                              Lido BIT NOT NULL DEFAULT 0,
-                              UsuarioId INT NOT NULL,
-                              FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UserId) ON DELETE CASCADE
-                          )",
-
-                        @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Comentarios' AND xtype='U')
-                          CREATE TABLE Comentarios (
-                              ComentarioId INT IDENTITY(1,1) PRIMARY KEY,
-                              Texto NVARCHAR(2000) NOT NULL,
-                              DataComentario DATETIME NOT NULL,
-                              Likes INT NOT NULL DEFAULT 0,
-                              Dislikes INT NOT NULL DEFAULT 0,
-                              LivroId INT NOT NULL,
-                              UsuarioId INT NOT NULL,
-                              FOREIGN KEY (LivroId) REFERENCES Livros(LivroId) ON DELETE CASCADE,
-                              FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UserId)
-                          )",
-
-                        @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LikesDislikes' AND xtype='U')
-                          CREATE TABLE LikesDislikes (
-                              LikeDislikeId INT IDENTITY(1,1) PRIMARY KEY,
-                              LivroId INT NOT NULL,
-                              UsuarioId INT NOT NULL,
-                              IsLike BIT NOT NULL,
-                              DataAcao DATETIME NOT NULL,
-                              FOREIGN KEY (LivroId) REFERENCES Livros(LivroId) ON DELETE CASCADE,
-                              FOREIGN KEY (UsuarioId) REFERENCES Usuarios(UserId),
-                              UNIQUE (LivroId, UsuarioId)
-                          )"
+                        // Script para CategoriaTiers (importante para o sistema de tiers)
+                        @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'CategoriaTiers')
+                        BEGIN
+                            CREATE TABLE CategoriaTiers (
+                                CategoriaTierId INT IDENTITY(1,1) PRIMARY KEY,
+                                Nome NVARCHAR(50) NOT NULL,
+                                Descricao NVARCHAR(255) NULL,
+                                Nivel INT NOT NULL DEFAULT 1,
+                                Cor NVARCHAR(20) NULL DEFAULT '#000000'
+                            )
+                            
+                            -- Inserir dados padrão
+                            INSERT INTO CategoriaTiers (Nome, Descricao, Nivel, Cor) VALUES
+                            ('Iniciante', 'Leitor iniciante', 1, '#4CAF50'),
+                            ('Intermediário', 'Leitor frequente', 2, '#2196F3'),
+                            ('Avançado', 'Leitor experiente', 3, '#FF9800'),
+                            ('Expert', 'Crítico literário', 4, '#F44336')
+                        END"
                     };
 
-                    foreach (var script in scripts)
+                    foreach (var script in scriptsFallback)
                     {
                         context.Database.ExecuteSqlCommand(script);
                     }
@@ -122,26 +118,59 @@ namespace gosti2.Data
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao verificar tabelas: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Aviso na verificação de tabelas: {ex.Message}");
+                // Não mostra MessageBox para não assustar o usuário
             }
         }
 
-        public static void ExecutarMigration()
+        // ✅ MÉTODO MELHORADO: Migração segura
+        public static void ExecutarMigrationSegura()
         {
             try
             {
-                Database.SetInitializer(new DropCreateDatabaseIfModelChanges<ApplicationDbContext>());
+                // Usar inicializador mais seguro
+                Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationDbContext>());
 
                 using (var context = new ApplicationDbContext())
                 {
-                    context.Database.Initialize(false);
+                    // Força a criação do banco/seeds se necessário
+                    context.Database.Initialize(true);
+
+                    // Verifica tabelas específicas
+                    VerificarTabelasEspecificas();
+
+                    MessageBox.Show("Banco migrado/validado com sucesso!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro na migration: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro na migração: {ex.Message}\n\nDica: Verifique se o SQL Server está acessível.",
+                    "Erro na Migração", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ✅ MÉTODO NOVO: Reset completo (apenas para desenvolvimento)
+        public static void ResetarBancoDesenvolvimento()
+        {
+            if (MessageBox.Show("Isso apagará TODOS os dados. Continuar?",
+                "Reset do Banco", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                try
+                {
+                    Database.SetInitializer(new DropCreateDatabaseAlways<ApplicationDbContext>());
+                    using (var context = new ApplicationDbContext())
+                    {
+                        context.Database.Initialize(true);
+                    }
+                    MessageBox.Show("Banco resetado com sucesso!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao resetar banco: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

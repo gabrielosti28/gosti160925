@@ -11,7 +11,7 @@ namespace gosti2
             InitializeComponent();
             CarregarDadosUsuario();
         }
-
+       
         private void CarregarDadosUsuario()
         {
             if (UsuarioManager.UsuarioLogado != null)

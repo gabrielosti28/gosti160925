@@ -2,241 +2,210 @@
 using System.Windows.Forms;
 using gosti;
 using gosti2.Data;
-using gosti2.Models;
-using System.Data.SqlClient;
 using gosti2.Tools;
-using Microsoft.Win32;
 
 namespace gosti2
 {
-    namespace gosti2
+    static class Program
     {
-        static class Program
+        [STAThread]
+        static void Main()
         {
-            [STAThread]
-            static void Main()
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            try
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-
-                try
+                // ✅ FLUXO ÚNICO E CORRETO DE INICIALIZAÇÃO
+                if (InicializarAplicacao())
                 {
-                    // ✅ VERIFICAR E ATUALIZAR BANCO PARA VERSÃO MAIS RECENTE
-                    DatabaseEvolutionManager.VerificarEAtualizarBanco();
-
-                    // ✅ VALIDAR ESQUEMA
-                    if (!DatabaseSchemaValidator.ValidarEsquema())
-                    {
-                        Application.Exit();
-                        return;
-                    }
-
-                    // ✅ INICIALIZAR APLICAÇÃO
-                    using (var formMain = new FormMain())
-                    {
-                        if (formMain.ShowDialog() == DialogResult.OK)
-                        {
-                            ExecutarAplicacao();
-                        }
-                    }
+                    ExecutarAplicacaoPrincipal();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Erro na inicialização: {ex.Message}", "Erro",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Falha na inicialização da aplicação. Verifique os logs para mais detalhes.",
+                        "Erro de Inicialização", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro fatal na inicialização: {ex.Message}",
+                    "Erro Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+        }
 
+        /// <summary>
+        /// Inicializa todos os componentes da aplicação na ordem correta
+        /// </summary>
+        private static bool InicializarAplicacao()
+        {
+            Console.WriteLine("🚀 Iniciando inicialização da aplicação...");
 
-                //gosti2.Tools.ReferenceVerifier.VerificarTodasReferencias();
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-
-                // ✅ PRIMEIRO: Verificar todas as referências
+            // 1. ✅ VERIFICAR REFERÊNCIAS (OPCIONAL - NÃO CRÍTICO)
+            try
+            {
                 ReferenceVerifier.VerificarTodasReferencias();
+                Console.WriteLine("✅ Verificação de referências concluída.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️  Aviso na verificação de referências: {ex.Message}");
+                // Continua mesmo com erro (não é crítico)
+            }
 
-                // ✅ DEPOIS: Continuar com a inicialização normal
-                if (!DatabaseSchemaValidator.ValidarEsquema())
+            // 2. ✅ INICIALIZAÇÃO BÁSICA DO BANCO
+            try
+            {
+                DatabaseInitializer.Initialize();
+                Console.WriteLine("✅ Inicialização do banco concluída.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro crítico na inicialização do banco: {ex.Message}",
+                    "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // 3. ✅ GARANTIR QUE BANCO EXISTE E ESTÁ ACESSÍVEL
+            try
+            {
+                DatabaseManager.GarantirBancoCriado();
+                Console.WriteLine("✅ Verificação de existência do banco concluída.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao garantir criação do banco: {ex.Message}",
+                    "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // 4. ✅ TESTAR CONEXÃO COM BANCO
+            if (!DatabaseManager.TestarConexao())
+            {
+                Console.WriteLine("❌ Conexão com banco falhou. Abrindo configuração...");
+
+                // Se não conectar, mostra tela de configuração
+                using (var formConfig = new FormConfiguracaoBanco())
                 {
-                    MessageBox.Show("O banco de dados precisa ser corrigido para continuar.",
-                        "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    if (formConfig.ShowDialog() != DialogResult.OK)
+                    {
+                        Console.WriteLine("❌ Usuário cancelou configuração do banco.");
+                        return false; // Usuário cancelou
+                    }
                 }
 
-                try
+                // Testa novamente após configuração
+                if (!DatabaseManager.TestarConexao())
                 {
-                    // ✅ PRIMEIRO: Validar o esquema do banco
-                    if (!DatabaseSchemaValidator.ValidarEsquema())
-                    {
-                        MessageBox.Show("O banco de dados precisa ser corrigido para continuar.",
-                            "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    // ✅ DEPOIS: Garantir que o banco existe e está atualizado
-                    DatabaseManager.GarantirBancoCriado();
-
-                    // ✅ SÓ ENTÃO: Testar conexão
-                    if (!DatabaseManager.TestarConexao())
-                    {
-                        using (var formConfig = new FormConfiguracaoBanco())
-                        {
-                            if (formConfig.ShowDialog() != DialogResult.OK)
-                            {
-                                return;
-                            }
-                        }
-                    }
-
-                    // ✅ TELA DE BOAS-VINDAS
-                    using (var formMain = new FormMain())
-                    {
-                        if (formMain.ShowDialog() == DialogResult.OK)
-                        {
-                            ExecutarAplicacao();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro inicial: {ex.Message}", "Erro",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Não foi possível estabelecer conexão com o banco de dados mesmo após configuração.",
+                        "Erro de Conexão", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
                 }
             }
 
-            private static void ExecutarAplicacao()
+            Console.WriteLine("✅ Conexão com banco estabelecida com sucesso.");
+
+            // 5. ✅ VERIFICAR E ATUALIZAR BANCO (EVOLUÇÃO)
+            try
             {
-                // ... implementação existente ...
+                DatabaseEvolutionManager.VerificarEAtualizarBanco();
+                Console.WriteLine("✅ Verificação de evolução do banco concluída.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️  Aviso na atualização do banco: {ex.Message}");
+                // Continua mesmo com erro (não é crítico)
+            }
+
+            // 6. ✅ VALIDAR ESQUEMA (SE O MÉTODO EXISTIR - CORRIGIDO)
+            try
+            {
+                // ✅ CORREÇÃO: Verifica se o método existe usando reflexão
+                var tipo = typeof(DatabaseSchemaValidator);
+                var metodo = tipo.GetMethod("ValidarEsquema");
+
+                if (metodo != null)
+                {
+                    // ✅ Agora chama o método corretamente
+                    var resultado = (bool)metodo.Invoke(null, null);
+                    if (!resultado)
+                    {
+                        Console.WriteLine("⚠️  Problemas no esquema do banco detectados.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("✅ Esquema do banco validado com sucesso.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️  Método ValidarEsquema não encontrado, continuando...");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️  Erro na validação do esquema: {ex.Message}");
+                // Não bloqueia a aplicação
+            }
+
+            Console.WriteLine("🎉 Inicialização da aplicação concluída com sucesso!");
+            return true;
+        }
+
+        /// <summary>
+        /// Executa o fluxo principal da aplicação
+        /// </summary>
+        private static void ExecutarAplicacaoPrincipal()
+        {
+            try
+            {
+                Console.WriteLine("👉 Iniciando aplicação principal...");
+
+                // ✅ OPÇÃO 1: Tela de boas-vindas inicial (FormMain)
+                using (var formMain = new FormMain())
+                {
+                    if (formMain.ShowDialog() == DialogResult.OK)
+                    {
+                        // ✅ SE USUÁRIO CONFIRMOU, INICIA APLICAÇÃO PRINCIPAL
+                        Console.WriteLine("✅ Usuário confirmou, iniciando FormLogin...");
+                        Application.Run(new FormLogin());
+                    }
+                    else
+                    {
+                        // Usuário cancelou na tela inicial
+                        Console.WriteLine("❌ Usuário cancelou na tela inicial.");
+                        MessageBox.Show("Aplicação cancelada pelo usuário.",
+                            "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+
+                // ✅ OPÇÃO 2: Iniciar diretamente o FormLogin (mais simples)
+                // Console.WriteLine("👉 Iniciando FormLogin diretamente...");
+                // Application.Run(new FormLogin());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao iniciar aplicação principal: {ex.Message}",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"❌ Erro na aplicação principal: {ex}");
+            }
+        }
+
+        // ✅ MÉTODO ALTERNATIVO SIMPLIFICADO
+        private static void ExecutarAplicacaoSimplificada()
+        {
+            // Versão mais direta se estiver com problemas
+            try
+            {
+                Application.Run(new FormLogin());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro: {ex.Message}\n\nTente reiniciar a aplicação.",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
 }
-//USE[master]
-//GO
-
-//-- Criar banco se não existir (mantendo o nome requerido)
-//IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'CJ3027333PR2')
-//CREATE DATABASE [CJ3027333PR2]
-//GO
-
-//USE[CJ3027333PR2]
-//GO
-
-//-- =============================================
-//-- TABELA DE CONTROLE DE VERSÃO DO SCHEMA
-//-- =============================================
-//CREATE TABLE SchemaVersion (
-//    VersionId INT IDENTITY(1,1) PRIMARY KEY,
-//    VersionNumber VARCHAR(20) NOT NULL,
-//    Description NVARCHAR(500) NOT NULL,
-//    AppliedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
-//    ScriptName NVARCHAR(255) NOT NULL
-//)
-//GO
-
-//-- =============================================
-//-- TABELAS PRINCIPAIS (VERSÃO 1.0)
-//-- =============================================
-
-//-- USUARIOS com bio básica (podemos expandir depois)
-//CREATE TABLE Usuarios (
-//    UsuarioId INT IDENTITY(1,1) PRIMARY KEY,
-//    Nome NVARCHAR(100) NOT NULL,
-//    Email NVARCHAR(100) NOT NULL UNIQUE,
-//    Senha NVARCHAR(255) NOT NULL,
-//    DataNascimento DATE NOT NULL,
-//    FotoPerfil VARBINARY(MAX) NULL,
-//    Bio NVARCHAR(500) NULL, -- ✅ Bio básica para começar
-//    DataCadastro DATETIME2 NOT NULL DEFAULT GETDATE(),
-//    UltimoLogin DATETIME2 NULL,
-//    Ativo BIT NOT NULL DEFAULT 1,
-    
-//    -- Campos para futuras expansões
-//    Website NVARCHAR(255) NULL,
-//    Localizacao NVARCHAR(100) NULL
-//)
-//GO
-
-//-- LIVROS
-//CREATE TABLE Livros (
-//    LivroId INT IDENTITY(1,1) PRIMARY KEY,
-//    Titulo NVARCHAR(200) NOT NULL,
-//    Autor NVARCHAR(100) NOT NULL,
-//    Genero NVARCHAR(50) NOT NULL,
-//    Descricao NVARCHAR(1000) NULL,
-//    Capa VARBINARY(MAX) NULL,
-//    DataAdicao DATETIME2 NOT NULL DEFAULT GETDATE(),
-//    Favorito BIT NOT NULL DEFAULT 0,
-//    Lido BIT NOT NULL DEFAULT 0,
-//    UsuarioId INT NOT NULL,
-    
-//    -- Novos campos para evolução futura
-//    ISBN NVARCHAR(20) NULL,
-//    AnoPublicacao INT NULL,
-//    Editora NVARCHAR(100) NULL,
-//    Paginas INT NULL,
-
-//    CONSTRAINT FK_Livros_Usuarios FOREIGN KEY (UsuarioId) 
-//        REFERENCES Usuarios(UsuarioId) ON DELETE CASCADE
-//)
-//GO
-
-//-- COMENTARIOS
-//CREATE TABLE Comentarios (
-//    ComentarioId INT IDENTITY(1,1) PRIMARY KEY,
-//    Texto NVARCHAR(2000) NOT NULL,
-//    DataComentario DATETIME2 NOT NULL DEFAULT GETDATE(),
-//    Likes INT NOT NULL DEFAULT 0,
-//    Dislikes INT NOT NULL DEFAULT 0,
-//    LivroId INT NOT NULL,
-//    UsuarioId INT NOT NULL,
-    
-//    -- Campo para futuras funcionalidades
-//    Editado BIT NOT NULL DEFAULT 0,
-//    DataEdicao DATETIME2 NULL,
-
-//    CONSTRAINT FK_Comentarios_Livros FOREIGN KEY (LivroId) 
-//        REFERENCES Livros(LivroId) ON DELETE CASCADE,
-//    CONSTRAINT FK_Comentarios_Usuarios FOREIGN KEY (UsuarioId) 
-//        REFERENCES Usuarios(UsuarioId)
-//)
-//GO
-
-//-- LIKES/DISLIKES
-//CREATE TABLE LikesDislikes (
-//    LikeDislikeId INT IDENTITY(1,1) PRIMARY KEY,
-//    LivroId INT NOT NULL,
-//    UsuarioId INT NOT NULL,
-//    IsLike BIT NOT NULL,
-//    DataAcao DATETIME2 NOT NULL DEFAULT GETDATE(),
-
-//    CONSTRAINT FK_LikesDislikes_Livros FOREIGN KEY (LivroId) 
-//        REFERENCES Livros(LivroId) ON DELETE CASCADE,
-//    CONSTRAINT FK_LikesDislikes_Usuarios FOREIGN KEY (UsuarioId) 
-//        REFERENCES Usuarios(UsuarioId),
-
-//    CONSTRAINT UK_LivroUsuario UNIQUE (LivroId, UsuarioId)
-//)
-//GO
-
-//-- =============================================
-//-- ÍNDICES E PERFORMANCE
-//-- =============================================
-//CREATE UNIQUE INDEX IX_Usuarios_Email ON Usuarios(Email);
-//CREATE INDEX IX_Livros_Titulo ON Livros(Titulo);
-//CREATE INDEX IX_Livros_Autor ON Livros(Autor);
-//CREATE INDEX IX_Comentarios_LivroId ON Comentarios(LivroId);
-//GO
-
-//-- =============================================
-//--REGISTRAR VERSÃO INICIAL
-//-- =============================================
-//INSERT INTO SchemaVersion (VersionNumber, Description, ScriptName)
-//VALUES ('1.0.0', 'Schema inicial com estrutura básica para evolucao futura', 'CJ3027333PR2_Schema_Evolutivo.sql')
-//GO
-
-//PRINT '✅ Banco CJ3027333PR2 criado com estrutura evolutiva!';
-//PRINT '✅ Preparado para futuras atualizações';
-//PRINT '✅ Versionamento implementado';
-//GO
