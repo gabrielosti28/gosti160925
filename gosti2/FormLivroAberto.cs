@@ -14,25 +14,44 @@ namespace gosti2
         private Livro _livro;
         private int _usuarioLogadoId;
 
-        public FormLivroAberto(int livroId)
+        public FormLivroAberto(int livroId, int usuarioLogadoId = 0)
         {
             InitializeComponent();
             _livroId = livroId;
-            _usuarioLogadoId = UsuarioManager.UsuarioLogado?.UserId ?? 0;
+            _usuarioLogadoId = usuarioLogadoId;
 
-            // Configuração segura do ícone
-            try
-            {
-            }
-            catch
-            {
-                // Se não houver ícone, continua sem
-            }
+            // ✅ CONFIGURAÇÕES DE UI
+            ConfigureUI();
 
             CarregarLivro();
             CarregarComentarios();
             CarregarLikesDislikes();
             VerificarVotoUsuario();
+        }
+
+        private void ConfigureUI()
+        {
+            // ✅ CONFIGURAÇÕES DE ESTILO
+            flowLayoutPanelComentarios.AutoScroll = true;
+            flowLayoutPanelComentarios.WrapContents = false;
+
+            // ✅ CONFIGURAR BOTÕES
+            btnLikeLivro.BackColor = Color.LightGray;
+            btnDislikeLivro.BackColor = Color.LightGray;
+
+            // ✅ EVENTO DE REDIMENSIONAMENTO
+            this.Resize += (s, e) => AjustarTamanhoPainelComentarios();
+        }
+
+        private void AjustarTamanhoPainelComentarios()
+        {
+            foreach (Control control in flowLayoutPanelComentarios.Controls)
+            {
+                if (control is Panel panel)
+                {
+                    panel.Width = flowLayoutPanelComentarios.ClientSize.Width - 25;
+                }
+            }
         }
 
         private void CarregarLivro()
@@ -41,8 +60,9 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
+                    // ✅ CORREÇÃO: Include correto e compatível
                     _livro = context.Livros
-                        .Include(l => l.Usuario)
+                        .Include(l => l.Usuario) // ✅ CORRETO: Lambda expression
                         .FirstOrDefault(l => l.LivroId == _livroId);
 
                     if (_livro != null)
@@ -50,20 +70,23 @@ namespace gosti2
                         lblTitulo.Text = _livro.Titulo;
                         lblAutor.Text = $"Autor: {_livro.Autor}";
                         lblGenero.Text = $"Gênero: {_livro.Genero}";
-                        lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario.Nome}";
-                        txtDescricao.Text = _livro.Descricao;
 
-                        if (_livro.Capa != null && _livro.Capa.Length > 0)
-                        {
-                            using (var ms = new System.IO.MemoryStream(_livro.Capa))
-                            {
-                                pictureBoxCapa.Image = Image.FromStream(ms);
-                            }
-                        }
-                        else
-                        {
-                            pictureBoxCapa.Image = Properties.Resources.default_book_cover;
-                        }
+                        // ✅ CORREÇÃO: NomeUsuario (não Nome)
+                        lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario?.NomeUsuario ?? "Usuário desconhecido"}";
+
+                        txtDescricao.Text = _livro.Descricao ?? "Sem descrição";
+
+                        // ✅ CARREGAR CAPA COM TRATAMENTO SEGURO
+                        CarregarCapaLivro(_livro.Capa);
+
+                        // ✅ EXIBIR INFORMAÇÕES ADICIONAIS
+                        ExibirInformacoesAdicionais(_livro);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Livro não encontrado.", "Erro",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
                     }
                 }
             }
@@ -74,7 +97,122 @@ namespace gosti2
             }
         }
 
-        
+        private void CarregarCapaLivro(byte[] capa)
+        {
+            try
+            {
+                if (capa != null && capa.Length > 0)
+                {
+                    using (var ms = new System.IO.MemoryStream(capa))
+                    {
+                        // ✅ EVITAR MEMORY LEAK: Dispose da imagem anterior
+                        if (pictureBoxCapa.Image != null)
+                        {
+                            var oldImage = pictureBoxCapa.Image;
+                            pictureBoxCapa.Image = null;
+                            oldImage.Dispose();
+                        }
+
+                        pictureBoxCapa.Image = Image.FromStream(ms);
+                    }
+                }
+                else
+                {
+                    // ✅ IMAGEM PADRÃO EMBUTIDA OU DE RECURSO
+                    pictureBoxCapa.Image = Properties.Resources.default_book_cover
+                                         ?? CreateDefaultBookCover();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao carregar capa: {ex.Message}");
+                pictureBoxCapa.Image = CreateDefaultBookCover();
+            }
+        }
+
+        private Bitmap CreateDefaultBookCover()
+        {
+            // ✅ CAPA PADRÃO DINÂMICA
+            var bmp = new Bitmap(200, 300);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.Clear(Color.SteelBlue);
+                using (var font = new Font("Arial", 16, FontStyle.Bold))
+                {
+                    g.DrawString("📚", font, Brushes.White, new PointF(70, 120));
+                }
+                g.DrawString("Sem Capa", new Font("Arial", 10), Brushes.White, new PointF(60, 180));
+            }
+            return bmp;
+        }
+
+        private void ExibirInformacoesAdicionais(Livro livro)
+        {
+            // ✅ EXIBIR INFORMAÇÕES EXTRAS SE DISPONÍVEIS
+            var infoAdicional = new System.Text.StringBuilder();
+
+            if (livro.AnoPublicacao.HasValue)
+                infoAdicional.AppendLine($"Ano: {livro.AnoPublicacao}");
+
+            if (!string.IsNullOrEmpty(livro.ISBN))
+                infoAdicional.AppendLine($"ISBN: {livro.ISBN}");
+
+            if (!string.IsNullOrEmpty(livro.Editora))
+                infoAdicional.AppendLine($"Editora: {livro.Editora}");
+
+            if (livro.Paginas.HasValue)
+                infoAdicional.AppendLine($"Páginas: {livro.Paginas}");
+
+            if (infoAdicional.Length > 0)
+            {
+                lblInfoAdicional.Text = infoAdicional.ToString();
+                lblInfoAdicional.Visible = true;
+            }
+        }
+
+        private void CarregarComentarios()
+        {
+            try
+            {
+                flowLayoutPanelComentarios.Controls.Clear();
+
+                using (var context = new ApplicationDbContext())
+                {
+                    // ✅ CORREÇÃO: Carregamento eficiente com Includes
+                    var comentarios = context.Comentarios
+                        .Include(c => c.Usuario) // ✅ CORRETO
+                        .Where(c => c.LivroId == _livroId)
+                        .OrderByDescending(c => c.DataComentario)
+                        .ToList();
+
+                    if (comentarios.Any())
+                    {
+                        foreach (var comentario in comentarios)
+                        {
+                            AdicionarComentarioPanel(comentario);
+                        }
+                    }
+                    else
+                    {
+                        // ✅ MENSAGEM QUANDO NÃO HÁ COMENTÁRIOS
+                        var lblSemComentarios = new Label
+                        {
+                            Text = "📝 Seja o primeiro a comentar sobre este livro!",
+                            Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                            ForeColor = Color.Gray,
+                            AutoSize = true,
+                            Margin = new Padding(10)
+                        };
+                        flowLayoutPanelComentarios.Controls.Add(lblSemComentarios);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void AdicionarComentarioPanel(Comentario comentario)
         {
@@ -88,12 +226,14 @@ namespace gosti2
                 Padding = new Padding(10)
             };
 
+            // ✅ CORREÇÃO: NomeUsuario (não Nome)
             var lblUsuario = new Label
             {
-                Text = comentario.Usuario.Nome,
+                Text = comentario.Usuario?.NomeUsuario ?? "Usuário desconhecido",
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Location = new Point(10, 10),
-                AutoSize = true
+                AutoSize = true,
+                ForeColor = Color.SteelBlue
             };
 
             var lblData = new Label
@@ -114,7 +254,8 @@ namespace gosti2
                 Location = new Point(10, 35),
                 Size = new Size(panel.Width - 30, 60),
                 BackColor = Color.White,
-                Font = new Font("Segoe UI", 9)
+                Font = new Font("Segoe UI", 9),
+                ScrollBars = ScrollBars.Vertical
             };
 
             var panelLikes = new Panel
@@ -130,8 +271,9 @@ namespace gosti2
                 Size = new Size(70, 25),
                 Location = new Point(0, 0),
                 Font = new Font("Segoe UI", 8),
-                BackColor = Color.LightGray,
-                FlatStyle = FlatStyle.Flat
+                BackColor = comentario.Likes > 0 ? Color.LightGreen : Color.LightGray,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
             };
             btnLike.Click += BtnLikeComentario_Click;
 
@@ -142,8 +284,9 @@ namespace gosti2
                 Size = new Size(70, 25),
                 Location = new Point(80, 0),
                 Font = new Font("Segoe UI", 8),
-                BackColor = Color.LightGray,
-                FlatStyle = FlatStyle.Flat
+                BackColor = comentario.Dislikes > 0 ? Color.LightCoral : Color.LightGray,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
             };
             btnDislike.Click += BtnDislikeComentario_Click;
 
@@ -169,6 +312,15 @@ namespace gosti2
 
                     lblLikes.Text = $"👍 {likes}";
                     lblDislikes.Text = $"👎 {dislikes}";
+
+                    // ✅ EXIBIR PORCENTAGEM SE HOUVER VOTOS
+                    var total = likes + dislikes;
+                    if (total > 0)
+                    {
+                        var percentual = (likes * 100) / total;
+                        lblAprovacao.Text = $"{percentual}% de aprovação";
+                        lblAprovacao.Visible = true;
+                    }
                 }
             }
             catch (Exception ex)
@@ -192,16 +344,17 @@ namespace gosti2
                         btnLikeLivro.Enabled = false;
                         btnDislikeLivro.Enabled = false;
 
-                        // Mudar cor para indicar que já votou
                         if (userVote.IsLike)
                         {
                             btnLikeLivro.BackColor = Color.ForestGreen;
                             btnLikeLivro.ForeColor = Color.White;
+                            btnLikeLivro.Text = "👍 Você curtiu";
                         }
                         else
                         {
                             btnDislikeLivro.BackColor = Color.IndianRed;
                             btnDislikeLivro.ForeColor = Color.White;
+                            btnDislikeLivro.Text = "👎 Você não curtiu";
                         }
                     }
                 }
@@ -215,9 +368,24 @@ namespace gosti2
 
         private void btnComentar_Click(object sender, EventArgs e)
         {
+            if (_usuarioLogadoId == 0)
+            {
+                MessageBox.Show("❌ Você precisa estar logado para comentar.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtNovoComentario.Text))
             {
-                MessageBox.Show("Digite um comentário antes de enviar.", "Aviso",
+                MessageBox.Show("📝 Digite um comentário antes de enviar.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtNovoComentario.Focus();
+                return;
+            }
+
+            if (txtNovoComentario.Text.Length > 2000)
+            {
+                MessageBox.Show("❌ Comentário muito longo. Máximo 2000 caracteres.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -231,7 +399,9 @@ namespace gosti2
                         Texto = txtNovoComentario.Text.Trim(),
                         LivroId = _livroId,
                         UsuarioId = _usuarioLogadoId,
-                        DataComentario = DateTime.Now
+                        DataComentario = DateTime.Now,
+                        Likes = 0,
+                        Dislikes = 0
                     };
 
                     context.Comentarios.Add(comentario);
@@ -240,31 +410,86 @@ namespace gosti2
                     txtNovoComentario.Clear();
                     CarregarComentarios();
 
-                    MessageBox.Show("Comentário adicionado com sucesso!", "Sucesso",
+                    MessageBox.Show("✅ Comentário adicionado com sucesso!", "Sucesso",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao adicionar comentário: {ex.Message}", "Erro",
+                MessageBox.Show($"❌ Erro ao adicionar comentário: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnLikeLivro_Click(object sender, EventArgs e)
         {
+            if (_usuarioLogadoId == 0)
+            {
+                MessageBox.Show("❌ Você precisa estar logado para curtir.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             RegistrarVotoLivro(true);
         }
 
         private void btnDislikeLivro_Click(object sender, EventArgs e)
         {
+            if (_usuarioLogadoId == 0)
+            {
+                MessageBox.Show("❌ Você precisa estar logado para não curtir.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             RegistrarVotoLivro(false);
         }
 
-       
+        private void RegistrarVotoLivro(bool isLike)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var existingVote = context.LikesDislikes
+                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
+
+                    if (existingVote != null)
+                    {
+                        existingVote.IsLike = isLike;
+                        existingVote.DataAcao = DateTime.Now;
+                    }
+                    else
+                    {
+                        var vote = new LikeDislike
+                        {
+                            LivroId = _livroId,
+                            UsuarioId = _usuarioLogadoId,
+                            IsLike = isLike,
+                            DataAcao = DateTime.Now
+                        };
+                        context.LikesDislikes.Add(vote);
+                    }
+
+                    context.SaveChanges();
+                    CarregarLikesDislikes();
+                    VerificarVotoUsuario();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Erro ao registrar voto: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void BtnLikeComentario_Click(object sender, EventArgs e)
         {
+            if (_usuarioLogadoId == 0)
+            {
+                MessageBox.Show("❌ Você precisa estar logado para curtir comentários.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var button = (Button)sender;
             int comentarioId = (int)button.Tag;
             RegistrarVotoComentario(comentarioId, true);
@@ -272,6 +497,13 @@ namespace gosti2
 
         private void BtnDislikeComentario_Click(object sender, EventArgs e)
         {
+            if (_usuarioLogadoId == 0)
+            {
+                MessageBox.Show("❌ Você precisa estar logado para não curtir comentários.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var button = (Button)sender;
             int comentarioId = (int)button.Tag;
             RegistrarVotoComentario(comentarioId, false);
@@ -298,7 +530,7 @@ namespace gosti2
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao votar no comentário: {ex.Message}", "Erro",
+                MessageBox.Show($"❌ Erro ao votar no comentário: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -310,76 +542,46 @@ namespace gosti2
 
         private void txtNovoComentario_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)Keys.Enter && !string.IsNullOrWhiteSpace(txtNovoComentario.Text))
+            if (e.KeyChar == (char)Keys.Enter && ModifierKeys != Keys.Shift)
             {
-                btnComentar.PerformClick();
+                if (!string.IsNullOrWhiteSpace(txtNovoComentario.Text))
+                {
+                    btnComentar.PerformClick();
+                }
                 e.Handled = true;
             }
         }
-        // No método CarregarComentarios():
-        private void CarregarComentarios()
+
+        private void FormLivroAberto_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
+            // ✅ LIMPEZA SEGURA DE RECURSOS
+            if (pictureBoxCapa.Image != null)
             {
-                flowLayoutPanelComentarios.Controls.Clear();
-
-                using (var context = new ApplicationDbContext())
-                {
-                    // ✅ CORREÇÃO: Usar Include corretamente
-                    var comentarios = context.Comentarios
-                        .Include("Usuario") // ← String-based include para evitar erros
-                        .Where(c => c.LivroId == _livroId)
-                        .OrderByDescending(c => c.DataComentario)
-                        .ToList();
-
-                    // Resto do método...
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}");
+                var image = pictureBoxCapa.Image;
+                pictureBoxCapa.Image = null;
+                image.Dispose();
             }
         }
 
-        // No método RegistrarVotoLivro():
-        private void RegistrarVotoLivro(bool isLike)
+        // ✅ NOVO: CONTADOR DE CARACTERES
+        private void txtNovoComentario_TextChanged(object sender, EventArgs e)
         {
-            try
+            int count = txtNovoComentario.Text.Length;
+            int max = 2000;
+            lblContadorCaracteres.Text = $"{count}/{max}";
+
+            if (count > max)
             {
-                using (var context = new ApplicationDbContext())
-                {
-                    // ✅ Verifica se já votou
-                    var existingVote = context.LikesDislikes
-                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
-
-                    if (existingVote != null)
-                    {
-                        // ✅ Atualiza o voto existente
-                        existingVote.IsLike = isLike;
-                        existingVote.DataAcao = DateTime.Now;
-                    }
-                    else
-                    {
-                        // ✅ Cria novo voto
-                        var vote = new LikeDislike
-                        {
-                            LivroId = _livroId,
-                            UsuarioId = _usuarioLogadoId,
-                            IsLike = isLike,
-                            DataAcao = DateTime.Now
-                        };
-                        context.LikesDislikes.Add(vote);
-                    }
-
-                    context.SaveChanges();
-                    CarregarLikesDislikes();
-                }
+                lblContadorCaracteres.ForeColor = Color.Red;
             }
-            catch (Exception ex)
+            else if (count > max * 0.8)
             {
-                MessageBox.Show($"Erro ao registrar voto: {ex.Message}");
+                lblContadorCaracteres.ForeColor = Color.Orange;
+            }
+            else
+            {
+                lblContadorCaracteres.ForeColor = Color.Gray;
             }
         }
-
     }
 }

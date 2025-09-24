@@ -17,6 +17,7 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelTopo = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.btnFechar = new System.Windows.Forms.Button();
@@ -24,10 +25,13 @@
             this.panelComentarios = new System.Windows.Forms.Panel();
             this.flowLayoutPanelComentarios = new System.Windows.Forms.FlowLayoutPanel();
             this.panelNovoComentario = new System.Windows.Forms.Panel();
+            this.lblContadorCaracteres = new System.Windows.Forms.Label();
             this.btnComentar = new System.Windows.Forms.Button();
             this.txtNovoComentario = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.panelInfoLivro = new System.Windows.Forms.Panel();
+            this.lblAprovacao = new System.Windows.Forms.Label();
+            this.lblInfoAdicional = new System.Windows.Forms.Label();
             this.panelLikes = new System.Windows.Forms.Panel();
             this.btnDislikeLivro = new System.Windows.Forms.Button();
             this.btnLikeLivro = new System.Windows.Forms.Button();
@@ -39,7 +43,7 @@
             this.lblGenero = new System.Windows.Forms.Label();
             this.lblAutor = new System.Windows.Forms.Label();
             this.pictureBoxCapa = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.panelTopo.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.panelComentarios.SuspendLayout();
@@ -52,7 +56,6 @@
             // panelTopo
             // 
             this.panelTopo.BackColor = System.Drawing.Color.SteelBlue;
-            this.panelTopo.Controls.Add(this.label1);
             this.panelTopo.Controls.Add(this.lblTitulo);
             this.panelTopo.Controls.Add(this.btnFechar);
             this.panelTopo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -67,6 +70,7 @@
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
+            this.lblTitulo.MaximumSize = new System.Drawing.Size(700, 0);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(93, 37);
             this.lblTitulo.TabIndex = 0;
@@ -114,22 +118,35 @@
             this.flowLayoutPanelComentarios.AutoScroll = true;
             this.flowLayoutPanelComentarios.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanelComentarios.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanelComentarios.Location = new System.Drawing.Point(10, 100);
+            this.flowLayoutPanelComentarios.Location = new System.Drawing.Point(10, 120);
             this.flowLayoutPanelComentarios.Name = "flowLayoutPanelComentarios";
-            this.flowLayoutPanelComentarios.Size = new System.Drawing.Size(580, 570);
+            this.flowLayoutPanelComentarios.Size = new System.Drawing.Size(580, 550);
             this.flowLayoutPanelComentarios.TabIndex = 1;
             this.flowLayoutPanelComentarios.WrapContents = false;
             // 
             // panelNovoComentario
             // 
+            this.panelNovoComentario.Controls.Add(this.lblContadorCaracteres);
             this.panelNovoComentario.Controls.Add(this.btnComentar);
             this.panelNovoComentario.Controls.Add(this.txtNovoComentario);
             this.panelNovoComentario.Controls.Add(this.label4);
             this.panelNovoComentario.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelNovoComentario.Location = new System.Drawing.Point(10, 10);
             this.panelNovoComentario.Name = "panelNovoComentario";
-            this.panelNovoComentario.Size = new System.Drawing.Size(580, 90);
+            this.panelNovoComentario.Size = new System.Drawing.Size(580, 110);
             this.panelNovoComentario.TabIndex = 0;
+            // 
+            // lblContadorCaracteres
+            // 
+            this.lblContadorCaracteres.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblContadorCaracteres.AutoSize = true;
+            this.lblContadorCaracteres.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.lblContadorCaracteres.ForeColor = System.Drawing.Color.Gray;
+            this.lblContadorCaracteres.Location = new System.Drawing.Point(470, 10);
+            this.lblContadorCaracteres.Name = "lblContadorCaracteres";
+            this.lblContadorCaracteres.Size = new System.Drawing.Size(52, 13);
+            this.lblContadorCaracteres.TabIndex = 3;
+            this.lblContadorCaracteres.Text = "0/2000";
             // 
             // btnComentar
             // 
@@ -139,7 +156,7 @@
             this.btnComentar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnComentar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnComentar.ForeColor = System.Drawing.Color.White;
-            this.btnComentar.Location = new System.Drawing.Point(470, 50);
+            this.btnComentar.Location = new System.Drawing.Point(470, 70);
             this.btnComentar.Name = "btnComentar";
             this.btnComentar.Size = new System.Drawing.Size(100, 30);
             this.btnComentar.TabIndex = 2;
@@ -149,13 +166,16 @@
             // 
             // txtNovoComentario
             // 
-            this.txtNovoComentario.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtNovoComentario.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNovoComentario.Location = new System.Drawing.Point(10, 30);
             this.txtNovoComentario.Multiline = true;
             this.txtNovoComentario.Name = "txtNovoComentario";
-            this.txtNovoComentario.Size = new System.Drawing.Size(450, 50);
+            this.txtNovoComentario.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNovoComentario.Size = new System.Drawing.Size(450, 70);
             this.txtNovoComentario.TabIndex = 1;
+            this.txtNovoComentario.TextChanged += new System.EventHandler(this.txtNovoComentario_TextChanged);
+            this.txtNovoComentario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNovoComentario_KeyPress);
             // 
             // label4
             // 
@@ -169,6 +189,8 @@
             // 
             // panelInfoLivro
             // 
+            this.panelInfoLivro.Controls.Add(this.lblAprovacao);
+            this.panelInfoLivro.Controls.Add(this.lblInfoAdicional);
             this.panelInfoLivro.Controls.Add(this.panelLikes);
             this.panelInfoLivro.Controls.Add(this.txtDescricao);
             this.panelInfoLivro.Controls.Add(this.lblAdicionadoPor);
@@ -181,6 +203,28 @@
             this.panelInfoLivro.Padding = new System.Windows.Forms.Padding(20);
             this.panelInfoLivro.Size = new System.Drawing.Size(400, 680);
             this.panelInfoLivro.TabIndex = 0;
+            // 
+            // lblAprovacao
+            // 
+            this.lblAprovacao.AutoSize = true;
+            this.lblAprovacao.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            this.lblAprovacao.ForeColor = System.Drawing.Color.Green;
+            this.lblAprovacao.Location = new System.Drawing.Point(23, 510);
+            this.lblAprovacao.Name = "lblAprovacao";
+            this.lblAprovacao.Size = new System.Drawing.Size(0, 15);
+            this.lblAprovacao.TabIndex = 7;
+            this.lblAprovacao.Visible = false;
+            // 
+            // lblInfoAdicional
+            // 
+            this.lblInfoAdicional.AutoSize = true;
+            this.lblInfoAdicional.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblInfoAdicional.Location = new System.Drawing.Point(23, 530);
+            this.lblInfoAdicional.MaximumSize = new System.Drawing.Size(354, 0);
+            this.lblInfoAdicional.Name = "lblInfoAdicional";
+            this.lblInfoAdicional.Size = new System.Drawing.Size(0, 15);
+            this.lblInfoAdicional.TabIndex = 6;
+            this.lblInfoAdicional.Visible = false;
             // 
             // panelLikes
             // 
@@ -196,68 +240,66 @@
             // 
             // btnDislikeLivro
             // 
-            this.btnDislikeLivro.BackColor = System.Drawing.Color.IndianRed;
+            this.btnDislikeLivro.BackColor = System.Drawing.Color.LightGray;
             this.btnDislikeLivro.FlatAppearance.BorderSize = 0;
             this.btnDislikeLivro.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDislikeLivro.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnDislikeLivro.ForeColor = System.Drawing.Color.White;
+            this.btnDislikeLivro.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnDislikeLivro.Location = new System.Drawing.Point(200, 40);
             this.btnDislikeLivro.Name = "btnDislikeLivro";
             this.btnDislikeLivro.Size = new System.Drawing.Size(120, 40);
             this.btnDislikeLivro.TabIndex = 4;
-            this.btnDislikeLivro.Text = "👎 Dislike";
+            this.btnDislikeLivro.Text = "👎";
             this.btnDislikeLivro.UseVisualStyleBackColor = false;
             this.btnDislikeLivro.Click += new System.EventHandler(this.btnDislikeLivro_Click);
             // 
             // btnLikeLivro
             // 
-            this.btnLikeLivro.BackColor = System.Drawing.Color.ForestGreen;
+            this.btnLikeLivro.BackColor = System.Drawing.Color.LightGray;
             this.btnLikeLivro.FlatAppearance.BorderSize = 0;
             this.btnLikeLivro.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLikeLivro.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnLikeLivro.ForeColor = System.Drawing.Color.White;
+            this.btnLikeLivro.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLikeLivro.Location = new System.Drawing.Point(40, 40);
             this.btnLikeLivro.Name = "btnLikeLivro";
             this.btnLikeLivro.Size = new System.Drawing.Size(120, 40);
             this.btnLikeLivro.TabIndex = 3;
-            this.btnLikeLivro.Text = "👍 Like";
+            this.btnLikeLivro.Text = "👍";
             this.btnLikeLivro.UseVisualStyleBackColor = false;
             this.btnLikeLivro.Click += new System.EventHandler(this.btnLikeLivro_Click);
             // 
             // lblDislikes
             // 
             this.lblDislikes.AutoSize = true;
-            this.lblDislikes.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblDislikes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.lblDislikes.Location = new System.Drawing.Point(240, 10);
             this.lblDislikes.Name = "lblDislikes";
-            this.lblDislikes.Size = new System.Drawing.Size(50, 25);
+            this.lblDislikes.Size = new System.Drawing.Size(40, 21);
             this.lblDislikes.TabIndex = 2;
             this.lblDislikes.Text = "👎 0";
             // 
             // lblLikes
             // 
             this.lblLikes.AutoSize = true;
-            this.lblLikes.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblLikes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.lblLikes.Location = new System.Drawing.Point(80, 10);
             this.lblLikes.Name = "lblLikes";
-            this.lblLikes.Size = new System.Drawing.Size(50, 25);
+            this.lblLikes.Size = new System.Drawing.Size(40, 21);
             this.lblLikes.TabIndex = 1;
             this.lblLikes.Text = "👍 0";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.label3.Location = new System.Drawing.Point(10, 10);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(61, 21);
+            this.label3.Size = new System.Drawing.Size(61, 19);
             this.label3.TabIndex = 0;
             this.label3.Text = "Votos: ";
             // 
             // txtDescricao
             // 
             this.txtDescricao.BackColor = System.Drawing.Color.White;
-            this.txtDescricao.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtDescricao.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDescricao.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtDescricao.Location = new System.Drawing.Point(23, 250);
             this.txtDescricao.Multiline = true;
@@ -266,7 +308,7 @@
             this.txtDescricao.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtDescricao.Size = new System.Drawing.Size(354, 130);
             this.txtDescricao.TabIndex = 4;
-            this.txtDescricao.Text = "Descrição do livro...";
+            this.txtDescricao.Text = "Carregando descrição...";
             // 
             // lblAdicionadoPor
             // 
@@ -309,15 +351,6 @@
             this.pictureBoxCapa.TabIndex = 0;
             this.pictureBoxCapa.TabStop = false;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(369, 70);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "label1";
-            // 
             // FormLivroAberto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,6 +363,7 @@
             this.Name = "FormLivroAberto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Detalhes do Livro";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormLivroAberto_FormClosing);
             this.panelTopo.ResumeLayout(false);
             this.panelTopo.PerformLayout();
             this.panelConteudo.ResumeLayout(false);
@@ -369,6 +403,9 @@
         private System.Windows.Forms.Label lblDislikes;
         private System.Windows.Forms.Label lblLikes;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblContadorCaracteres;
+        private System.Windows.Forms.Label lblInfoAdicional;
+        private System.Windows.Forms.Label lblAprovacao;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

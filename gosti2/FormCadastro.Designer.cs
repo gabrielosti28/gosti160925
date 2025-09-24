@@ -22,7 +22,7 @@
             this.labelTitulo = new System.Windows.Forms.Label();
             this.pictureBoxLogo = new System.Windows.Forms.Panel();
             this.panelConteudo = new System.Windows.Forms.Panel();
-            this.panelFormulario = new System.Windows.Forms.Panel(); 
+            this.panelFormulario = new System.Windows.Forms.Panel();
             this.txtBio = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtDataNascimento = new System.Windows.Forms.TextBox();
