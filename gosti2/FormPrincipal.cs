@@ -24,8 +24,8 @@ namespace gosti2
                 var usuario = UsuarioManager.UsuarioLogado;
 
                 // Atualiza os labels
-                lblUsuario.Text = $"Bem-vindo, {usuario.Nome}!";
-                lblBemVindo.Text = $"Olá, {usuario.Nome.Split(' ')[0]}!";
+                lblUsuario.Text = $"Bem-vindo, {usuario.NomeUsuario}!";
+                lblBemVindo.Text = $"Olá, {usuario.NomeUsuario.Split(' ')[0]}!";
                 lblBio.Text = string.IsNullOrEmpty(usuario.Bio) ? "🌟 Apaixonado por livros e novas histórias..." : usuario.Bio;
 
                 // Atualiza a foto de perfil se existir

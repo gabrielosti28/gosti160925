@@ -17,7 +17,7 @@ namespace gosti2
         public FormMeusLivros()
         {
             InitializeComponent();
-            usuarioLogadoId = UsuarioManager.UsuarioLogado?.UsuarioId ?? 0; // Corrigido para UsuarioId
+            usuarioLogadoId = UsuarioManager.UsuarioLogado?.UsuarioId ?? 0;
             ConfigurarDataGridView();
             CarregarLivros();
         }
@@ -52,8 +52,8 @@ namespace gosti2
                     // Carrega apenas livros do usuário logado com includes necessários
                     var livros = context.Livros
                         .Include(l => l.Usuario)
-                        .Include(l => l.CategoriaTier) // Inclui a categoria tier
-                        .Where(l => l.UsuarioId == usuarioLogadoId) // Filtra por usuário logado
+                        //.Include(l => l.CategoriaTier) // CORREÇÃO: Nome correto da propriedade de navegação
+                        .Where(l => l.UsuarioId == usuarioLogadoId)
                         .OrderByDescending(l => l.DataAdicao)
                         .ToList();
 
@@ -64,16 +64,16 @@ namespace gosti2
                         Image capaImage = ObterImagemCapa(livro.Capa);
 
                         string statusLeitura = ObterStatusLeitura(livro);
-                        string categoriaTier = livro.CategoriaTier?.Nome ?? "Não categorizado";
+                        //string categoriaTier = livro.Genero?.Autor ?? "Não categorizado"; // CORREÇÃO: Acesso correto
 
                         int rowIndex = dataGridViewLivros.Rows.Add(
-                            livro.LivroId, // ID oculto para referência
+                            livro.LivroId,
                             capaImage,
                             livro.Titulo,
                             livro.Autor,
                             livro.Genero,
                             statusLeitura,
-                            categoriaTier,
+                            //categoriaTier,
                             livro.DataAdicao.ToString("dd/MM/yyyy")
                         );
 
@@ -86,7 +86,7 @@ namespace gosti2
                         if (livro.Favorito)
                         {
                             dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
-                                Color.FromArgb(255, 255, 200); // Amarelo claro para favoritos
+                                Color.FromArgb(255, 255, 200);
                         }
                     }
 
@@ -100,6 +100,7 @@ namespace gosti2
             }
         }
 
+        // ... o resto do código permanece igual ...
         private Image ObterImagemCapa(byte[] capaBytes)
         {
             if (capaBytes != null && capaBytes.Length > 0)
@@ -109,12 +110,11 @@ namespace gosti2
                     using (var ms = new System.IO.MemoryStream(capaBytes))
                     {
                         var originalImage = Image.FromStream(ms);
-                        return RedimensionarImagem(originalImage, 80, 120); // Tamanho otimizado
+                        return RedimensionarImagem(originalImage, 80, 120);
                     }
                 }
                 catch
                 {
-                    // Fallback para imagem padrão em caso de erro
                     return CriarImagemPadrao();
                 }
             }
@@ -123,7 +123,6 @@ namespace gosti2
 
         private Image CriarImagemPadrao()
         {
-            // Cria uma imagem padrão programaticamente
             var defaultImage = new Bitmap(80, 120);
             using (var g = Graphics.FromImage(defaultImage))
             {
@@ -214,7 +213,6 @@ namespace gosti2
                 return;
             }
 
-            // Verificação de propriedade redundante (já filtramos por usuário)
             using (var formEditar = new FormAdicionarLivro(livroId))
             {
                 if (formEditar.ShowDialog() == DialogResult.OK)
@@ -274,7 +272,6 @@ namespace gosti2
 
                     if (livro != null)
                     {
-                        // O Entity Framework cuidará do cascade delete devido às configurações
                         context.Livros.Remove(livro);
                         context.SaveChanges();
 
@@ -312,12 +309,12 @@ namespace gosti2
             {
                 try
                 {
-                    DatabaseInitializer.Initialize(); // Garante que o banco está inicializado
+                    DatabaseInitializer.Initialize();
 
                     using (var formLivroAberto = new FormLivroAberto(livroId))
                     {
                         formLivroAberto.ShowDialog();
-                        CarregarLivros(); // Recarrega para refletir possíveis mudanças
+                        CarregarLivros();
                     }
                 }
                 catch (Exception ex)

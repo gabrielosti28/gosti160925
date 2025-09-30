@@ -4,6 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace gosti2.Models  // ✅ CORRIGIDO: Namespace correto
 {
+   
+    
+    
+    
     [Table("CategoriaTiers")]  // ✅ CORRIGIDO: Nome da tabela no plural
     public class CategoriaTier
     {
@@ -41,5 +45,8 @@ namespace gosti2.Models  // ✅ CORRIGIDO: Namespace correto
         public string ObterCorOuPadrao() => string.IsNullOrEmpty(Cor) ? "#000000" : Cor;
 
         public bool PodeSerEditada() => Nivel > 1; // Exemplo: níveis > 1 podem ser editados
+    
+        
+    
     }
 }

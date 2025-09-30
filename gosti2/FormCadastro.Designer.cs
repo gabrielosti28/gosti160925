@@ -240,7 +240,7 @@
             this.txtConfirmarSenha.MaxLength = 255;
             this.txtConfirmarSenha.Name = "txtConfirmarSenha";
             this.txtConfirmarSenha.PasswordChar = '•';
-            this.txtConfirmarSenha.PlaceholderText = "Digite a senha novamente";
+            //this.txtConfirmarSenha.PlaceholderText = "Digite a senha novamente";
             this.txtConfirmarSenha.Size = new System.Drawing.Size(200, 25);
             this.txtConfirmarSenha.TabIndex = 5;
             this.txtConfirmarSenha.TextChanged += new System.EventHandler(this.txtConfirmarSenha_TextChanged);
@@ -391,8 +391,8 @@
             // 
             // errorProvider
             // 
-            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.errorProvider.ContainerControl = this;
+//            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+//            this.errorProvider.ContainerControl = this;
             // 
             // FormCadastro
             // 
