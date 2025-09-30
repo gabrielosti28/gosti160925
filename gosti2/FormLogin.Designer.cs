@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace gosti2
+﻿namespace gosti2
 {
     partial class FormLogin
     {
@@ -9,6 +6,12 @@ namespace gosti2
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        //private System.Windows.Forms.ErrorProvider errorProvider;
+        //private System.Windows.Forms.CheckBox chkLembrarUsuario;
+        //private System.Windows.Forms.CheckBox chkMostrarSenha;
+        //private System.Windows.Forms.ProgressBar progressBar;
+        //private System.Windows.Forms.PictureBox pictureBoxLogo;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -19,6 +22,7 @@ namespace gosti2
             if (disposing && (components != null))
             {
                 components.Dispose();
+                errorProvider?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -31,12 +35,16 @@ namespace gosti2
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
             this.panelSuperior = new System.Windows.Forms.Panel();
             this.labelTitulo = new System.Windows.Forms.Label();
-            this.panelLogo = new System.Windows.Forms.Panel();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.chkMostrarSenha = new System.Windows.Forms.CheckBox();
+            this.chkLembrarUsuario = new System.Windows.Forms.CheckBox();
             this.linkEsqueciSenha = new System.Windows.Forms.LinkLabel();
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.labelSenha = new System.Windows.Forms.Label();
@@ -50,19 +58,22 @@ namespace gosti2
             this.labelMensagem = new System.Windows.Forms.Label();
             this.panelRodape = new System.Windows.Forms.Panel();
             this.labelCopyright = new System.Windows.Forms.Label();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panelSuperior.SuspendLayout();
+           ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
             this.panelBotoes.SuspendLayout();
             this.panelMensagem.SuspendLayout();
             this.panelRodape.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSuperior
             // 
-            this.panelSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.panelSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.panelSuperior.Controls.Add(this.labelTitulo);
-            this.panelSuperior.Controls.Add(this.panelLogo);
+            this.panelSuperior.Controls.Add(this.pictureBoxLogo);
             this.panelSuperior.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelSuperior.Location = new System.Drawing.Point(0, 0);
             this.panelSuperior.Name = "panelSuperior";
@@ -78,15 +89,17 @@ namespace gosti2
             this.labelTitulo.Name = "labelTitulo";
             this.labelTitulo.Size = new System.Drawing.Size(280, 32);
             this.labelTitulo.TabIndex = 1;
-            this.labelTitulo.Text = "Login - BookConnect";
+            this.labelTitulo.Text = "📚 Login - BookConnect";
             // 
-            // panelLogo
+            // pictureBoxLogo
             // 
-            this.panelLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.panelLogo.Location = new System.Drawing.Point(30, 20);
-            this.panelLogo.Name = "panelLogo";
-            this.panelLogo.Size = new System.Drawing.Size(60, 60);
-            this.panelLogo.TabIndex = 0;
+            this.pictureBoxLogo.Image = global::gosti2.Properties.Resources.default_book_cover;
+            this.pictureBoxLogo.Location = new System.Drawing.Point(30, 20);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(60, 60);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxLogo.TabIndex = 0;
+            this.pictureBoxLogo.TabStop = false;
             // 
             // panelConteudo
             // 
@@ -103,6 +116,9 @@ namespace gosti2
             // 
             // panelFormulario
             // 
+            this.panelFormulario.Controls.Add(this.progressBar);
+            this.panelFormulario.Controls.Add(this.chkMostrarSenha);
+            this.panelFormulario.Controls.Add(this.chkLembrarUsuario);
             this.panelFormulario.Controls.Add(this.linkEsqueciSenha);
             this.panelFormulario.Controls.Add(this.txtSenha);
             this.panelFormulario.Controls.Add(this.labelSenha);
@@ -114,12 +130,44 @@ namespace gosti2
             this.panelFormulario.Size = new System.Drawing.Size(400, 320);
             this.panelFormulario.TabIndex = 3;
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(50, 280);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(300, 10);
+            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar.TabIndex = 8;
+            this.progressBar.Visible = false;
+            // 
+            // chkMostrarSenha
+            // 
+            this.chkMostrarSenha.AutoSize = true;
+            this.chkMostrarSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkMostrarSenha.Location = new System.Drawing.Point(200, 195);
+            this.chkMostrarSenha.Name = "chkMostrarSenha";
+            this.chkMostrarSenha.Size = new System.Drawing.Size(150, 19);
+            this.chkMostrarSenha.TabIndex = 3;
+            this.chkMostrarSenha.Text = "👁️ Mostrar senha";
+            this.chkMostrarSenha.UseVisualStyleBackColor = true;
+            this.chkMostrarSenha.CheckedChanged += new System.EventHandler(this.chkMostrarSenha_CheckedChanged);
+            // 
+            // chkLembrarUsuario
+            // 
+            this.chkLembrarUsuario.AutoSize = true;
+            this.chkLembrarUsuario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkLembrarUsuario.Location = new System.Drawing.Point(50, 195);
+            this.chkLembrarUsuario.Name = "chkLembrarUsuario";
+            this.chkLembrarUsuario.Size = new System.Drawing.Size(144, 19);
+            this.chkLembrarUsuario.TabIndex = 2;
+            this.chkLembrarUsuario.Text = "💾 Lembrar usuário";
+            this.chkLembrarUsuario.UseVisualStyleBackColor = true;
+            // 
             // linkEsqueciSenha
             // 
             this.linkEsqueciSenha.AutoSize = true;
-            this.linkEsqueciSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkEsqueciSenha.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
-            this.linkEsqueciSenha.Location = new System.Drawing.Point(50, 220);
+            this.linkEsqueciSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkEsqueciSenha.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.linkEsqueciSenha.Location = new System.Drawing.Point(50, 250);
             this.linkEsqueciSenha.Name = "linkEsqueciSenha";
             this.linkEsqueciSenha.Size = new System.Drawing.Size(150, 15);
             this.linkEsqueciSenha.TabIndex = 4;
@@ -129,42 +177,46 @@ namespace gosti2
             // 
             // txtSenha
             // 
-            this.txtSenha.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSenha.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSenha.Location = new System.Drawing.Point(50, 160);
             this.txtSenha.Name = "txtSenha";
             this.txtSenha.PasswordChar = '•';
-            this.txtSenha.Size = new System.Drawing.Size(300, 29);
+            //this.txtSenha.PlaceholderText = "Digite sua senha";
+            this.txtSenha.Size = new System.Drawing.Size(300, 25);
             this.txtSenha.TabIndex = 1;
+            this.txtSenha.TextChanged += new System.EventHandler(this.txtSenha_TextChanged);
             this.txtSenha.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSenha_KeyPress);
             // 
             // labelSenha
             // 
             this.labelSenha.AutoSize = true;
-            this.labelSenha.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSenha.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelSenha.Location = new System.Drawing.Point(50, 130);
             this.labelSenha.Name = "labelSenha";
-            this.labelSenha.Size = new System.Drawing.Size(134, 21);
+            this.labelSenha.Size = new System.Drawing.Size(103, 20);
             this.labelSenha.TabIndex = 2;
-            this.labelSenha.Text = "🔑 Senha:";
+            this.labelSenha.Text = "🔑 Password:";
             // 
             // txtEmail
             // 
-            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtEmail.Location = new System.Drawing.Point(50, 70);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(300, 29);
+            //this.txtEmail.PlaceholderText = "seu@email.com";
+            this.txtEmail.Size = new System.Drawing.Size(300, 25);
             this.txtEmail.TabIndex = 0;
+            this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
             this.txtEmail.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtEmail_KeyPress);
             // 
             // labelEmail
             // 
             this.labelEmail.AutoSize = true;
-            this.labelEmail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelEmail.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelEmail.Location = new System.Drawing.Point(50, 40);
             this.labelEmail.Name = "labelEmail";
-            this.labelEmail.Size = new System.Drawing.Size(141, 21);
+            this.labelEmail.Size = new System.Drawing.Size(110, 20);
             this.labelEmail.TabIndex = 0;
-            this.labelEmail.Text = "📧 Email:";
+            this.labelEmail.Text = "📧 Username:";
             // 
             // panelBotoes
             // 
@@ -184,14 +236,15 @@ namespace gosti2
             this.btnEntrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
             this.btnEntrar.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnEntrar.FlatAppearance.BorderSize = 0;
+            this.btnEntrar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(159)))), ((int)(((byte)(103)))));
             this.btnEntrar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(205)))), ((int)(((byte)(50)))));
             this.btnEntrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEntrar.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEntrar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEntrar.ForeColor = System.Drawing.Color.White;
             this.btnEntrar.Location = new System.Drawing.Point(20, 20);
             this.btnEntrar.Name = "btnEntrar";
-            this.btnEntrar.Size = new System.Drawing.Size(220, 80);
-            this.btnEntrar.TabIndex = 2;
+            this.btnEntrar.Size = new System.Drawing.Size(220, 70);
+            this.btnEntrar.TabIndex = 5;
             this.btnEntrar.Text = "✅ Entrar";
             this.btnEntrar.UseVisualStyleBackColor = false;
             this.btnEntrar.Click += new System.EventHandler(this.btnEntrar_Click);
@@ -201,31 +254,33 @@ namespace gosti2
             this.btnCadastro.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.btnCadastro.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnCadastro.FlatAppearance.BorderSize = 0;
+            this.btnCadastro.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(120)))), ((int)(((byte)(170)))));
             this.btnCadastro.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.btnCadastro.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCadastro.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCadastro.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCadastro.ForeColor = System.Drawing.Color.White;
-            this.btnCadastro.Location = new System.Drawing.Point(20, 100);
+            this.btnCadastro.Location = new System.Drawing.Point(20, 90);
             this.btnCadastro.Name = "btnCadastro";
             this.btnCadastro.Size = new System.Drawing.Size(220, 60);
-            this.btnCadastro.TabIndex = 3;
+            this.btnCadastro.TabIndex = 6;
             this.btnCadastro.Text = "📝 Criar Conta";
             this.btnCadastro.UseVisualStyleBackColor = false;
             this.btnCadastro.Click += new System.EventHandler(this.btnCadastro_Click);
             // 
             // btnSair
             // 
-            this.btnSair.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(20)))), ((int)(((byte)(60)))));
+            this.btnSair.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.btnSair.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnSair.FlatAppearance.BorderSize = 0;
+            this.btnSair.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
             this.btnSair.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(69)))), ((int)(((byte)(0)))));
             this.btnSair.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSair.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSair.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSair.ForeColor = System.Drawing.Color.White;
             this.btnSair.Location = new System.Drawing.Point(20, 240);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(220, 60);
-            this.btnSair.TabIndex = 4;
+            this.btnSair.TabIndex = 7;
             this.btnSair.Text = "🚪 Sair";
             this.btnSair.UseVisualStyleBackColor = false;
             this.btnSair.Click += new System.EventHandler(this.btnSair_Click);
@@ -245,7 +300,7 @@ namespace gosti2
             // 
             this.labelMensagem.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelMensagem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelMensagem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.labelMensagem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.labelMensagem.Location = new System.Drawing.Point(10, 10);
             this.labelMensagem.Name = "labelMensagem";
             this.labelMensagem.Size = new System.Drawing.Size(640, 20);
@@ -255,7 +310,7 @@ namespace gosti2
             // 
             // panelRodape
             // 
-            this.panelRodape.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.panelRodape.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.panelRodape.Controls.Add(this.labelCopyright);
             this.panelRodape.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelRodape.Location = new System.Drawing.Point(0, 500);
@@ -272,17 +327,24 @@ namespace gosti2
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(700, 40);
             this.labelCopyright.TabIndex = 0;
-            this.labelCopyright.Text = "© 2025 BookConnect - Sua comunidade literária favorita";
+            this.labelCopyright.Text = "© 2024 BookConnect - Sua comunidade literária favorita";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.errorProvider.ContainerControl = this;
             // 
             // FormLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(700, 540);
             this.Controls.Add(this.panelConteudo);
             this.Controls.Add(this.panelSuperior);
             this.Controls.Add(this.panelRodape);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -292,12 +354,14 @@ namespace gosti2
             this.Text = "Login - BookConnect";
             this.panelSuperior.ResumeLayout(false);
             this.panelSuperior.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.panelConteudo.ResumeLayout(false);
             this.panelFormulario.ResumeLayout(false);
             this.panelFormulario.PerformLayout();
             this.panelBotoes.ResumeLayout(false);
             this.panelMensagem.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -306,7 +370,7 @@ namespace gosti2
 
         private System.Windows.Forms.Panel panelSuperior;
         private System.Windows.Forms.Label labelTitulo;
-        private System.Windows.Forms.Panel panelLogo;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
         private System.Windows.Forms.Panel panelConteudo;
         private System.Windows.Forms.Panel panelFormulario;
         private System.Windows.Forms.LinkLabel linkEsqueciSenha;
@@ -322,5 +386,9 @@ namespace gosti2
         private System.Windows.Forms.Label labelMensagem;
         private System.Windows.Forms.Panel panelRodape;
         private System.Windows.Forms.Label labelCopyright;
+        private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.CheckBox chkLembrarUsuario;
+        private System.Windows.Forms.CheckBox chkMostrarSenha;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }

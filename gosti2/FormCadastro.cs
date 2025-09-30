@@ -1,184 +1,284 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using gosti2.Models;
 using gosti2.Data;
+using gosti2.Models;
 
 namespace gosti2
 {
     public partial class FormCadastro : Form
     {
+        private BackgroundWorker validacaoWorker;
+
         public FormCadastro()
         {
             InitializeComponent();
+            ConfigurarValidacoes();
+            ConfigurarBackgroundWorker();
+        }
 
-            // ✅ CONFIGURAÇÕES ADICIONAIS
-            txtDataNascimento.Mask = "00/00/0000"; // Máscara para data
-            txtDataNascimento.PlaceholderText = "dd/mm/aaaa";
+        private void ConfigurarValidacoes()
+        {
+            // Configuração da máscara de data
+            txtDataNascimento.Mask = "00/00/0000";
+            //txtDataNascimento.PlaceholderText = "dd/mm/aaaa";
+            txtDataNascimento.ValidatingType = typeof(DateTime);
 
-            // ✅ FOCO NO PRIMEIRO CAMPO
+            // Configuração de limites de caracteres
+            txtNomeUsuario.MaxLength = 100;
+            txtEmail.MaxLength = 100;
+            txtBio.MaxLength = 500;
+            txtSenha.MaxLength = 255;
+            txtConfirmarSenha.MaxLength = 255;
+
+            // ToolTips para melhor UX
+            var toolTip = new ToolTip();
+            toolTip.SetToolTip(txtNomeUsuario, "3-100 caracteres. Letras, números e underline permitidos.");
+            toolTip.SetToolTip(txtSenha, "Mínimo 6 caracteres. Use letras, números e caracteres especiais.");
+            toolTip.SetToolTip(txtDataNascimento, "Você deve ter pelo menos 13 anos.");
+
+            // Foco inicial
             txtNomeUsuario.Focus();
         }
 
-        private void btnCadastrar2_Click(object sender, EventArgs e)
+        private void ConfigurarBackgroundWorker()
         {
-            try
-            {
-                if (!ValidarCampos()) return;
-
-                // ✅ USUARIO COMPATÍVEL COM SUA CLASSE ATUAL
-                var novoUsuario = new Usuario
-                {
-                    NomeUsuario = txtNomeUsuario.Text.Trim(), // ✅ CORRETO: NomeUsuario
-                    Email = txtEmail.Text.Trim().ToLower(),   // ✅ Email em minúsculo
-                    Senha = CriptografarSenha(txtSenha.Text), // ✅ Senha criptografada
-                    DataNascimento = ConverterData(txtDataNascimento.Text), // ✅ DateTime
-                    Bio = string.IsNullOrWhiteSpace(txtBio.Text) ? null : txtBio.Text.Trim(),
-                    DataCadastro = DateTime.Now,
-                    Ativo = true
-                };
-
-                // ✅ CADASTRO USANDO Entity Framework (compatível com seu projeto)
-                if (CadastrarUsuario(novoUsuario))
-                {
-                    MessageBox.Show("✅ Cadastro realizado com sucesso!\n\nAgora você pode fazer login em sua conta.",
-                                  "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"❌ Erro ao cadastrar: {ex.Message}", "Erro",
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            validacaoWorker = new BackgroundWorker();
+            validacaoWorker.DoWork += ValidacaoWorker_DoWork;
+            validacaoWorker.RunWorkerCompleted += ValidacaoWorker_RunWorkerCompleted;
         }
 
-        // ✅ MÉTODO DE CADASTRO COMPATÍVEL COM SEU PROJETO
-        private bool CadastrarUsuario(Usuario usuario)
-        {
-            try
-            {
-                using (var context = new ApplicationDbContext())
-                {
-                    // ✅ VERIFICAR SE EMAIL JÁ EXISTE
-                    if (context.Usuarios.Any(u => u.Email == usuario.Email))
-                    {
-                        MessageBox.Show("❌ Este email já está cadastrado. Use outro email ou recupere sua senha.",
-                                      "Email Existente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return false;
-                    }
+        #region Validações Síncronas e Assíncronas
 
-                    // ✅ VERIFICAR SE NOME DE USUÁRIO JÁ EXISTE
-                    if (context.Usuarios.Any(u => u.NomeUsuario == usuario.NomeUsuario))
-                    {
-                        MessageBox.Show("❌ Este nome de usuário já está em uso. Escolha outro.",
-                                      "Nome em Uso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return false;
-                    }
-
-                    context.Usuarios.Add(usuario);
-                    context.SaveChanges();
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro no banco de dados: {ex.Message}");
-            }
-        }
-
-        // ✅ VALIDAÇÃO ROBUSTA E COMPLETA
         private bool ValidarCampos()
         {
-            // ✅ NOME DE USUÁRIO
-            if (string.IsNullOrWhiteSpace(txtNomeUsuario.Text) || txtNomeUsuario.Text.Length < 3)
+            // Validação síncrona - campos básicos
+            if (!ValidarNomeUsuario() || !ValidarEmail() || !ValidarSenha() ||
+                !ValidarConfirmacaoSenha() || !ValidarDataNascimento())
             {
-                MessageBox.Show("❌ Nome de usuário deve ter pelo menos 3 caracteres.",
-                              "Nome Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtNomeUsuario.Focus();
                 return false;
             }
 
-            // ✅ EMAIL
-            if (string.IsNullOrWhiteSpace(txtEmail.Text) || !ValidarEmail(txtEmail.Text))
+            // Validação assíncrona - verificação no banco
+            if (validacaoWorker.IsBusy)
             {
-                MessageBox.Show("❌ Por favor, informe um email válido.",
-                              "Email Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtEmail.Focus();
+                MessageBox.Show("Validação em andamento. Aguarde...", "Aguarde",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
 
-            // ✅ SENHA
-            if (string.IsNullOrWhiteSpace(txtSenha.Text) || txtSenha.Text.Length < 6)
+            var dadosValidacao = new DadosValidacao
             {
-                MessageBox.Show("❌ A senha deve ter pelo menos 6 caracteres.",
-                              "Senha Fraca", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtSenha.Focus();
+                NomeUsuario = txtNomeUsuario.Text.Trim(),
+                Email = txtEmail.Text.Trim().ToLower()
+            };
+
+            btnCadastrar2.Enabled = false;
+            btnCadastrar2.Text = "Validando...";
+            validacaoWorker.RunWorkerAsync(dadosValidacao);
+
+            return false; // Retorna false temporariamente até a validação assíncrona completar
+        }
+
+        // Classe auxiliar para evitar problemas com dynamic
+        private class DadosValidacao
+        {
+            public string NomeUsuario { get; set; }
+            public string Email { get; set; }
+        }
+
+        private bool ValidarNomeUsuario()
+        {
+            var nomeUsuario = txtNomeUsuario.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(nomeUsuario) || nomeUsuario.Length < 3)
+            {
+                MostrarErro(txtNomeUsuario, "Nome de usuário deve ter pelo menos 3 caracteres.");
                 return false;
             }
 
-            // ✅ CONFIRMAÇÃO DE SENHA
-            if (txtSenha.Text != txtConfirmarSenha.Text)
+            if (!Regex.IsMatch(nomeUsuario, @"^[a-zA-Z0-9_]+$"))
             {
-                MessageBox.Show("❌ As senhas não coincidem. Por favor, digite novamente.",
-                              "Senhas Diferentes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtConfirmarSenha.Clear();
-                txtConfirmarSenha.Focus();
+                MostrarErro(txtNomeUsuario, "Use apenas letras, números e underline (_).");
                 return false;
             }
 
-            // ✅ DATA DE NASCIMENTO
-            if (string.IsNullOrWhiteSpace(txtDataNascimento.Text) || !ValidarDataNascimento(txtDataNascimento.Text))
+            if (nomeUsuario.Length > 100)
             {
-                MessageBox.Show("❌ Data de nascimento inválida ou formato incorreto (dd/mm/aaaa).",
-                              "Data Inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtDataNascimento.Focus();
+                MostrarErro(txtNomeUsuario, "Nome de usuário muito longo (máx. 100 caracteres).");
                 return false;
             }
 
-            // ✅ IDADE MÍNIMA (13 anos)
-            var dataNascimento = ConverterData(txtDataNascimento.Text);
-            if (CalcularIdade(dataNascimento) < 13)
-            {
-                MessageBox.Show("❌ Você deve ter pelo menos 13 anos para se cadastrar.",
-                              "Idade Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtDataNascimento.Focus();
-                return false;
-            }
-
+            LimparErro(txtNomeUsuario);
             return true;
         }
 
-        // ✅ MÉTODOS AUXILIARES DE VALIDAÇÃO
-        private bool ValidarEmail(string email)
+        private bool ValidarEmail()
         {
-            try
+            var email = txtEmail.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(email))
             {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
+                MostrarErro(txtEmail, "Email é obrigatório.");
                 return false;
             }
-        }
 
-        private bool ValidarDataNascimento(string data)
-        {
-            try
+            // Regex mais robusta para validação de email
+            var emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!Regex.IsMatch(email, emailRegex))
             {
-                DateTime.ParseExact(data, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-                return true;
-            }
-            catch
-            {
+                MostrarErro(txtEmail, "Formato de email inválido.");
                 return false;
             }
+
+            LimparErro(txtEmail);
+            return true;
         }
 
-        private DateTime ConverterData(string data)
+        private bool ValidarSenha()
         {
-            return DateTime.ParseExact(data, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            var senha = txtSenha.Text;
+
+            if (string.IsNullOrWhiteSpace(senha) || senha.Length < 6)
+            {
+                MostrarErro(txtSenha, "Senha deve ter pelo menos 6 caracteres.");
+                return false;
+            }
+
+            // Validação de força da senha
+            var forcaSenha = CalcularForcaSenha(senha);
+            if (forcaSenha < 2)
+            {
+                MostrarErro(txtSenha, "Senha muito fraca. Use letras maiúsculas, minúsculas, números e símbolos.");
+                return false;
+            }
+
+            AtualizarIndicadorForcaSenha(forcaSenha);
+            LimparErro(txtSenha);
+            return true;
+        }
+
+        private bool ValidarConfirmacaoSenha()
+        {
+            if (txtSenha.Text != txtConfirmarSenha.Text)
+            {
+                MostrarErro(txtConfirmarSenha, "As senhas não coincidem.");
+                return false;
+            }
+
+            LimparErro(txtConfirmarSenha);
+            return true;
+        }
+
+        private bool ValidarDataNascimento()
+        {
+            var dataTexto = txtDataNascimento.Text;
+
+            if (string.IsNullOrWhiteSpace(dataTexto) || dataTexto.Replace("/", "").Length != 8)
+            {
+                MostrarErro(txtDataNascimento, "Data de nascimento incompleta.");
+                return false;
+            }
+
+            if (!DateTime.TryParseExact(dataTexto, "dd/MM/yyyy",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTime dataNascimento))
+            {
+                MostrarErro(txtDataNascimento, "Data de nascimento inválida.");
+                return false;
+            }
+
+            var idade = CalcularIdade(dataNascimento);
+            if (idade < 13)
+            {
+                MostrarErro(txtDataNascimento, "Você deve ter pelo menos 13 anos.");
+                return false;
+            }
+
+            if (idade > 120)
+            {
+                MostrarErro(txtDataNascimento, "Data de nascimento inválida.");
+                return false;
+            }
+
+            LimparErro(txtDataNascimento);
+            return true;
+        }
+
+        #endregion
+
+        #region Métodos Auxiliares
+
+        private void MostrarErro(Control controle, string mensagem)
+        {
+            errorProvider.SetError(controle, mensagem);
+            controle.Focus();
+        }
+
+        private void LimparErro(Control controle)
+        {
+            errorProvider.SetError(controle, string.Empty);
+        }
+
+        private int CalcularForcaSenha(string senha)
+        {
+            int forca = 0;
+
+            if (senha.Length >= 8) forca++;
+            if (Regex.IsMatch(senha, @"[a-z]")) forca++;
+            if (Regex.IsMatch(senha, @"[A-Z]")) forca++;
+            if (Regex.IsMatch(senha, @"[0-9]")) forca++;
+            if (Regex.IsMatch(senha, @"[^a-zA-Z0-9]")) forca++;
+
+            return forca;
+        }
+
+        private void AtualizarIndicadorForcaSenha(int forca)
+        {
+            // Implementação visual da força da senha
+            if (panelForcaSenha != null && lblForcaSenha != null)
+            {
+                Color cor;
+                string texto;
+
+                switch (forca)
+                {
+                    case 0:
+                    case 1:
+                        cor = Color.Red;
+                        texto = "Muito Fraca";
+                        break;
+                    case 2:
+                        cor = Color.Orange;
+                        texto = "Fraca";
+                        break;
+                    case 3:
+                        cor = Color.Yellow;
+                        texto = "Média";
+                        break;
+                    case 4:
+                        cor = Color.LightGreen;
+                        texto = "Forte";
+                        break;
+                    case 5:
+                        cor = Color.Green;
+                        texto = "Muito Forte";
+                        break;
+                    default:
+                        cor = Color.Gray;
+                        texto = "Força da senha";
+                        break;
+                }
+
+                panelForcaSenha.BackColor = cor;
+                lblForcaSenha.Text = texto;
+                lblForcaSenha.ForeColor = forca < 3 ? Color.White : Color.Black;
+            }
         }
 
         private int CalcularIdade(DateTime dataNascimento)
@@ -189,15 +289,144 @@ namespace gosti2
             return idade;
         }
 
-        // ✅ CRIPTOGRAFIA BÁSICA DE SENHA (MELHORAR FUTURAMENTE)
         private string CriptografarSenha(string senha)
         {
-            // ✅ IMPLEMENTAÇÃO BÁSICA - MELHORAR COM BCrypt/ASP.NET Identity NO FUTURO
-            using (var sha = System.Security.Cryptography.SHA256.Create())
+            // Implementação alternativa usando SHA256 (sem dependência externa)
+            using (var sha256 = SHA256.Create())
             {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(senha + "gosti2_salt"); // Salt básico
-                var hash = sha.ComputeHash(bytes);
+                var bytes = Encoding.UTF8.GetBytes(senha + "BookConnect_Salt_2024");
+                var hash = sha256.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);
+            }
+        }
+
+        private bool VerificarSenha(string senha, string hash)
+        {
+            // Para verificar a senha, criptografa a senha fornecida e compara com o hash
+            var hashFornecido = CriptografarSenha(senha);
+            return hashFornecido == hash;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void btnCadastrar2_Click(object sender, EventArgs e)
+        {
+            // A validação completa é feita no método ValidarCampos
+            // que chama a validação assíncrona se necessário
+            ValidarCampos();
+        }
+
+        private void ValidacaoWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var dados = e.Argument as DadosValidacao;
+
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // Corrigido: usando dados tipados em vez de dynamic
+                    var emailExiste = context.Usuarios.Any(u => u.Email == dados.Email);
+                    var usuarioExiste = context.Usuarios.Any(u => u.NomeUsuario == dados.NomeUsuario);
+
+                    e.Result = new ResultadoValidacao
+                    {
+                        EmailExiste = emailExiste,
+                        UsuarioExiste = usuarioExiste
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Result = new ResultadoValidacao { Error = ex.Message };
+            }
+        }
+
+        // Classe para resultado da validação
+        private class ResultadoValidacao
+        {
+            public bool EmailExiste { get; set; }
+            public bool UsuarioExiste { get; set; }
+            public string Error { get; set; }
+        }
+
+        private void ValidacaoWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            btnCadastrar2.Enabled = true;
+            btnCadastrar2.Text = "Cadastrar";
+
+            if (e.Error != null)
+            {
+                MessageBox.Show($"Erro na validação: {e.Error.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var resultado = e.Result as ResultadoValidacao;
+
+            if (!string.IsNullOrEmpty(resultado.Error))
+            {
+                MessageBox.Show($"Erro no banco de dados: {resultado.Error}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (resultado.EmailExiste)
+            {
+                MostrarErro(txtEmail, "Este email já está cadastrado.");
+                return;
+            }
+
+            if (resultado.UsuarioExiste)
+            {
+                MostrarErro(txtNomeUsuario, "Este nome de usuário já está em uso.");
+                return;
+            }
+
+            // Todas as validações passaram - proceder com o cadastro
+            RealizarCadastro();
+        }
+
+        private void RealizarCadastro()
+        {
+            try
+            {
+                var novoUsuario = new Usuario
+                {
+                    NomeUsuario = txtNomeUsuario.Text.Trim(),
+                    Email = txtEmail.Text.Trim().ToLower(),
+                    Senha = CriptografarSenha(txtSenha.Text),
+                    DataNascimento = DateTime.ParseExact(txtDataNascimento.Text, "dd/MM/yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture),
+                    Bio = string.IsNullOrWhiteSpace(txtBio.Text) ? null : txtBio.Text.Trim(),
+                    DataCadastro = DateTime.Now,
+                    UltimoLogin = null,
+                    Ativo = true,
+                    Website = null,
+                    Localizacao = null,
+                    FotoPerfil = null
+                };
+
+                using (var context = new ApplicationDbContext())
+                {
+                    context.Usuarios.Add(novoUsuario);
+                    context.SaveChanges();
+                }
+
+                MessageBox.Show("Cadastro realizado com sucesso!\n\nAgora você pode fazer login em sua conta.",
+                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao cadastrar: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnCadastrar2.Enabled = true;
+                btnCadastrar2.Text = "Cadastrar";
             }
         }
 
@@ -207,43 +436,78 @@ namespace gosti2
             this.Close();
         }
 
-        // ✅ MELHORIAS DE USABILIDADE
+        private void linkLogin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            this.DialogResult = DialogResult.Retry;
+            this.Close();
+        }
+
         private void txtDataNascimento_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite apenas números e barra
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '/')
             {
                 e.Handled = true;
             }
         }
 
-        private void linkLogin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // ✅ VOLTAR PARA LOGIN
-            this.DialogResult = DialogResult.Retry; // Ou DialogResult.Cancel
-            this.Close();
-        }
-
-        // ✅ EVENTOS PARA MELHORAR UX
         private void txtNomeUsuario_TextChanged(object sender, EventArgs e)
         {
-            // Limitar tamanho do nome de usuário
-            if (txtNomeUsuario.Text.Length > 50)
+            // Validação em tempo real
+            if (txtNomeUsuario.Text.Length > 0)
             {
-                txtNomeUsuario.Text = txtNomeUsuario.Text.Substring(0, 50);
-                txtNomeUsuario.SelectionStart = 50;
+                ValidarNomeUsuario();
             }
         }
 
-        private void txtEmail_Leave(object sender, EventArgs e)
+        private void txtEmail_TextChanged(object sender, EventArgs e)
         {
-            // Auto-completar domínio comum
-            if (!string.IsNullOrWhiteSpace(txtEmail.Text) &&
-                !txtEmail.Text.Contains("@") &&
-                !txtEmail.Text.EndsWith(".com"))
+            if (txtEmail.Text.Length > 0)
             {
-                txtEmail.Text += "@gmail.com";
+                ValidarEmail();
             }
         }
+
+        private void txtSenha_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSenha.Text.Length > 0)
+            {
+                ValidarSenha();
+            }
+        }
+
+        private void txtConfirmarSenha_TextChanged(object sender, EventArgs e)
+        {
+            if (txtConfirmarSenha.Text.Length > 0)
+            {
+                ValidarConfirmacaoSenha();
+            }
+        }
+
+        private void txtDataNascimento_TextChanged(object sender, EventArgs e)
+        {
+            if (txtDataNascimento.Text.Replace("/", "").Length == 8)
+            {
+                ValidarDataNascimento();
+            }
+        }
+
+        private void chkMostrarSenha_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSenha.UseSystemPasswordChar = !chkMostrarSenha.Checked;
+            txtConfirmarSenha.UseSystemPasswordChar = !chkMostrarSenha.Checked;
+        }
+
+        //private void txtBio_TextChanged(object sender, EventArgs e)
+        //{
+        //    // Contador de caracteres para a bio
+        //    if (lblContadorBio != null)
+        //    {
+        //        int caracteresRestantes = 500 - txtBio.Text.Length;
+        //        lblContadorBio.Text = $"{caracteresRestantes} caracteres restantes";
+        //        lblContadorBio.ForeColor = caracteresRestantes < 50 ? Color.Red : Color.Gray;
+        //    }
+        //}
+
+        #endregion
     }
 }

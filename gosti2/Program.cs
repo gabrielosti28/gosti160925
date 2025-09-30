@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using gosti;
+using gosti2;
 using gosti2.Data;
 using gosti2.Tools;
 

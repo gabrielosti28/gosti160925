@@ -2,8 +2,13 @@
 using System.Windows.Forms;
 using gosti2.Models;
 using gosti2.Data;
+using gosti2.Properties;
+
 namespace gosti2
+
 {
+
+
     public partial class FormPrincipal : Form
     {
         public FormPrincipal()
@@ -11,7 +16,7 @@ namespace gosti2
             InitializeComponent();
             CarregarDadosUsuario();
         }
-       
+        
         private void CarregarDadosUsuario()
         {
             if (UsuarioManager.UsuarioLogado != null)

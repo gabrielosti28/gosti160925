@@ -5,8 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using gosti2.Models;
 using gosti2.Data;
 
@@ -19,8 +17,30 @@ namespace gosti2
         public FormMeusLivros()
         {
             InitializeComponent();
-            usuarioLogadoId = UsuarioManager.UsuarioLogado?.UserId ?? 0;
+            usuarioLogadoId = UsuarioManager.UsuarioLogado?.UsuarioId ?? 0; // Corrigido para UsuarioId
+            ConfigurarDataGridView();
             CarregarLivros();
+        }
+
+        private void ConfigurarDataGridView()
+        {
+            // Adiciona coluna oculta para LivroId
+            if (!dataGridViewLivros.Columns.Contains("colLivroId"))
+            {
+                var colunaLivroId = new DataGridViewTextBoxColumn
+                {
+                    Name = "colLivroId",
+                    HeaderText = "LivroId",
+                    Visible = false,
+                    DataPropertyName = "LivroId"
+                };
+                dataGridViewLivros.Columns.Insert(0, colunaLivroId);
+            }
+
+            // Configurações de performance
+            dataGridViewLivros.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewLivros.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridViewLivros.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
         }
 
         private void CarregarLivros()
@@ -29,53 +49,48 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Carrega todos os livros com informações do usuário
+                    // Carrega apenas livros do usuário logado com includes necessários
                     var livros = context.Livros
                         .Include(l => l.Usuario)
+                        .Include(l => l.CategoriaTier) // Inclui a categoria tier
+                        .Where(l => l.UsuarioId == usuarioLogadoId) // Filtra por usuário logado
+                        .OrderByDescending(l => l.DataAdicao)
                         .ToList();
 
                     dataGridViewLivros.Rows.Clear();
 
                     foreach (var livro in livros)
                     {
-                        Image capaImage = null;
-                        if (livro.Capa != null && livro.Capa.Length > 0)
-                        {
-                            using (var ms = new System.IO.MemoryStream(livro.Capa))
-                            {
-                                // Corrigindo a exibição da imagem
-                                var originalImage = Image.FromStream(ms);
+                        Image capaImage = ObterImagemCapa(livro.Capa);
 
-                                // Redimensionar mantendo a proporção
-                                capaImage = RedimensionarImagem(originalImage, 100, 150);
-                            }
-                        }
-                        else
-                        {
-                            // Imagem padrão quando não há capa
-                            capaImage = RedimensionarImagem(Properties.Resources.default_book_cover, 100, 150);
-                        }
+                        string statusLeitura = ObterStatusLeitura(livro);
+                        string categoriaTier = livro.CategoriaTier?.Nome ?? "Não categorizado";
 
                         int rowIndex = dataGridViewLivros.Rows.Add(
+                            livro.LivroId, // ID oculto para referência
                             capaImage,
                             livro.Titulo,
                             livro.Autor,
-                            livro.Genero, // ou livro.Categoria, dependendo do seu modelo
-                            livro.Lido ? "Lido" : "Não Lido",
-                            livro.UsuarioId,
-                            livro.Usuario.Nome
+                            livro.Genero,
+                            statusLeitura,
+                            categoriaTier,
+                            livro.DataAdicao.ToString("dd/MM/yyyy")
                         );
 
-                        // Define a altura da linha para acomodar a imagem
+                        // Configurações visuais da linha
                         dataGridViewLivros.Rows[rowIndex].Height = 160;
+                        dataGridViewLivros.Rows[rowIndex].Cells["colCapa"].Style.Alignment =
+                            DataGridViewContentAlignment.MiddleCenter;
 
-                        // Define o estilo da célula para centralizar a imagem
-                        dataGridViewLivros.Rows[rowIndex].Cells["colCapa"].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                        // Destaca livros favoritos
+                        if (livro.Favorito)
+                        {
+                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
+                                Color.FromArgb(255, 255, 200); // Amarelo claro para favoritos
+                        }
                     }
 
-                    // Esconde as colunas de ID do usuário
-                    dataGridViewLivros.Columns["colUsuarioId"].Visible = false;
-                    dataGridViewLivros.Columns["colUsuarioNome"].Visible = false;
+                    AtualizarEstatisticas(livros.Count());
                 }
             }
             catch (Exception ex)
@@ -85,7 +100,73 @@ namespace gosti2
             }
         }
 
-        // Método para redimensionar imagem mantendo a proporção
+        private Image ObterImagemCapa(byte[] capaBytes)
+        {
+            if (capaBytes != null && capaBytes.Length > 0)
+            {
+                try
+                {
+                    using (var ms = new System.IO.MemoryStream(capaBytes))
+                    {
+                        var originalImage = Image.FromStream(ms);
+                        return RedimensionarImagem(originalImage, 80, 120); // Tamanho otimizado
+                    }
+                }
+                catch
+                {
+                    // Fallback para imagem padrão em caso de erro
+                    return CriarImagemPadrao();
+                }
+            }
+            return CriarImagemPadrao();
+        }
+
+        private Image CriarImagemPadrao()
+        {
+            // Cria uma imagem padrão programaticamente
+            var defaultImage = new Bitmap(80, 120);
+            using (var g = Graphics.FromImage(defaultImage))
+            {
+                g.Clear(Color.LightGray);
+                using (var font = new Font("Arial", 8))
+                using (var brush = new SolidBrush(Color.DarkGray))
+                {
+                    g.DrawString("Sem Capa", font, brush, 10, 50);
+                }
+            }
+            return defaultImage;
+        }
+
+        private string ObterStatusLeitura(Livro livro)
+        {
+            if (livro.Lido) return "✅ Lido";
+            if (livro.Favorito) return "⭐ Favorito";
+            return "📖 Para Ler";
+        }
+
+        private void AtualizarEstatisticas(int totalLivros)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var livrosLidos = context.Livros
+                        .Count(l => l.UsuarioId == usuarioLogadoId && l.Lido);
+
+                    var livrosFavoritos = context.Livros
+                        .Count(l => l.UsuarioId == usuarioLogadoId && l.Favorito);
+
+                    lblEstatisticas.Text =
+                        $"Total: {totalLivros} | Lidos: {livrosLidos} | Favoritos: {livrosFavoritos}";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblEstatisticas.Text = "Estatísticas indisponíveis";
+                Console.WriteLine($"Erro ao carregar estatísticas: {ex.Message}");
+            }
+        }
+
         private Image RedimensionarImagem(Image imagem, int largura, int altura)
         {
             var destRect = new Rectangle(0, 0, largura, altura);
@@ -104,7 +185,8 @@ namespace gosti2
                 using (var wrapMode = new ImageAttributes())
                 {
                     wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(imagem, destRect, 0, 0, imagem.Width, imagem.Height, GraphicsUnit.Pixel, wrapMode);
+                    graphics.DrawImage(imagem, destRect, 0, 0, imagem.Width, imagem.Height,
+                                     GraphicsUnit.Pixel, wrapMode);
                 }
             }
 
@@ -117,80 +199,51 @@ namespace gosti2
             {
                 if (formAdicionar.ShowDialog() == DialogResult.OK)
                 {
-                    CarregarLivros(); // Recarrega a lista após adicionar
+                    CarregarLivros();
                 }
             }
         }
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
-            if (dataGridViewLivros.SelectedRows.Count == 0)
+            var livroId = ObterIdLivroSelecionado();
+            if (livroId == 0)
             {
                 MessageBox.Show("Selecione um livro para editar.", "Atenção",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DataGridViewRow linhaSelecionada = dataGridViewLivros.SelectedRows[0];
-            int livroUsuarioId = Convert.ToInt32(linhaSelecionada.Cells["colUsuarioId"].Value);
-
-            if (livroUsuarioId != usuarioLogadoId)
+            // Verificação de propriedade redundante (já filtramos por usuário)
+            using (var formEditar = new FormAdicionarLivro(livroId))
             {
-                MessageBox.Show("Você só pode editar os livros que adicionou.",
-                    "Acesso Negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Obter o ID do livro selecionado
-            int livroId = ObterIdLivroSelecionado();
-            if (livroId > 0)
-            {
-                using (var formEditar = new FormAdicionarLivro(livroId))
+                if (formEditar.ShowDialog() == DialogResult.OK)
                 {
-                    if (formEditar.ShowDialog() == DialogResult.OK)
-                    {
-                        CarregarLivros(); // Recarrega a lista após editar
-                    }
+                    CarregarLivros();
                 }
-            }
-            else
-            {
-                MessageBox.Show("Não foi possível identificar o livro selecionado.", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnRemover_Click(object sender, EventArgs e)
         {
-            if (dataGridViewLivros.SelectedRows.Count == 0)
+            var livroId = ObterIdLivroSelecionado();
+            if (livroId == 0)
             {
                 MessageBox.Show("Selecione um livro para remover.", "Atenção",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DataGridViewRow linhaSelecionada = dataGridViewLivros.SelectedRows[0];
-            int livroUsuarioId = Convert.ToInt32(linhaSelecionada.Cells["colUsuarioId"].Value);
-
-            if (livroUsuarioId != usuarioLogadoId)
-            {
-                MessageBox.Show("Você só pode remover os livros que adicionou.",
-                    "Acesso Negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string tituloLivro = linhaSelecionada.Cells["colTitulo"].Value.ToString();
-            var result = MessageBox.Show($"Tem certeza que deseja remover o livro '{tituloLivro}'?",
-                "Confirmar Remoção", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var tituloLivro = dataGridViewLivros.SelectedRows[0].Cells["colTitulo"].Value.ToString();
+            var result = MessageBox.Show(
+                $"Tem certeza que deseja remover o livro '{tituloLivro}'?\n\nEsta ação não pode ser desfeita.",
+                "Confirmar Remoção",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
             {
-                int livroId = ObterIdLivroSelecionado();
-                if (livroId > 0)
-                {
-                    RemoverLivro(livroId);
-                    CarregarLivros(); // Recarrega a lista após remover
-                }
+                RemoverLivro(livroId);
             }
         }
 
@@ -198,14 +251,10 @@ namespace gosti2
         {
             if (dataGridViewLivros.SelectedRows.Count > 0)
             {
-                // Em uma implementação real, você teria o ID do livro em uma coluna oculta
-                // Por enquanto, vamos buscar pelo título (não ideal, mas funcional)
-                string titulo = dataGridViewLivros.SelectedRows[0].Cells["colTitulo"].Value.ToString();
-
-                using (var context = new ApplicationDbContext())
+                var row = dataGridViewLivros.SelectedRows[0];
+                if (row.Cells["colLivroId"].Value != null)
                 {
-                    var livro = context.Livros.FirstOrDefault(l => l.Titulo == titulo);
-                    return livro?.LivroId ?? 0;
+                    return Convert.ToInt32(row.Cells["colLivroId"].Value);
                 }
             }
             return 0;
@@ -217,13 +266,22 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    var livro = context.Livros.Find(livroId);
+                    var livro = context.Livros
+                        .Include(l => l.Avaliacoes)
+                        .Include(l => l.Comentarios)
+                        .Include(l => l.LikesDislikes)
+                        .FirstOrDefault(l => l.LivroId == livroId);
+
                     if (livro != null)
                     {
+                        // O Entity Framework cuidará do cascade delete devido às configurações
                         context.Livros.Remove(livro);
                         context.SaveChanges();
+
                         MessageBox.Show("Livro removido com sucesso!", "Sucesso",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        CarregarLivros();
                     }
                 }
             }
@@ -239,67 +297,77 @@ namespace gosti2
             this.Close();
         }
 
-        private void dataGridViewLivros_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridViewLivros_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
+                AbrirDetalhesLivro();
+            }
+        }
+
+        private void AbrirDetalhesLivro()
+        {
+            var livroId = ObterIdLivroSelecionado();
+            if (livroId > 0)
+            {
                 try
                 {
-                    int livroId = ObterIdLivroSelecionado();
-                    if (livroId > 0)
-                    {
-                        // Garantir que o banco está inicializado
-                        DatabaseInitializer.Initialize();
+                    DatabaseInitializer.Initialize(); // Garante que o banco está inicializado
 
-                        using (var formLivroAberto = new FormLivroAberto(livroId))
-                        {
-                            formLivroAberto.ShowDialog();
-                            CarregarLivros();
-                        }
+                    using (var formLivroAberto = new FormLivroAberto(livroId))
+                    {
+                        formLivroAberto.ShowDialog();
+                        CarregarLivros(); // Recarrega para refletir possíveis mudanças
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Erro ao abrir livro: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}",
-                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Erro ao abrir livro: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
         private void dataGridViewLivros_SelectionChanged(object sender, EventArgs e)
         {
-            // Habilita/desabilita botões baseado na seleção e propriedade
-            if (dataGridViewLivros.SelectedRows.Count > 0)
-            {
-                DataGridViewRow linhaSelecionada = dataGridViewLivros.SelectedRows[0];
-                int livroUsuarioId = Convert.ToInt32(linhaSelecionada.Cells["colUsuarioId"].Value);
-
-                bool usuarioEDono = (livroUsuarioId == usuarioLogadoId);
-                btnEditar.Enabled = usuarioEDono;
-                btnRemover.Enabled = usuarioEDono;
-
-                // Altera a cor de fundo para indicar propriedade
-                foreach (DataGridViewRow row in dataGridViewLivros.Rows)
-                {
-                    int rowUsuarioId = Convert.ToInt32(row.Cells["colUsuarioId"].Value);
-                    if (rowUsuarioId == usuarioLogadoId)
-                    {
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(240, 248, 255); // Azul claro
-                    }
-                    else
-                    {
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 250, 240); // Laranja claro
-                    }
-                }
-            }
-            else
-            {
-                btnEditar.Enabled = false;
-                btnRemover.Enabled = false;
-            }
+            bool linhaSelecionada = dataGridViewLivros.SelectedRows.Count > 0;
+            btnEditar.Enabled = linhaSelecionada;
+            btnRemover.Enabled = linhaSelecionada;
         }
 
-       
+        private void btnAtualizar_Click(object sender, EventArgs e)
+        {
+            CarregarLivros();
+        }
 
+        private void txtPesquisa_TextChanged(object sender, EventArgs e)
+        {
+            FiltrarLivros(txtPesquisa.Text.Trim());
+        }
+
+        private void FiltrarLivros(string termoPesquisa)
+        {
+            if (string.IsNullOrEmpty(termoPesquisa))
+            {
+                foreach (DataGridViewRow row in dataGridViewLivros.Rows)
+                {
+                    row.Visible = true;
+                }
+                return;
+            }
+
+            foreach (DataGridViewRow row in dataGridViewLivros.Rows)
+            {
+                var titulo = row.Cells["colTitulo"].Value?.ToString() ?? "";
+                var autor = row.Cells["colAutor"].Value?.ToString() ?? "";
+                var genero = row.Cells["colGenero"].Value?.ToString() ?? "";
+
+                bool corresponde = titulo.IndexOf(termoPesquisa, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                 autor.IndexOf(termoPesquisa, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                 genero.IndexOf(termoPesquisa, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                row.Visible = corresponde;
+            }
+        }
     }
 }
