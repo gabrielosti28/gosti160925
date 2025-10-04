@@ -1,6 +1,10 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using gosti2.Models;
+using gosti2.Tools;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace gosti2.Data
 {
@@ -9,28 +13,54 @@ namespace gosti2.Data
         // ✅ Connection string corrigida para usar o nome correto
         public ApplicationDbContext() : base("name=CJ3027333PR2")
         {
-            // ✅ Configurações otimizadas
+            // ✅ Configurações otimizadas para performance
             Database.SetInitializer<ApplicationDbContext>(null);
-            this.Configuration.LazyLoadingEnabled = true;  // ✅ Habilitado para conveniência
+            this.Configuration.LazyLoadingEnabled = false;  // ✅ Desabilitado para melhor performance
             this.Configuration.ProxyCreationEnabled = false;
             this.Configuration.AutoDetectChangesEnabled = true;
+
+            // ✅ LOG de criação do contexto
+            DiagnosticContext.LogarInfo("ApplicationDbContext criado - Conexão estabelecida");
         }
 
-        // ✅ DbSets 100% COMPATIVEIS com suas classes
+        // ✅ DbSets 100% COMPATIVEIS com suas classes e com o banco
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Livro> Livros { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Mensagem> Mensagens { get; set; }
-        public DbSet<CategoriaTier> CategoriaTiers { get; set; } // ✅ Nome correto
+        public DbSet<CategoriaTier> CategoriaTiers { get; set; }
         public DbSet<LikeDislike> LikesDislikes { get; set; }
         public DbSet<Avaliacao> Avaliacoes { get; set; }
 
+        // ✅ SOBRESCREVER SaveChanges para logging
+        public override int SaveChanges()
+        {
+            try
+            {
+                var entidadesAlteradas = ChangeTracker.Entries()
+                    .Count(e => e.State == EntityState.Added ||
+                               e.State == EntityState.Modified ||
+                               e.State == EntityState.Deleted);
+
+                var resultado = base.SaveChanges();
+
+                DiagnosticContext.LogarInfo($"SaveChanges executado: {resultado} registros afetados ({entidadesAlteradas} entidades alteradas)");
+
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                DiagnosticContext.LogarErro("Erro durante SaveChanges no ApplicationDbContext", ex);
+                throw; // Repropaga a exceção
+            }
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // ✅ Remove pluralização para usar nomes exatos das tabelas
+            // ✅ Remove pluralização para usar nomes exatos das tabelas do SQL
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
-            // ✅ Configuração mínima e compatível
+            // ✅ Configuração compatível com o schema do banco
             ConfigureUsuario(modelBuilder);
             ConfigureLivro(modelBuilder);
             ConfigureComentario(modelBuilder);
@@ -40,6 +70,8 @@ namespace gosti2.Data
             ConfigureAvaliacao(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
+
+            DiagnosticContext.LogarInfo("Modelo do Entity Framework configurado com sucesso");
         }
 
         private void ConfigureUsuario(DbModelBuilder modelBuilder)
@@ -49,7 +81,7 @@ namespace gosti2.Data
             // ✅ CHAVE PRIMÁRIA CORRETA
             entity.HasKey(u => u.UsuarioId);
 
-            // ✅ PROPRIEDADES EXISTENTES
+            // ✅ PROPRIEDADES EXISTENTES - COMPATÍVEL COM BANCO
             entity.Property(u => u.NomeUsuario)
                   .IsRequired()
                   .HasMaxLength(100);
@@ -74,15 +106,26 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasMaxLength(100);
 
-            // ✅ ÍNDICE ÚNICO
-            entity.HasIndex(u => u.Email).IsUnique();
-            entity.HasIndex(u => u.NomeUsuario).IsUnique();
+            entity.Property(u => u.DataNascimento)
+                  .IsRequired()
+                  .HasColumnType("date");
 
-            // ✅ RELAÇÕES (OPCIONAIS - Entity Framework já detecta automaticamente)
-            entity.HasMany(u => u.Livros)
-                  .WithRequired(l => l.Usuario)
-                  .HasForeignKey(l => l.UsuarioId)
-                  .WillCascadeOnDelete(true); // ✅ Cascade para livros
+            entity.Property(u => u.DataCadastro)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
+            entity.Property(u => u.UltimoLogin)
+                  .IsOptional()
+                  .HasColumnType("datetime2");
+
+            // ✅ ÍNDICES ÚNICOS - COMPATÍVEL COM SQL
+            entity.HasIndex(u => u.Email)
+                  .IsUnique()
+                  .HasName("IX_Usuarios_Email");
+
+            entity.HasIndex(u => u.NomeUsuario)
+                  .IsUnique()
+                  .HasName("IX_Usuarios_NomeUsuario");
         }
 
         private void ConfigureLivro(DbModelBuilder modelBuilder)
@@ -91,7 +134,7 @@ namespace gosti2.Data
 
             entity.HasKey(l => l.LivroId);
 
-            // ✅ PROPRIEDADES EXISTENTES
+            // ✅ PROPRIEDADES EXISTENTES - COMPATÍVEL COM BANCO
             entity.Property(l => l.Titulo)
                   .IsRequired()
                   .HasMaxLength(200);
@@ -117,10 +160,25 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasMaxLength(100);
 
-            // ✅ ÍNDICES PARA PERFORMANCE
-            entity.HasIndex(l => l.Titulo);
-            entity.HasIndex(l => l.Autor);
-            entity.HasIndex(l => l.UsuarioId);
+            entity.Property(l => l.DataAdicao)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
+            // ✅ ÍNDICES PARA PERFORMANCE - COMPATÍVEL COM SQL
+            entity.HasIndex(l => l.Titulo)
+                  .HasName("IX_Livros_Titulo");
+
+            entity.HasIndex(l => l.Autor)
+                  .HasName("IX_Livros_Autor");
+
+            entity.HasIndex(l => l.UsuarioId)
+                  .HasName("IX_Livros_UsuarioId");
+
+            // ✅ RELACIONAMENTOS
+            entity.HasRequired(l => l.Usuario)
+                  .WithMany(u => u.Livros)
+                  .HasForeignKey(l => l.UsuarioId)
+                  .WillCascadeOnDelete(true);
         }
 
         private void ConfigureComentario(DbModelBuilder modelBuilder)
@@ -133,9 +191,29 @@ namespace gosti2.Data
                   .IsRequired()
                   .HasMaxLength(2000);
 
-            // ✅ ÍNDICES PARA PERFORMANCE
-            entity.HasIndex(c => c.LivroId);
+            entity.Property(c => c.DataComentario)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
+            entity.Property(c => c.DataEdicao)
+                  .IsOptional()
+                  .HasColumnType("datetime2");
+
+            // ✅ ÍNDICES PARA PERFORMANCE - COMPATÍVEL COM SQL
+            entity.HasIndex(c => c.LivroId)
+                  .HasName("IX_Comentarios_LivroId");
+
             entity.HasIndex(c => c.UsuarioId);
+
+            // ✅ RELACIONAMENTOS
+            entity.HasRequired(c => c.Livro)
+                  .WithMany()
+                  .HasForeignKey(c => c.LivroId)
+                  .WillCascadeOnDelete(true);
+
+            entity.HasRequired(c => c.Usuario)
+                  .WithMany()
+                  .HasForeignKey(c => c.UsuarioId);
         }
 
         private void ConfigureMensagem(DbModelBuilder modelBuilder)
@@ -144,16 +222,33 @@ namespace gosti2.Data
 
             entity.HasKey(m => m.MensagemId);
 
-            // ✅ MAPEAMENTO CORRETO DO CAMPO
+            // ✅ CORREÇÃO: A classe usa "Conteudo" mapeado para "Texto" no banco
             entity.Property(m => m.Conteudo)
                   .IsRequired()
                   .HasMaxLength(2000)
-                  .HasColumnName("Texto"); // ✅ MAPEIA PARA O NOME NO BANCO
+                  .HasColumnName("Texto"); // ✅ MAPEIA CORRETAMENTE PARA A COLUNA NO BANCO
 
-            // ✅ ÍNDICES PARA CHAT
-            entity.HasIndex(m => m.RemetenteId);
-            entity.HasIndex(m => m.DestinatarioId);
-            entity.HasIndex(m => new { m.RemetenteId, m.DestinatarioId });
+            entity.Property(m => m.DataEnvio)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
+            // ✅ ÍNDICES PARA CHAT - COMPATÍVEL COM SQL
+            entity.HasIndex(m => m.RemetenteId)
+                  .HasName("IX_Mensagens_RemetenteDestinatario");
+
+            entity.HasIndex(m => m.DestinatarioId)
+                  .HasName("IX_Mensagens_RemetenteDestinatario");
+
+            // ✅ RELACIONAMENTOS
+            entity.HasRequired(m => m.Remetente)
+                  .WithMany()
+                  .HasForeignKey(m => m.RemetenteId)
+                  .WillCascadeOnDelete(false);
+
+            entity.HasRequired(m => m.Destinatario)
+                  .WithMany()
+                  .HasForeignKey(m => m.DestinatarioId)
+                  .WillCascadeOnDelete(false);
         }
 
         private void ConfigureLikeDislike(DbModelBuilder modelBuilder)
@@ -162,20 +257,30 @@ namespace gosti2.Data
 
             entity.HasKey(ld => ld.LikeDislikeId);
 
+            entity.Property(ld => ld.DataAcao)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
             // ✅ CONSTRAINT ÚNICA (1 like/dislike por usuário/livro)
             entity.HasIndex(ld => new { ld.LivroId, ld.UsuarioId })
-                  .IsUnique();
+                  .IsUnique()
+                  .HasName("UK_LivroUsuario");
 
-            // ✅ ÍNDICES PARA PERFORMANCE
-            entity.HasIndex(ld => ld.LivroId);
-            entity.HasIndex(ld => ld.UsuarioId);
+            // ✅ RELACIONAMENTOS
+            entity.HasRequired(ld => ld.Livro)
+                  .WithMany()
+                  .HasForeignKey(ld => ld.LivroId)
+                  .WillCascadeOnDelete(true);
+
+            entity.HasRequired(ld => ld.Usuario)
+                  .WithMany()
+                  .HasForeignKey(ld => ld.UsuarioId);
         }
 
         private void ConfigureCategoriaTier(DbModelBuilder modelBuilder)
         {
             var entity = modelBuilder.Entity<CategoriaTier>();
 
-            // ✅ CHAVE PRIMÁRIA CORRETA
             entity.HasKey(ct => ct.CategoriaTierId);
 
             entity.Property(ct => ct.Nome)
@@ -186,6 +291,7 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasMaxLength(255);
 
+            // ✅ CORREÇÃO: Valor padrão removido - deve ser definido na classe
             entity.Property(ct => ct.Cor)
                   .IsOptional()
                   .HasMaxLength(20);
@@ -197,17 +303,52 @@ namespace gosti2.Data
 
             entity.HasKey(a => a.AvaliacaoId);
 
+            entity.Property(a => a.Comentario)
+                  .IsOptional()
+                  .HasMaxLength(1000);
+
+            entity.Property(a => a.DataAvaliacao)
+                  .IsRequired()
+                  .HasColumnType("datetime2");
+
             // ✅ CONSTRAINT ÚNICA (1 avaliação por usuário/livro)
             entity.HasIndex(a => new { a.LivroId, a.UsuarioId })
-                  .IsUnique();
+                  .IsUnique()
+                  .HasName("UK_Avaliacao_UsuarioLivro");
 
-            // ✅ CHECK CONSTRAINT via Fluent API
+            // ✅ VALIDAÇÃO DE NOTA (1-5)
             entity.Property(a => a.Nota)
                   .IsRequired();
 
-            // ✅ ÍNDICES PARA PERFORMANCE
-            entity.HasIndex(a => a.LivroId);
-            entity.HasIndex(a => a.UsuarioId);
+            // ✅ RELACIONAMENTOS
+            entity.HasRequired(a => a.Livro)
+                  .WithMany()
+                  .HasForeignKey(a => a.LivroId)
+                  .WillCascadeOnDelete(true);
+
+            entity.HasRequired(a => a.Usuario)
+                  .WithMany()
+                  .HasForeignKey(a => a.UsuarioId);
+        }
+
+        // ✅ MÉTODO PARA VERIFICAR CONEXÃO
+        public bool TestarConexao()
+        {
+            try
+            {
+                return Database.Exists();
+            }
+            catch (Exception ex)
+            {
+                DiagnosticContext.LogarErro("Falha ao testar conexão no ApplicationDbContext", ex);
+                return false;
+            }
+        }
+
+        // ✅ DESTRUTOR PARA LOG
+        ~ApplicationDbContext()
+        {
+            DiagnosticContext.LogarInfo("ApplicationDbContext finalizado");
         }
     }
 }

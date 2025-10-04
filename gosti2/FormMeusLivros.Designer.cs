@@ -18,8 +18,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMeusLivros));
             this.panelTopo = new System.Windows.Forms.Panel();
+            this.lblEstatisticas = new System.Windows.Forms.Label();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.panelContainer = new System.Windows.Forms.Panel();
             this.dataGridViewLivros = new System.Windows.Forms.DataGridView();
@@ -40,7 +40,6 @@
             this.panelPesquisa = new System.Windows.Forms.Panel();
             this.txtPesquisa = new System.Windows.Forms.TextBox();
             this.lblPesquisa = new System.Windows.Forms.Label();
-            this.lblEstatisticas = new System.Windows.Forms.Label();
             this.panelTopo.SuspendLayout();
             this.panelContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLivros)).BeginInit();
@@ -50,6 +49,7 @@
             // 
             // panelTopo
             // 
+            this.panelTopo.BackColor = System.Drawing.Color.Teal;
             this.panelTopo.Controls.Add(this.lblEstatisticas);
             this.panelTopo.Controls.Add(this.lblTitulo);
             this.panelTopo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -58,6 +58,19 @@
             this.panelTopo.Size = new System.Drawing.Size(1000, 60);
             this.panelTopo.TabIndex = 0;
             // 
+            // lblEstatisticas
+            // 
+            this.lblEstatisticas.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblEstatisticas.AutoSize = true;
+            this.lblEstatisticas.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEstatisticas.ForeColor = System.Drawing.Color.White;
+            this.lblEstatisticas.Location = new System.Drawing.Point(650, 25);
+            this.lblEstatisticas.Name = "lblEstatisticas";
+            this.lblEstatisticas.Size = new System.Drawing.Size(163, 17);
+            this.lblEstatisticas.TabIndex = 1;
+            this.lblEstatisticas.Text = "Carregando estatísticas...";
+            this.lblEstatisticas.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // lblTitulo
             // 
             this.lblTitulo.AutoSize = true;
@@ -65,7 +78,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(192, 32);
+            this.lblTitulo.Size = new System.Drawing.Size(189, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "📚 Meus Livros";
             // 
@@ -92,7 +105,7 @@
             this.dataGridViewLivros.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -111,7 +124,7 @@
             this.colDataAdicao});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(235)))), ((int)(((byte)(252)))));
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
@@ -300,13 +313,12 @@
             // 
             // txtPesquisa
             // 
-            this.txtPesquisa.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtPesquisa.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPesquisa.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPesquisa.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPesquisa.Location = new System.Drawing.Point(90, 8);
             this.txtPesquisa.Name = "txtPesquisa";
-            //this.txtPesquisa.PlaceholderText = "Pesquisar por título, autor ou gênero...";
             this.txtPesquisa.Size = new System.Drawing.Size(855, 25);
             this.txtPesquisa.TabIndex = 1;
             this.txtPesquisa.TextChanged += new System.EventHandler(this.txtPesquisa_TextChanged);
@@ -317,22 +329,9 @@
             this.lblPesquisa.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPesquisa.Location = new System.Drawing.Point(10, 11);
             this.lblPesquisa.Name = "lblPesquisa";
-            this.lblPesquisa.Size = new System.Drawing.Size(74, 17);
+            this.lblPesquisa.Size = new System.Drawing.Size(89, 17);
             this.lblPesquisa.TabIndex = 0;
             this.lblPesquisa.Text = "🔍 Pesquisa:";
-            // 
-            // lblEstatisticas
-            // 
-            this.lblEstatisticas.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblEstatisticas.AutoSize = true;
-            this.lblEstatisticas.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEstatisticas.ForeColor = System.Drawing.Color.White;
-            this.lblEstatisticas.Location = new System.Drawing.Point(650, 25);
-            this.lblEstatisticas.Name = "lblEstatisticas";
-            this.lblEstatisticas.Size = new System.Drawing.Size(330, 17);
-            this.lblEstatisticas.TabIndex = 1;
-            this.lblEstatisticas.Text = "Carregando estatísticas...";
-            this.lblEstatisticas.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // FormMeusLivros
             // 
@@ -345,7 +344,6 @@
             this.Controls.Add(this.panelBotoes);
             this.Controls.Add(this.panelTopo);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "FormMeusLivros";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -358,6 +356,7 @@
             this.panelPesquisa.ResumeLayout(false);
             this.panelPesquisa.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

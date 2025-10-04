@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.panelSuperior = new System.Windows.Forms.Panel();
+            this.btnDiagnosticos = new System.Windows.Forms.Button();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.panelLogo = new System.Windows.Forms.Panel();
             this.panelLateral = new System.Windows.Forms.Panel();
@@ -40,11 +40,14 @@
             this.btnSair = new System.Windows.Forms.Button();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelEstatisticas = new System.Windows.Forms.Panel();
+            this.panelLivros = new System.Windows.Forms.Panel();
             this.lblLivrosCadastrados = new System.Windows.Forms.Label();
-            this.lblAmigos = new System.Windows.Forms.Label();
-            this.lblMensagens = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.panelAmigos = new System.Windows.Forms.Panel();
+            this.lblAmigos = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.panelMensagens = new System.Windows.Forms.Panel();
+            this.lblMensagens = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBoxPerfil = new System.Windows.Forms.PictureBox();
             this.lblBio = new System.Windows.Forms.Label();
@@ -58,6 +61,9 @@
             this.panelLateral.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.panelEstatisticas.SuspendLayout();
+            this.panelLivros.SuspendLayout();
+            this.panelAmigos.SuspendLayout();
+            this.panelMensagens.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
             this.panelAtividades.SuspendLayout();
             this.panelRodape.SuspendLayout();
@@ -65,31 +71,50 @@
             // 
             // panelSuperior
             // 
-            this.panelSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.panelSuperior.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.panelSuperior.Controls.Add(this.btnDiagnosticos);
             this.panelSuperior.Controls.Add(this.lblUsuario);
             this.panelSuperior.Controls.Add(this.panelLogo);
             this.panelSuperior.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelSuperior.Location = new System.Drawing.Point(0, 0);
             this.panelSuperior.Name = "panelSuperior";
-            this.panelSuperior.Size = new System.Drawing.Size(1000, 80);
+            this.panelSuperior.Size = new System.Drawing.Size(1200, 90);
             this.panelSuperior.TabIndex = 0;
+            // 
+            // btnDiagnosticos
+            // 
+            this.btnDiagnosticos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDiagnosticos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnDiagnosticos.FlatAppearance.BorderSize = 0;
+            this.btnDiagnosticos.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(91)))), ((int)(((byte)(98)))));
+            this.btnDiagnosticos.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(137)))), ((int)(((byte)(145)))));
+            this.btnDiagnosticos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDiagnosticos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDiagnosticos.ForeColor = System.Drawing.Color.White;
+            this.btnDiagnosticos.Location = new System.Drawing.Point(1050, 25);
+            this.btnDiagnosticos.Name = "btnDiagnosticos";
+            this.btnDiagnosticos.Size = new System.Drawing.Size(120, 40);
+            this.btnDiagnosticos.TabIndex = 2;
+            this.btnDiagnosticos.Text = "🔧 Diagnósticos";
+            this.btnDiagnosticos.UseVisualStyleBackColor = false;
             // 
             // lblUsuario
             // 
             this.lblUsuario.AutoSize = true;
-            this.lblUsuario.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUsuario.Font = new System.Drawing.Font("Segoe UI Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUsuario.ForeColor = System.Drawing.Color.White;
-            this.lblUsuario.Location = new System.Drawing.Point(100, 25);
+            this.lblUsuario.Location = new System.Drawing.Point(100, 30);
             this.lblUsuario.Name = "lblUsuario";
-            this.lblUsuario.Size = new System.Drawing.Size(215, 30);
+            this.lblUsuario.Size = new System.Drawing.Size(236, 32);
             this.lblUsuario.TabIndex = 1;
             this.lblUsuario.Text = "Bem-vindo, Usuário!";
             this.lblUsuario.Click += new System.EventHandler(this.lblUsuario_Click);
             // 
             // panelLogo
             // 
+            this.panelLogo.BackColor = System.Drawing.Color.White;
             this.panelLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.panelLogo.Location = new System.Drawing.Point(20, 10);
+            this.panelLogo.Location = new System.Drawing.Point(25, 15);
             this.panelLogo.Name = "panelLogo";
             this.panelLogo.Size = new System.Drawing.Size(60, 60);
             this.panelLogo.TabIndex = 0;
@@ -103,25 +128,26 @@
             this.panelLateral.Controls.Add(this.btnLivros);
             this.panelLateral.Controls.Add(this.btnSair);
             this.panelLateral.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelLateral.Location = new System.Drawing.Point(0, 80);
+            this.panelLateral.Location = new System.Drawing.Point(0, 90);
             this.panelLateral.Name = "panelLateral";
-            this.panelLateral.Size = new System.Drawing.Size(200, 520);
+            this.panelLateral.Size = new System.Drawing.Size(220, 610);
             this.panelLateral.TabIndex = 1;
             // 
             // btnPerfil
             // 
-            this.btnPerfil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.btnPerfil.BackColor = System.Drawing.Color.Transparent;
             this.btnPerfil.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnPerfil.FlatAppearance.BorderSize = 0;
-            this.btnPerfil.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnPerfil.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnPerfil.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
             this.btnPerfil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPerfil.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPerfil.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPerfil.ForeColor = System.Drawing.Color.White;
             this.btnPerfil.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPerfil.Location = new System.Drawing.Point(0, 240);
+            this.btnPerfil.Location = new System.Drawing.Point(0, 180);
             this.btnPerfil.Name = "btnPerfil";
-            this.btnPerfil.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnPerfil.Size = new System.Drawing.Size(200, 60);
+            this.btnPerfil.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnPerfil.Size = new System.Drawing.Size(220, 60);
             this.btnPerfil.TabIndex = 6;
             this.btnPerfil.Text = "👤 Meu Perfil";
             this.btnPerfil.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -130,18 +156,19 @@
             // 
             // btnTierList
             // 
-            this.btnTierList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.btnTierList.BackColor = System.Drawing.Color.Transparent;
             this.btnTierList.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnTierList.FlatAppearance.BorderSize = 0;
-            this.btnTierList.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnTierList.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnTierList.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
             this.btnTierList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTierList.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTierList.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTierList.ForeColor = System.Drawing.Color.White;
             this.btnTierList.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnTierList.Location = new System.Drawing.Point(0, 180);
+            this.btnTierList.Location = new System.Drawing.Point(0, 120);
             this.btnTierList.Name = "btnTierList";
-            this.btnTierList.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnTierList.Size = new System.Drawing.Size(200, 60);
+            this.btnTierList.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnTierList.Size = new System.Drawing.Size(220, 60);
             this.btnTierList.TabIndex = 5;
             this.btnTierList.Text = "⭐ Tier Lists";
             this.btnTierList.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -150,18 +177,19 @@
             // 
             // btnMensagens
             // 
-            this.btnMensagens.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.btnMensagens.BackColor = System.Drawing.Color.Transparent;
             this.btnMensagens.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnMensagens.FlatAppearance.BorderSize = 0;
-            this.btnMensagens.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnMensagens.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnMensagens.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
             this.btnMensagens.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMensagens.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMensagens.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnMensagens.ForeColor = System.Drawing.Color.White;
             this.btnMensagens.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMensagens.Location = new System.Drawing.Point(0, 120);
+            this.btnMensagens.Location = new System.Drawing.Point(0, 60);
             this.btnMensagens.Name = "btnMensagens";
-            this.btnMensagens.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnMensagens.Size = new System.Drawing.Size(200, 60);
+            this.btnMensagens.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnMensagens.Size = new System.Drawing.Size(220, 60);
             this.btnMensagens.TabIndex = 4;
             this.btnMensagens.Text = "✉️ Mensagens";
             this.btnMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -170,18 +198,19 @@
             // 
             // btnLivros
             // 
-            this.btnLivros.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(110)))), ((int)(((byte)(170)))));
+            this.btnLivros.BackColor = System.Drawing.Color.Transparent;
             this.btnLivros.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnLivros.FlatAppearance.BorderSize = 0;
-            this.btnLivros.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnLivros.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(130)))), ((int)(((byte)(200)))));
+            this.btnLivros.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(140)))), ((int)(((byte)(210)))));
             this.btnLivros.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLivros.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLivros.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLivros.ForeColor = System.Drawing.Color.White;
             this.btnLivros.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLivros.Location = new System.Drawing.Point(0, 60);
+            this.btnLivros.Location = new System.Drawing.Point(0, 0);
             this.btnLivros.Name = "btnLivros";
-            this.btnLivros.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btnLivros.Size = new System.Drawing.Size(200, 60);
+            this.btnLivros.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnLivros.Size = new System.Drawing.Size(220, 60);
             this.btnLivros.TabIndex = 3;
             this.btnLivros.Text = "📚 Meus Livros";
             this.btnLivros.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -190,16 +219,17 @@
             // 
             // btnSair
             // 
-            this.btnSair.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(20)))), ((int)(((byte)(60)))));
+            this.btnSair.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnSair.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnSair.FlatAppearance.BorderSize = 0;
-            this.btnSair.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(69)))), ((int)(((byte)(0)))));
+            this.btnSair.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(35)))), ((int)(((byte)(51)))));
+            this.btnSair.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(69)))), ((int)(((byte)(58)))));
             this.btnSair.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSair.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSair.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSair.ForeColor = System.Drawing.Color.White;
-            this.btnSair.Location = new System.Drawing.Point(0, 460);
+            this.btnSair.Location = new System.Drawing.Point(0, 550);
             this.btnSair.Name = "btnSair";
-            this.btnSair.Size = new System.Drawing.Size(200, 60);
+            this.btnSair.Size = new System.Drawing.Size(220, 60);
             this.btnSair.TabIndex = 7;
             this.btnSair.Text = "🚪 Sair";
             this.btnSair.UseVisualStyleBackColor = false;
@@ -207,95 +237,122 @@
             // 
             // panelConteudo
             // 
-            this.panelConteudo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(248)))), ((int)(((byte)(255)))));
+            this.panelConteudo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.panelConteudo.Controls.Add(this.panelEstatisticas);
             this.panelConteudo.Controls.Add(this.pictureBoxPerfil);
             this.panelConteudo.Controls.Add(this.lblBio);
             this.panelConteudo.Controls.Add(this.lblBemVindo);
             this.panelConteudo.Controls.Add(this.panelAtividades);
             this.panelConteudo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelConteudo.Location = new System.Drawing.Point(200, 80);
+            this.panelConteudo.Location = new System.Drawing.Point(220, 90);
             this.panelConteudo.Name = "panelConteudo";
-            this.panelConteudo.Padding = new System.Windows.Forms.Padding(20);
-            this.panelConteudo.Size = new System.Drawing.Size(800, 520);
+            this.panelConteudo.Padding = new System.Windows.Forms.Padding(30);
+            this.panelConteudo.Size = new System.Drawing.Size(980, 610);
             this.panelConteudo.TabIndex = 2;
             // 
             // panelEstatisticas
             // 
-            this.panelEstatisticas.BackColor = System.Drawing.Color.White;
-            this.panelEstatisticas.Controls.Add(this.lblLivrosCadastrados);
-            this.panelEstatisticas.Controls.Add(this.lblAmigos);
-            this.panelEstatisticas.Controls.Add(this.lblMensagens);
-            this.panelEstatisticas.Controls.Add(this.label4);
-            this.panelEstatisticas.Controls.Add(this.label3);
-            this.panelEstatisticas.Controls.Add(this.label2);
-            this.panelEstatisticas.Location = new System.Drawing.Point(23, 80);
+            this.panelEstatisticas.BackColor = System.Drawing.Color.Transparent;
+            this.panelEstatisticas.Controls.Add(this.panelLivros);
+            this.panelEstatisticas.Controls.Add(this.panelAmigos);
+            this.panelEstatisticas.Controls.Add(this.panelMensagens);
+            this.panelEstatisticas.Location = new System.Drawing.Point(33, 100);
             this.panelEstatisticas.Name = "panelEstatisticas";
-            this.panelEstatisticas.Size = new System.Drawing.Size(754, 100);
-            this.panelEstatisticas.TabIndex = 8;
+            this.panelEstatisticas.Size = new System.Drawing.Size(914, 120);
+            this.panelEstatisticas.TabIndex = 11;
+            // 
+            // panelLivros
+            // 
+            this.panelLivros.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelLivros.Controls.Add(this.lblLivrosCadastrados);
+            this.panelLivros.Controls.Add(this.label4);
+            this.panelLivros.Location = new System.Drawing.Point(0, 0);
+            this.panelLivros.Name = "panelLivros";
+            this.panelLivros.Size = new System.Drawing.Size(300, 120);
+            this.panelLivros.TabIndex = 6;
             // 
             // lblLivrosCadastrados
             // 
-            this.lblLivrosCadastrados.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLivrosCadastrados.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblLivrosCadastrados.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.lblLivrosCadastrados.Location = new System.Drawing.Point(150, 40);
+            this.lblLivrosCadastrados.Location = new System.Drawing.Point(0, 40);
             this.lblLivrosCadastrados.Name = "lblLivrosCadastrados";
-            this.lblLivrosCadastrados.Size = new System.Drawing.Size(150, 30);
+            this.lblLivrosCadastrados.Size = new System.Drawing.Size(300, 45);
             this.lblLivrosCadastrados.TabIndex = 5;
             this.lblLivrosCadastrados.Text = "0";
             this.lblLivrosCadastrados.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label4
+            // 
+            this.label4.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.Gray;
+            this.label4.Location = new System.Drawing.Point(0, 15);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(300, 25);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "📚 Livros Cadastrados";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panelAmigos
+            // 
+            this.panelAmigos.BackColor = System.Drawing.Color.Azure;
+            this.panelAmigos.Controls.Add(this.lblAmigos);
+            this.panelAmigos.Controls.Add(this.label3);
+            this.panelAmigos.Location = new System.Drawing.Point(307, 0);
+            this.panelAmigos.Name = "panelAmigos";
+            this.panelAmigos.Size = new System.Drawing.Size(300, 120);
+            this.panelAmigos.TabIndex = 7;
+            // 
             // lblAmigos
             // 
-            this.lblAmigos.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAmigos.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAmigos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.lblAmigos.Location = new System.Drawing.Point(400, 40);
+            this.lblAmigos.Location = new System.Drawing.Point(0, 40);
             this.lblAmigos.Name = "lblAmigos";
-            this.lblAmigos.Size = new System.Drawing.Size(150, 30);
+            this.lblAmigos.Size = new System.Drawing.Size(300, 45);
             this.lblAmigos.TabIndex = 4;
             this.lblAmigos.Text = "0";
             this.lblAmigos.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblMensagens
-            // 
-            this.lblMensagens.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMensagens.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.lblMensagens.Location = new System.Drawing.Point(650, 40);
-            this.lblMensagens.Name = "lblMensagens";
-            this.lblMensagens.Size = new System.Drawing.Size(100, 30);
-            this.lblMensagens.TabIndex = 3;
-            this.lblMensagens.Text = "0";
-            this.lblMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label4
-            // 
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.Gray;
-            this.label4.Location = new System.Drawing.Point(150, 10);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(150, 30);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "📚 Livros";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // label3
             // 
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.Gray;
-            this.label3.Location = new System.Drawing.Point(400, 10);
+            this.label3.Location = new System.Drawing.Point(0, 15);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(150, 30);
+            this.label3.Size = new System.Drawing.Size(300, 25);
             this.label3.TabIndex = 1;
             this.label3.Text = "👥 Amigos";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // panelMensagens
+            // 
+            this.panelMensagens.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.panelMensagens.Controls.Add(this.lblMensagens);
+            this.panelMensagens.Controls.Add(this.label2);
+            this.panelMensagens.Location = new System.Drawing.Point(614, 0);
+            this.panelMensagens.Name = "panelMensagens";
+            this.panelMensagens.Size = new System.Drawing.Size(300, 120);
+            this.panelMensagens.TabIndex = 8;
+            // 
+            // lblMensagens
+            // 
+            this.lblMensagens.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMensagens.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.lblMensagens.Location = new System.Drawing.Point(0, 40);
+            this.lblMensagens.Name = "lblMensagens";
+            this.lblMensagens.Size = new System.Drawing.Size(300, 45);
+            this.lblMensagens.TabIndex = 3;
+            this.lblMensagens.Text = "0";
+            this.lblMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // label2
-            //   
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            // 
+            this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Gray;
-            this.label2.Location = new System.Drawing.Point(650, 10);
+            this.label2.Location = new System.Drawing.Point(0, 15);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 30);
+            this.label2.Size = new System.Drawing.Size(300, 25);
             this.label2.TabIndex = 0;
             this.label2.Text = "✉️ Mensagens";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -304,9 +361,9 @@
             // 
             this.pictureBoxPerfil.BackColor = System.Drawing.Color.White;
             this.pictureBoxPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxPerfil.Location = new System.Drawing.Point(23, 23);
+            this.pictureBoxPerfil.Location = new System.Drawing.Point(33, 33);
             this.pictureBoxPerfil.Name = "pictureBoxPerfil";
-            this.pictureBoxPerfil.Size = new System.Drawing.Size(50, 50);
+            this.pictureBoxPerfil.Size = new System.Drawing.Size(60, 60);
             this.pictureBoxPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxPerfil.TabIndex = 7;
             this.pictureBoxPerfil.TabStop = false;
@@ -316,20 +373,20 @@
             // 
             this.lblBio.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBio.ForeColor = System.Drawing.Color.DimGray;
-            this.lblBio.Location = new System.Drawing.Point(300, 40);
+            this.lblBio.Location = new System.Drawing.Point(350, 50);
             this.lblBio.Name = "lblBio";
-            this.lblBio.Size = new System.Drawing.Size(477, 30);
+            this.lblBio.Size = new System.Drawing.Size(597, 30);
             this.lblBio.TabIndex = 8;
             this.lblBio.Text = "Bio do usuário será exibida aqui...";
             this.lblBio.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBemVindo
             // 
-            this.lblBemVindo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBemVindo.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBemVindo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.lblBemVindo.Location = new System.Drawing.Point(80, 30);
+            this.lblBemVindo.Location = new System.Drawing.Point(100, 40);
             this.lblBemVindo.Name = "lblBemVindo";
-            this.lblBemVindo.Size = new System.Drawing.Size(200, 30);
+            this.lblBemVindo.Size = new System.Drawing.Size(250, 40);
             this.lblBemVindo.TabIndex = 9;
             this.lblBemVindo.Text = "Bem-vindo de volta!";
             this.lblBemVindo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -339,10 +396,10 @@
             this.panelAtividades.BackColor = System.Drawing.Color.White;
             this.panelAtividades.Controls.Add(this.listBoxAtividades);
             this.panelAtividades.Controls.Add(this.label1);
-            this.panelAtividades.Location = new System.Drawing.Point(23, 200);
+            this.panelAtividades.Location = new System.Drawing.Point(33, 240);
             this.panelAtividades.Name = "panelAtividades";
-            this.panelAtividades.Padding = new System.Windows.Forms.Padding(10);
-            this.panelAtividades.Size = new System.Drawing.Size(754, 280);
+            this.panelAtividades.Padding = new System.Windows.Forms.Padding(15);
+            this.panelAtividades.Size = new System.Drawing.Size(914, 340);
             this.panelAtividades.TabIndex = 10;
             // 
             // listBoxAtividades
@@ -357,22 +414,25 @@
             "⭐ Criou uma nova tier list de Fantasia",
             "💬 Comentou em \"Harry Potter e a Pedra Filosofal\"",
             "👥 Adicionou Maria Silva como amiga",
-            "📚 Finalizou a leitura de \"1984\""});
-            this.listBoxAtividades.Location = new System.Drawing.Point(10, 40);
+            "📚 Finalizou a leitura de \"1984\"",
+            "🎯 Alcançou o nível Expert em Leitura",
+            "❤️ Recebeu 15 likes no seu comentário",
+            "📖 Começou a ler \"Dom Casmurro\""});
+            this.listBoxAtividades.Location = new System.Drawing.Point(15, 50);
             this.listBoxAtividades.Name = "listBoxAtividades";
             this.listBoxAtividades.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.listBoxAtividades.Size = new System.Drawing.Size(734, 230);
+            this.listBoxAtividades.Size = new System.Drawing.Size(884, 275);
             this.listBoxAtividades.TabIndex = 1;
             this.listBoxAtividades.SelectedIndexChanged += new System.EventHandler(this.listBoxAtividades_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.label1.Location = new System.Drawing.Point(10, 10);
+            this.label1.Location = new System.Drawing.Point(15, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(734, 30);
+            this.label1.Size = new System.Drawing.Size(884, 35);
             this.label1.TabIndex = 0;
             this.label1.Text = "📊 Suas Atividades Recentes";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -382,9 +442,9 @@
             this.panelRodape.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.panelRodape.Controls.Add(this.labelCopyright);
             this.panelRodape.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelRodape.Location = new System.Drawing.Point(0, 600);
+            this.panelRodape.Location = new System.Drawing.Point(0, 700);
             this.panelRodape.Name = "panelRodape";
-            this.panelRodape.Size = new System.Drawing.Size(1000, 40);
+            this.panelRodape.Size = new System.Drawing.Size(1200, 40);
             this.panelRodape.TabIndex = 3;
             // 
             // labelCopyright
@@ -394,22 +454,23 @@
             this.labelCopyright.ForeColor = System.Drawing.Color.White;
             this.labelCopyright.Location = new System.Drawing.Point(0, 0);
             this.labelCopyright.Name = "labelCopyright";
-            this.labelCopyright.Size = new System.Drawing.Size(1000, 40);
+            this.labelCopyright.Size = new System.Drawing.Size(1200, 40);
             this.labelCopyright.TabIndex = 0;
             this.labelCopyright.Text = "© 2024 BookConnect - Sua jornada literária começa aqui!";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FormPrincipal
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1000, 640);
+            this.ClientSize = new System.Drawing.Size(1200, 740);
             this.Controls.Add(this.panelConteudo);
             this.Controls.Add(this.panelLateral);
             this.Controls.Add(this.panelSuperior);
             this.Controls.Add(this.panelRodape);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormPrincipal";
@@ -420,6 +481,9 @@
             this.panelLateral.ResumeLayout(false);
             this.panelConteudo.ResumeLayout(false);
             this.panelEstatisticas.ResumeLayout(false);
+            this.panelLivros.ResumeLayout(false);
+            this.panelAmigos.ResumeLayout(false);
+            this.panelMensagens.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).EndInit();
             this.panelAtividades.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
@@ -454,5 +518,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnDiagnosticos;
+        private System.Windows.Forms.Panel panelLivros;
+        private System.Windows.Forms.Panel panelAmigos;
+        private System.Windows.Forms.Panel panelMensagens;
     }
 }
