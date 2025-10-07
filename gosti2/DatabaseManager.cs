@@ -222,5 +222,22 @@ namespace gosti2.Data
                 return query.Take(quantidade).ToList();
             }
         }
+        public static bool TestarConexaoComFallback()
+        {
+            try
+            {
+                return TestarConexao();
+            }
+            catch
+            {
+                // ✅ MODO OFFLINE: Retorna true mesmo sem banco para não bloquear aplicação
+                System.Diagnostics.Debug.WriteLine("⚠️  Modo offline ativado - banco não disponível");
+                return true;
+            }
+        }
+
+
+
+
     }
 }

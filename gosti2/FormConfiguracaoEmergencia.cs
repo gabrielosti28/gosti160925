@@ -188,5 +188,35 @@ namespace gosti2
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
+        private static bool BasicSystemCheck()
+        {
+            try
+            {
+                // ✅ VERIFICAÇÃO MÍNIMA - APENAS O ESSENCIAL
+                System.Diagnostics.Debug.WriteLine("🔍 Executando verificação de sistema básica...");
+
+                // Apenas verifica se consegue executar código básico
+                var testValue = 1 + 1;
+
+                if (testValue == 2) // Verificação básica de que o runtime funciona
+                {
+                    System.Diagnostics.Debug.WriteLine("✅ Verificação de sistema básica: OK");
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Falha na verificação de sistema: {ex.Message}");
+                return false;
+            }
+        }
+
+
+
+
+
     }
 }

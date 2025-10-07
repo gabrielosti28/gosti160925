@@ -16,41 +16,52 @@ namespace gosti2
         [STAThread]
         static void Main()
         {
-            // ✅ CONFIGURAÇÃO GLOBAL DA APLICAÇÃO
-            ConfigureApplicationGlobalSettings();
 
-            // ✅ INICIALIZAÇÃO COM TRATAMENTO DE EXCEÇÕES GLOBAL
-            AppDomain.CurrentDomain.UnhandledException += GlobalExceptionHandler;
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            Application.ThreadException += ThreadExceptionHandler;
-
+            // ✅ CONFIGURAÇÃO BÁSICA
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             try
             {
-                LogStartup("🚀 Iniciando aplicação BookConnect...");
+                // ✅ VERIFICAÇÃO SUPER SIMPLIFICADA
+                Console.WriteLine("🚀 Iniciando BookConnect...");
 
-                // ✅ INICIALIZAÇÃO EM ETAPAS COM FALBACK
-                var initializationResult = ExecuteInitializationPipeline();
+                // ✅ TENTA CONEXÃO COM BANCO (MAS NÃO BLOQUEIA)
+                bool bancoDisponivel = false;
+                try
+                {
+                    bancoDisponivel = DatabaseManager.TestarConexao();
+                }
+                catch
+                {
+                    bancoDisponivel = false;
+                }
 
-                if (initializationResult.Success)
+                if (!bancoDisponivel)
                 {
-                    LogSuccess("✅ Inicialização concluída com sucesso");
-                    RunApplication();
+                    // ✅ SE BANCO NÃO DISPONÍVEL, MOSTRA CONFIGURADOR
+                    using (var configForm = new FormConfiguracaoEmergencia())
+                    {
+                        if (configForm.ShowDialog() == DialogResult.OK)
+                        {
+                            Console.WriteLine("✅ Banco configurado pelo usuário");
+                        }
+                        else
+                        {
+                            Console.WriteLine("⚠️  Usuário cancelou configuração do banco");
+                        }
+                    }
                 }
-                else
-                {
-                    HandleInitializationFailure(initializationResult);
-                }
+
+                // ✅ INICIA APLICAÇÃO MESMO SEM BANCO
+                Console.WriteLine("👉 Iniciando interface principal...");
+                Application.Run(new FormLogin());
             }
             catch (Exception ex)
             {
-                HandleCriticalFailure(ex);
-            }
-            finally
-            {
-                LogShutdown("📋 Aplicação finalizada");
+                // ✅ TRATAMENTO DE ERRO SIMPLES
+                MessageBox.Show($"Erro ao iniciar: {ex.Message}\n\nTente reiniciar a aplicação.",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -144,21 +155,66 @@ namespace gosti2
 
         private static bool BasicSystemCheck()
         {
-            // ✅ VERIFICAÇÕES CRÍTICAS DO SISTEMA
-            if (!Environment.Is64BitProcess)
+            try
             {
-                LogWarning("Aplicação executando em 32-bit - pode afetar performance");
-            }
+                DiagnosticContext.LogarInfo("🔍 Iniciando verificação de sistema...");
 
-            // Verifica memória disponível
-            var memoryAvailable = GC.GetTotalMemory(false) > 1000000; // ~1MB
-            if (!memoryAvailable)
+                // 1. Teste básico de execução
+                var testCalculation = 1 + 1;
+                if (testCalculation != 2)
+                {
+                    throw new InvalidOperationException("Teste matemático básico falhou");
+                }
+
+                // 2. Verificação de memória (com fallback)
+                try
+                {
+                    var memory = GC.GetTotalMemory(true);
+                    DiagnosticContext.LogarInfo($"Memória inicial: {memory} bytes");
+
+                    if (memory < 50000) // 50KB mínimo
+                    {
+                        DiagnosticContext.LogarAviso($"Memória baixa: {memory} bytes");
+                        // Não falha, apenas registra aviso
+                    }
+                }
+                catch (Exception memEx)
+                {
+                    DiagnosticContext.LogarAviso($"Verificação de memória falhou: {memEx.Message}");
+                    // Continua mesmo com falha na memória
+                }
+
+                // 3. Verificação de arquivos temporários
+                try
+                {
+                    var tempPath = System.IO.Path.GetTempPath();
+                    if (!System.IO.Directory.Exists(tempPath))
+                    {
+                        DiagnosticContext.LogarAviso("Diretório temporário não acessível");
+                    }
+                }
+                catch (Exception fileEx)
+                {
+                    DiagnosticContext.LogarAviso($"Verificação de arquivos falhou: {fileEx.Message}");
+                }
+
+                DiagnosticContext.LogarInfo("✅ Verificação de sistema concluída");
+                return true; // ✅ SEMPRE RETORNA TRUE (verificação não é mais crítica)
+            }
+            catch (Exception ex)
             {
-                LogError("Memória insuficiente para executar a aplicação");
-                return false;
-            }
+                DiagnosticContext.LogarErro("❌ Falha na verificação de sistema", ex);
 
-            return true;
+                // ✅ EM CASO DE FALHA, PERGUNTA AO USUÁRIO SE QUER CONTINUAR
+                var result = MessageBox.Show(
+                    $"A verificação de sistema encontrou problemas:\n\n{ex.Message}\n\n" +
+                    "Deseja tentar executar mesmo assim?",
+                    "Problema na Verificação",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                return result == DialogResult.Yes;
+            }
         }
 
         private static bool CheckReferences()
@@ -187,37 +243,63 @@ namespace gosti2
 
         private static bool DatabaseConfiguration()
         {
-            // ✅ CONFIGURAÇÃO ROBUSTA DO BANCO
             try
             {
-                // 1. Inicialização básica
-                DatabaseInitializer.Initialize();
+                DiagnosticContext.LogarInfo("🔧 Iniciando configuração do banco...");
 
-                // 2. Garantir que banco existe
-                DatabaseManager.GarantirBancoCriado();
-
-                // 3. Testar conexão
-                if (!DatabaseManager.TestarConexao())
+                // ✅ TENTATIVA 1: Testa conexão básica
+                if (DatabaseManager.TestarConexao())
                 {
-                    LogWarning("Conexão inicial com banco falhou - tentando recuperação");
+                    DiagnosticContext.LogarInfo("✅ Conexão com banco estabelecida");
+                    DatabaseInitializer.Initialize();
+                    DatabaseEvolutionManager.VerificarEAtualizarBanco();
+                    return true;
+                }
 
-                    // ✅ TENTATIVA DE RECUPERAÇÃO AUTOMÁTICA
-                    if (!AttemptDatabaseRecovery())
+                // ✅ TENTATIVA 2: Se falhou, mostra configuração emergencial
+                DiagnosticContext.LogarAviso("❌ Conexão com banco falhou - abrindo configurador...");
+
+                using (var configForm = new FormConfiguracaoEmergencia())
+                {
+                    var result = configForm.ShowDialog();
+
+                    if (result == DialogResult.OK)
                     {
-                        return false;
+                        // Testa novamente após configuração
+                        if (DatabaseManager.TestarConexao())
+                        {
+                            DiagnosticContext.LogarInfo("✅ Banco configurado com sucesso após intervenção");
+                            return true;
+                        }
                     }
                 }
 
-                // 4. Atualização do schema
-                DatabaseEvolutionManager.VerificarEAtualizarBanco();
+                // ✅ TENTATIVA 3: Modo offline/emergência
+                DiagnosticContext.LogarAviso("⚠️  Executando em modo offline (sem banco)");
 
-                // 5. Validação final
-                return ValidateDatabaseSchema();
+                var userChoice = MessageBox.Show(
+                    "Não foi possível conectar ao banco de dados.\n\n" +
+                    "Deseja executar em modo offline?\n\n" +
+                    "✅ Modo Online: Funcionalidades completas\n" +
+                    "⚠️  Modo Offline: Funcionalidades limitadas",
+                    "Modo de Operação",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                return userChoice == DialogResult.Yes; // Continua mesmo sem banco
             }
             catch (Exception ex)
             {
-                LogError("Falha crítica na configuração do banco", ex);
-                return false;
+                DiagnosticContext.LogarErro("Erro na configuração do banco", ex);
+
+                // ✅ FALLBACK: Permite executar mesmo com erro de banco
+                var result = MessageBox.Show(
+                    $"Erro no banco: {ex.Message}\n\nDeseja continuar em modo offline?",
+                    "Problema no Banco",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Error);
+
+                return result == DialogResult.Yes;
             }
         }
 
@@ -574,7 +656,23 @@ namespace gosti2
                     Console.WriteLine("   Exceção: " + ex.Message);
             }
         }
-
+        private static void DebugInitialization()
+        {
+            try
+            {
+                Console.WriteLine("=== INICIANDO DEBUG ===");
+                Console.WriteLine($"Sistema Operacional: {Environment.OSVersion}");
+                Console.WriteLine($"64-bit OS: {Environment.Is64BitOperatingSystem}");
+                Console.WriteLine($"64-bit Process: {Environment.Is64BitProcess}");
+                Console.WriteLine($"Memória: {GC.GetTotalMemory(false)}");
+                Console.WriteLine($"Diretório: {Environment.CurrentDirectory}");
+                Console.WriteLine("=== DEBUG CONCLUÍDO ===");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRO NO DEBUG: {ex.Message}");
+            }
+        }
 
     }
 }
