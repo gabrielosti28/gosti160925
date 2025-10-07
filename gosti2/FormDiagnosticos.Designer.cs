@@ -156,7 +156,7 @@
             this.btnExportar.TabIndex = 7;
             this.btnExportar.Text = "📤 Exportar";
             this.btnExportar.UseVisualStyleBackColor = false;
-            this.btnExportar.Click += new System.EventHandler(this.btnExportar_Click);
+           // this.btnExportar.Click += new System.EventHandler(this.btnExportar_Click);
             // 
             // btnFiltrar
             // 
@@ -172,7 +172,7 @@
             this.btnFiltrar.TabIndex = 8;
             this.btnFiltrar.Text = "Filtrar";
             this.btnFiltrar.UseVisualStyleBackColor = false;
-            this.btnFiltrar.Click += new System.EventHandler(this.btnFiltrar_Click);
+            //this.btnFiltrar.Click += new System.EventHandler(this.btnFiltrar_Click);
             // 
             // cmbNivelFiltro
             // 

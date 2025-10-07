@@ -1,30 +1,46 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using gosti2.Models;
-using gosti2.Tools;
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using gosti2.Models;
+using gosti2.Tools;
+using System.Data.Entity.Infrastructure.Annotations;
 
 namespace gosti2.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        // ✅ Connection string corrigida para usar o nome correto
-        public ApplicationDbContext() : base("name=CJ3027333PR2")
-        {
-            // ✅ Configurações otimizadas para performance
-            Database.SetInitializer<ApplicationDbContext>(null);
-            this.Configuration.LazyLoadingEnabled = false;  // ✅ Desabilitado para melhor performance
-            this.Configuration.ProxyCreationEnabled = false;
-            this.Configuration.AutoDetectChangesEnabled = true;
+        #region ✅ CONSTRUTORES
 
-            // ✅ LOG de criação do contexto
-            DiagnosticContext.LogarInfo("ApplicationDbContext criado - Conexão estabelecida");
+        // ✅ CONSTRUTOR PRINCIPAL - USA CONNECTION STRING DO APP.CONFIG
+        public ApplicationDbContext() : base("name=ApplicationDbContext")
+        {
+            ConfigureContext();
         }
 
-        // ✅ DbSets 100% COMPATIVEIS com suas classes e com o banco
+        // ✅ CONSTRUTOR ALTERNATIVO - PARA CONEXÃO DINÂMICA
+        public ApplicationDbContext(string connectionString) : base(connectionString)
+        {
+            ConfigureContext();
+        }
+
+        // ✅ CONSTRUTOR COM CONTROLE DE INITIALIZER
+        public ApplicationDbContext(string connectionString, bool enableInitializer) : base(connectionString)
+        {
+            if (!enableInitializer)
+            {
+                Database.SetInitializer<ApplicationDbContext>(null);
+            }
+            ConfigureContext();
+        }
+
+        #endregion
+
+        #region ✅ DBSETS - MAPEAMENTO COMPLETO
+
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<SistemaLog> SistemaLogs { get; set; }
         public DbSet<Livro> Livros { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Mensagem> Mensagens { get; set; }
@@ -32,11 +48,38 @@ namespace gosti2.Data
         public DbSet<LikeDislike> LikesDislikes { get; set; }
         public DbSet<Avaliacao> Avaliacoes { get; set; }
 
-        // ✅ SOBRESCREVER SaveChanges para logging
+        #endregion
+
+        #region 🔧 CONFIGURAÇÃO DO CONTEXTO
+
+        private void ConfigureContext()
+        {
+            // ✅ CONFIGURAÇÕES DE PERFORMANCE
+            this.Configuration.LazyLoadingEnabled = false;
+            this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.AutoDetectChangesEnabled = true;
+
+            // ✅ CONFIGURAÇÃO DE TIMEOUT (30 segundos)
+            this.Database.CommandTimeout = 30;
+
+            // ✅ LOG DE CRIAÇÃO (SEGURO)
+            SafeLogInfo("ApplicationDbContext criado - Configuração aplicada");
+        }
+
+        #endregion
+
+        #region 💾 SOBRESCRITA DE SAVECHANGES
+
         public override int SaveChanges()
         {
             try
             {
+                // ✅ VALIDAÇÃO DE ENTIDADES ANTES DE SALVAR
+                ValidateEntities();
+
+                // ✅ TIMESTAMP AUTOMÁTICO PARA ENTIDADES COM DATACADASTRO
+                UpdateTimestamps();
+
                 var entidadesAlteradas = ChangeTracker.Entries()
                     .Count(e => e.State == EntityState.Added ||
                                e.State == EntityState.Modified ||
@@ -44,24 +87,79 @@ namespace gosti2.Data
 
                 var resultado = base.SaveChanges();
 
-                DiagnosticContext.LogarInfo($"SaveChanges executado: {resultado} registros afetados ({entidadesAlteradas} entidades alteradas)");
+                SafeLogInfo($"SaveChanges executado: {resultado} registros afetados ({entidadesAlteradas} entidades alteradas)");
 
                 return resultado;
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro durante SaveChanges no ApplicationDbContext", ex);
+                SafeLogError("Erro durante SaveChanges no ApplicationDbContext", ex);
                 throw; // Repropaga a exceção
             }
         }
 
+        // ✅ MÉTODO ASSÍNCRONO PARA OPERAÇÕES EM LOTE
+        public async System.Threading.Tasks.Task<int> SaveChangesAsync()
+        {
+            return await System.Threading.Tasks.Task.Run(() => SaveChanges());
+        }
+
+        private void ValidateEntities()
+        {
+            var entities = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity);
+
+            foreach (var entity in entities)
+            {
+                // ✅ VALIDAÇÃO BÁSICA DE ENTIDADES
+                if (entity is Usuario usuario)
+                {
+                    if (string.IsNullOrWhiteSpace(usuario.NomeUsuario))
+                        throw new InvalidOperationException("Nome de usuário é obrigatório");
+                }
+            }
+        }
+
+        private void UpdateTimestamps()
+        {
+            var currentTime = DateTime.Now;
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity is Usuario usuario && entry.State == EntityState.Added)
+                {
+                    if (usuario.DataCadastro == default)
+                        usuario.DataCadastro = currentTime;
+                }
+
+                if (entry.Entity is Livro livro && entry.State == EntityState.Added)
+                {
+                    if (livro.DataAdicao == default)
+                        livro.DataAdicao = currentTime;
+                }
+
+                if (entry.Entity is SistemaLog log && entry.State == EntityState.Added)
+                {
+                    if (log.DataHora == default)
+                        log.DataHora = currentTime;
+                }
+            }
+        }
+
+        #endregion
+
+        #region 🗄️ CONFIGURAÇÃO DO MODELO (FLUENT API)
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // ✅ Remove pluralização para usar nomes exatos das tabelas do SQL
+            // ✅ CONFIGURAÇÕES GLOBAIS
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
-            // ✅ Configuração compatível com o schema do banco
+            // ✅ CONFIGURAÇÕES ESPECÍFICAS DE CADA ENTIDADE
             ConfigureUsuario(modelBuilder);
+            ConfigureSistemaLog(modelBuilder);
             ConfigureLivro(modelBuilder);
             ConfigureComentario(modelBuilder);
             ConfigureMensagem(modelBuilder);
@@ -71,24 +169,25 @@ namespace gosti2.Data
 
             base.OnModelCreating(modelBuilder);
 
-            DiagnosticContext.LogarInfo("Modelo do Entity Framework configurado com sucesso");
+            SafeLogInfo("Modelo do Entity Framework configurado com sucesso");
         }
 
         private void ConfigureUsuario(DbModelBuilder modelBuilder)
         {
             var entity = modelBuilder.Entity<Usuario>();
 
-            // ✅ CHAVE PRIMÁRIA CORRETA
             entity.HasKey(u => u.UsuarioId);
 
-            // ✅ PROPRIEDADES EXISTENTES - COMPATÍVEL COM BANCO
+            // ✅ PROPRIEDADES COM CONFIGURAÇÃO PRECISA
             entity.Property(u => u.NomeUsuario)
                   .IsRequired()
-                  .HasMaxLength(100);
+                  .HasMaxLength(100)
+                  .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_Usuarios_NomeUsuario") { IsUnique = true }));
 
             entity.Property(u => u.Email)
                   .IsRequired()
-                  .HasMaxLength(100);
+                  .HasMaxLength(100)
+                  .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("IX_Usuarios_Email") { IsUnique = true }));
 
             entity.Property(u => u.Senha)
                   .IsRequired()
@@ -118,14 +217,67 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasColumnType("datetime2");
 
-            // ✅ ÍNDICES ÚNICOS - COMPATÍVEL COM SQL
-            entity.HasIndex(u => u.Email)
-                  .IsUnique()
-                  .HasName("IX_Usuarios_Email");
+            // ✅ RELACIONAMENTOS
+            entity.HasMany(u => u.Livros)
+                  .WithRequired(l => l.Usuario)
+                  .HasForeignKey(l => l.UsuarioId)
+                  .WillCascadeOnDelete(true);
+        }
 
-            entity.HasIndex(u => u.NomeUsuario)
-                  .IsUnique()
-                  .HasName("IX_Usuarios_NomeUsuario");
+        private void ConfigureSistemaLog(DbModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<SistemaLog>();
+
+            entity.HasKey(l => l.LogId);
+
+            entity.Property(l => l.Nivel)
+                  .IsRequired()
+                  .HasMaxLength(20);
+
+            entity.Property(l => l.Mensagem)
+                  .IsRequired()
+                  .HasColumnType("nvarchar(MAX)");
+
+            entity.Property(l => l.StackTrace)
+                  .IsOptional()
+                  .HasColumnType("nvarchar(MAX)");
+
+            entity.Property(l => l.Formulario)
+                  .IsOptional()
+                  .HasMaxLength(100);
+
+            entity.Property(l => l.Metodo)
+                  .IsOptional()
+                  .HasMaxLength(200);
+
+            entity.Property(l => l.ExceptionType)
+                  .IsOptional()
+                  .HasMaxLength(200);
+
+            entity.Property(l => l.InnerException)
+                  .IsOptional()
+                  .HasColumnType("nvarchar(MAX)");
+
+            entity.Property(l => l.DataHora)
+                  .IsRequired()
+                  .HasColumnType("datetime2")
+                  .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None); // ✅ CONTROLE MANUAL
+
+            // ✅ ÍNDICES PARA PERFORMANCE
+            entity.HasIndex(l => l.DataHora)
+                  .HasName("IX_SistemaLogs_DataHora");
+
+            entity.HasIndex(l => l.Nivel)
+                  .HasName("IX_SistemaLogs_Nivel");
+
+            entity.HasIndex(l => l.Formulario)
+                  .HasName("IX_SistemaLogs_Formulario");
+
+            // ✅ RELACIONAMENTO OPCIONAL COM USUÁRIO
+            entity.HasOptional(l => l.Usuario)
+                  .WithMany()
+                  .HasForeignKey(l => l.UsuarioId)
+                  .WillCascadeOnDelete(false);
         }
 
         private void ConfigureLivro(DbModelBuilder modelBuilder)
@@ -134,7 +286,6 @@ namespace gosti2.Data
 
             entity.HasKey(l => l.LivroId);
 
-            // ✅ PROPRIEDADES EXISTENTES - COMPATÍVEL COM BANCO
             entity.Property(l => l.Titulo)
                   .IsRequired()
                   .HasMaxLength(200);
@@ -151,7 +302,6 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasMaxLength(1000);
 
-            // ✅ CAMPOS OPCIONAIS DO SEU SQL
             entity.Property(l => l.ISBN)
                   .IsOptional()
                   .HasMaxLength(20);
@@ -164,7 +314,7 @@ namespace gosti2.Data
                   .IsRequired()
                   .HasColumnType("datetime2");
 
-            // ✅ ÍNDICES PARA PERFORMANCE - COMPATÍVEL COM SQL
+            // ✅ ÍNDICES
             entity.HasIndex(l => l.Titulo)
                   .HasName("IX_Livros_Titulo");
 
@@ -179,6 +329,11 @@ namespace gosti2.Data
                   .WithMany(u => u.Livros)
                   .HasForeignKey(l => l.UsuarioId)
                   .WillCascadeOnDelete(true);
+
+            //entity.HasOptional(l => l.CategoriaTier)
+            //      .WithMany()
+            //      .HasForeignKey(l => l.CategoriaTierId)
+            //      .WillCascadeOnDelete(false);
         }
 
         private void ConfigureComentario(DbModelBuilder modelBuilder)
@@ -199,11 +354,9 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasColumnType("datetime2");
 
-            // ✅ ÍNDICES PARA PERFORMANCE - COMPATÍVEL COM SQL
+            // ✅ ÍNDICES
             entity.HasIndex(c => c.LivroId)
                   .HasName("IX_Comentarios_LivroId");
-
-            entity.HasIndex(c => c.UsuarioId);
 
             // ✅ RELACIONAMENTOS
             entity.HasRequired(c => c.Livro)
@@ -213,7 +366,8 @@ namespace gosti2.Data
 
             entity.HasRequired(c => c.Usuario)
                   .WithMany()
-                  .HasForeignKey(c => c.UsuarioId);
+                  .HasForeignKey(c => c.UsuarioId)
+                  .WillCascadeOnDelete(false);
         }
 
         private void ConfigureMensagem(DbModelBuilder modelBuilder)
@@ -222,21 +376,18 @@ namespace gosti2.Data
 
             entity.HasKey(m => m.MensagemId);
 
-            // ✅ CORREÇÃO: A classe usa "Conteudo" mapeado para "Texto" no banco
+            // ✅ CORREÇÃO: MAPEAMENTO CORRETO ENTRE CLASSE E BANCO
             entity.Property(m => m.Conteudo)
                   .IsRequired()
                   .HasMaxLength(2000)
-                  .HasColumnName("Texto"); // ✅ MAPEIA CORRETAMENTE PARA A COLUNA NO BANCO
+                  .HasColumnName("Texto"); // ✅ NOME DA COLUNA NO BANCO
 
             entity.Property(m => m.DataEnvio)
                   .IsRequired()
                   .HasColumnType("datetime2");
 
-            // ✅ ÍNDICES PARA CHAT - COMPATÍVEL COM SQL
-            entity.HasIndex(m => m.RemetenteId)
-                  .HasName("IX_Mensagens_RemetenteDestinatario");
-
-            entity.HasIndex(m => m.DestinatarioId)
+            // ✅ ÍNDICES COMPOSTOS
+            entity.HasIndex(m => new { m.RemetenteId, m.DestinatarioId })
                   .HasName("IX_Mensagens_RemetenteDestinatario");
 
             // ✅ RELACIONAMENTOS
@@ -261,7 +412,7 @@ namespace gosti2.Data
                   .IsRequired()
                   .HasColumnType("datetime2");
 
-            // ✅ CONSTRAINT ÚNICA (1 like/dislike por usuário/livro)
+            // ✅ CONSTRAINT ÚNICA
             entity.HasIndex(ld => new { ld.LivroId, ld.UsuarioId })
                   .IsUnique()
                   .HasName("UK_LivroUsuario");
@@ -274,7 +425,8 @@ namespace gosti2.Data
 
             entity.HasRequired(ld => ld.Usuario)
                   .WithMany()
-                  .HasForeignKey(ld => ld.UsuarioId);
+                  .HasForeignKey(ld => ld.UsuarioId)
+                  .WillCascadeOnDelete(false);
         }
 
         private void ConfigureCategoriaTier(DbModelBuilder modelBuilder)
@@ -291,7 +443,6 @@ namespace gosti2.Data
                   .IsOptional()
                   .HasMaxLength(255);
 
-            // ✅ CORREÇÃO: Valor padrão removido - deve ser definido na classe
             entity.Property(ct => ct.Cor)
                   .IsOptional()
                   .HasMaxLength(20);
@@ -311,12 +462,12 @@ namespace gosti2.Data
                   .IsRequired()
                   .HasColumnType("datetime2");
 
-            // ✅ CONSTRAINT ÚNICA (1 avaliação por usuário/livro)
+            // ✅ CONSTRAINT ÚNICA E CHECK CONSTRAINT
             entity.HasIndex(a => new { a.LivroId, a.UsuarioId })
                   .IsUnique()
                   .HasName("UK_Avaliacao_UsuarioLivro");
 
-            // ✅ VALIDAÇÃO DE NOTA (1-5)
+            // ✅ VALIDAÇÃO DE NOTA VIA FLUENT API
             entity.Property(a => a.Nota)
                   .IsRequired();
 
@@ -328,27 +479,98 @@ namespace gosti2.Data
 
             entity.HasRequired(a => a.Usuario)
                   .WithMany()
-                  .HasForeignKey(a => a.UsuarioId);
+                  .HasForeignKey(a => a.UsuarioId)
+                  .WillCascadeOnDelete(false);
         }
 
-        // ✅ MÉTODO PARA VERIFICAR CONEXÃO
+        #endregion
+
+        #region 🔍 MÉTODOS UTILITÁRIOS
+
+        // ✅ TESTE DE CONEXÃO ROBUSTO
         public bool TestarConexao()
         {
             try
             {
-                return Database.Exists();
+                return this.Database.Exists();
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Falha ao testar conexão no ApplicationDbContext", ex);
+                SafeLogError("Falha ao testar conexão no ApplicationDbContext", ex);
                 return false;
             }
         }
 
-        // ✅ DESTRUTOR PARA LOG
-        ~ApplicationDbContext()
+        // ✅ MÉTODO PARA EXECUTAR SQL DIRETO
+        public int ExecutarSqlCommand(string sql, params object[] parameters)
         {
-            DiagnosticContext.LogarInfo("ApplicationDbContext finalizado");
+            try
+            {
+                return this.Database.ExecuteSqlCommand(sql, parameters);
+            }
+            catch (Exception ex)
+            {
+                SafeLogError($"Erro ao executar SQL: {sql}", ex);
+                throw;
+            }
         }
+
+        // ✅ MÉTODO PARA LIMPAR CONTEXTO
+        public void LimparContexto()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State != EntityState.Unchanged)
+                .ToList();
+
+            foreach (var entry in entries)
+            {
+                entry.State = EntityState.Detached;
+            }
+
+            SafeLogInfo($"Contexto limpo: {entries.Count} entidades desanexadas");
+        }
+
+        #endregion
+
+        #region 📝 LOGGING SEGURO
+
+        private void SafeLogInfo(string message)
+        {
+            try
+            {
+                DiagnosticContext.LogarInfo(message);
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine($"INFO: {message}");
+            }
+        }
+
+        private void SafeLogError(string message, Exception ex)
+        {
+            try
+            {
+                DiagnosticContext.LogarErro(message, ex);
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine($"ERRO: {message} - {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region 🧹 DESTRUTOR E DISPOSE
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                SafeLogInfo("ApplicationDbContext sendo descartado");
+            }
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }

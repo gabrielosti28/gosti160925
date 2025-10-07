@@ -9,7 +9,7 @@ namespace gosti2.Models
     public class Livro
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LivroId { get; set; }
 
         [Required]
@@ -41,21 +41,26 @@ namespace gosti2.Models
         public int? Paginas { get; set; }
         public decimal? Avaliacao { get; set; }
 
+        // ✅ ADICIONE ESTAS PROPRIEDADES PARA CATEGORIA TIER
+        [ForeignKey("CategoriaTier")]
+        public int? CategoriaTierId { get; set; } // ✅ ADICIONAR ESTA LINHA
+
         // Chave estrangeira
         [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
 
-        // ✅ NAVEGAÇÕES CORRETAS (INCLUINDO Avaliacoes)
+        // ✅ NAVEGAÇÕES CORRETAS (INCLUINDO CategoriaTier)
         public virtual Usuario Usuario { get; set; }
+        public virtual CategoriaTier CategoriaTier { get; set; } // ✅ ADICIONAR ESTA LINHA
         public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
-        public virtual ICollection<Avaliacao> Avaliacoes { get; set; } // ✅ ESTA LINHA RESOLVE O ERRO
+        public virtual ICollection<Avaliacao> Avaliacoes { get; set; }
 
         public Livro()
         {
             Comentarios = new HashSet<Comentario>();
             LikesDislikes = new HashSet<LikeDislike>();
-            Avaliacoes = new HashSet<Avaliacao>(); // ✅ INICIALIZAÇÃO OBRIGATÓRIA
+            Avaliacoes = new HashSet<Avaliacao>();
         }
     }
 }

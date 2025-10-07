@@ -4,173 +4,222 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
 using gosti2.Models;
-using gosti2.Data;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace gosti2.Data
 {
-    public static class DatabaseManager
+    public class DatabaseManager
     {
+        // ✅ LISTA DE CONEXÕES PARA TESTE AUTOMÁTICO
+        private static string[] connectionStringNames = new[]
+        {
+            "ApplicationDbContext",  // Nome correto para EF
+            "CJ3027333PR2",
+            "DefaultConnection",
+            "LocalDB",
+            "SQLEXPRESS"
+        };
+
+        // ✅ MÉTODO PARA OBTER STRING DE CONEXÃO FUNCIONAL
+        public static string GetWorkingConnectionString()
+        {
+            // Primeiro tenta pegar do App.config pelo nome
+            foreach (var connectionName in connectionStringNames)
+            {
+                try
+                {
+                    var connectionString = ConfigurationManager.ConnectionStrings[connectionName]?.ConnectionString;
+                    if (!string.IsNullOrEmpty(connectionString))
+                    {
+                        using (var connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            Console.WriteLine($"✅ Conexão bem-sucedida: {connectionName}");
+                            return connectionString;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Falha na conexão {connectionName}: {ex.Message}");
+                }
+            }
+
+            // Fallback: tenta conexões hardcoded
+            var fallbackConnections = new[]
+            {
+                "Server=(localdb)\\MSSQLLocalDB;Database=CJ3027333PR2;Trusted_Connection=true;TrustServerCertificate=true;",
+                "Server=.\\SQLEXPRESS;Database=CJ3027333PR2;Trusted_Connection=true;TrustServerCertificate=true;",
+                "Data Source=.;Initial Catalog=CJ3027333PR2;Integrated Security=True;TrustServerCertificate=True;"
+            };
+
+            foreach (var connString in fallbackConnections)
+            {
+                try
+                {
+                    using (var connection = new SqlConnection(connString))
+                    {
+                        connection.Open();
+                        Console.WriteLine($"✅ Conexão fallback bem-sucedida");
+                        return connString;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Falha na conexão fallback: {ex.Message}");
+                }
+            }
+
+            throw new InvalidOperationException("Nenhuma conexão com SQL Server funcionou!");
+        }
+
+        // ✅ TESTE DE CONEXÃO MELHORADO
         public static bool TestarConexao()
         {
             try
             {
-                using (var context = new ApplicationDbContext())
+                var connectionString = GetWorkingConnectionString();
+
+                // Testa se o banco existe e está acessível
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    return context.Database.Exists();
+                    connection.Open();
+
+                    // Verifica se o banco específico existe
+                    using (var command = new SqlCommand(
+                        "SELECT COUNT(*) FROM sys.databases WHERE name = 'CJ3027333PR2'", connection))
+                    {
+                        var result = (int)command.ExecuteScalar();
+                        return result > 0;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro na conexão: {ex.Message}\n\nVerifique:\n1. SQL Server está rodando\n2. Banco CJ3027333PR2 existe\n3. Servidor acessível",
-                    "Erro de Conexão", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"❌ Teste de conexão falhou: {ex.Message}");
                 return false;
             }
         }
-        private static bool VerificarTabelasPrincipais()
+
+        // ✅ MÉTODO PARA CRIAR BANCO SE NÃO EXISTIR
+        public static void CriarBancoSeNaoExistir()
         {
             try
             {
-                using (var context = new ApplicationDbContext())
+                // Primeiro conecta sem especificar o banco
+                var masterConnectionString = GetWorkingConnectionString().Replace("CJ3027333PR2", "master");
+
+                using (var connection = new SqlConnection(masterConnectionString))
                 {
-                    // Verifica se a tabela principal existe
-                    return context.Database.SqlQuery<int?>(
-                        "SELECT COUNT(*) FROM sys.tables WHERE name = 'Usuarios'").FirstOrDefault() > 0;
+                    connection.Open();
+
+                    // Verifica se o banco existe
+                    using (var checkCommand = new SqlCommand(
+                        "SELECT COUNT(*) FROM sys.databases WHERE name = 'CJ3027333PR2'", connection))
+                    {
+                        var exists = (int)checkCommand.ExecuteScalar() > 0;
+
+                        if (!exists)
+                        {
+                            // Cria o banco
+                            using (var createCommand = new SqlCommand(
+                                "CREATE DATABASE [CJ3027333PR2]", connection))
+                            {
+                                createCommand.ExecuteNonQuery();
+                                Console.WriteLine("✅ Banco CJ3027333PR2 criado com sucesso!");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("✅ Banco CJ3027333PR2 já existe");
+                        }
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new Exception($"Erro ao criar banco: {ex.Message}", ex);
             }
         }
+
+        // ✅ MÉTODO PARA GARANTIR QUE O BANCO ESTÁ PRONTO
         public static void GarantirBancoCriado()
         {
             try
             {
+                CriarBancoSeNaoExistir();
+
+                // Agora usa o contexto com o banco criado
                 using (var context = new ApplicationDbContext())
                 {
-                    // Cria o banco se não existir (usando Entity Framework)
-                    context.Database.CreateIfNotExists();
-
-                    // Substitua por uma verificação básica
-                    if (!VerificarTabelasPrincipais())
+                    // Força a criação das tabelas se não existirem
+                    if (!context.Database.Exists())
                     {
-                        MessageBox.Show("Schema do banco precisa ser atualizado. Execute a migração.",
-                            "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        context.Database.Create();
+                        Console.WriteLine("✅ Tabelas criadas com sucesso!");
                     }
                     else
                     {
-                        Console.WriteLine("✅ Banco validado com sucesso!");
+                        Console.WriteLine("✅ Banco e tabelas já existem");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao criar/validar banco: {ex.Message}", "Erro",
+                MessageBox.Show($"Erro ao criar/validar banco: {ex.Message}\n\n" +
+                    "Verifique se o SQL Server está instalado e rodando.",
+                    "Erro de Banco de Dados",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ✅ MÉTODO NOVO: Verificar e criar tabelas específicas se necessário
-        public static void VerificarTabelasEspecificas()
+        // ✅ MÉTODOS DE LOG (MANTIDOS)
+        public void AdicionarLog(string nivel, string mensagem, int? usuarioId = null,
+            string formulario = "", string metodo = "", string stackTrace = null,
+            string exceptionType = null, string innerException = null)
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Scripts de fallback caso alguma tabela específica falte
-                    var scriptsFallback = new[]
+                    var log = new SistemaLog
                     {
-                        // Script para SchemaVersion (controle de migrações)
-                        @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SchemaVersion')
-                        CREATE TABLE SchemaVersion (
-                            VersionId INT IDENTITY(1,1) PRIMARY KEY,
-                            VersionNumber VARCHAR(20) NOT NULL,
-                            Description NVARCHAR(500) NOT NULL,
-                            AppliedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
-                            ScriptName NVARCHAR(255) NOT NULL
-                        )",
-
-                        // Script para CategoriaTiers (importante para o sistema de tiers)
-                        @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'CategoriaTiers')
-                        BEGIN
-                            CREATE TABLE CategoriaTiers (
-                                CategoriaTierId INT IDENTITY(1,1) PRIMARY KEY,
-                                Nome NVARCHAR(50) NOT NULL,
-                                Descricao NVARCHAR(255) NULL,
-                                Nivel INT NOT NULL DEFAULT 1,
-                                Cor NVARCHAR(20) NULL DEFAULT '#000000'
-                            )
-                            
-                            -- Inserir dados padrão
-                            INSERT INTO CategoriaTiers (Nome, Descricao, Nivel, Cor) VALUES
-                            ('Iniciante', 'Leitor iniciante', 1, '#4CAF50'),
-                            ('Intermediário', 'Leitor frequente', 2, '#2196F3'),
-                            ('Avançado', 'Leitor experiente', 3, '#FF9800'),
-                            ('Expert', 'Crítico literário', 4, '#F44336')
-                        END"
+                        Nivel = nivel,
+                        Mensagem = mensagem,
+                        StackTrace = stackTrace,
+                        UsuarioId = usuarioId,
+                        Formulario = formulario,
+                        Metodo = metodo,
+                        ExceptionType = exceptionType,
+                        InnerException = innerException,
+                        DataHora = DateTime.Now
                     };
 
-                    foreach (var script in scriptsFallback)
-                    {
-                        context.Database.ExecuteSqlCommand(script);
-                    }
+                    context.SistemaLogs.Add(log);
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Aviso na verificação de tabelas: {ex.Message}");
-                // Não mostra MessageBox para não assustar o usuário
+                System.Diagnostics.Debug.WriteLine($"Erro ao salvar log no banco: {ex.Message}");
             }
         }
 
-        // ✅ MÉTODO MELHORADO: Migração segura
-        public static void ExecutarMigrationSegura()
+        public List<SistemaLog> ObterLogs(int quantidade = 1000, string nivel = null)
         {
-            try
+            using (var context = new ApplicationDbContext())
             {
-                // Usar inicializador mais seguro
-                Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationDbContext>());
+                IQueryable<SistemaLog> query = context.SistemaLogs
+                    .Include(l => l.Usuario)
+                    .OrderByDescending(l => l.DataHora);
 
-                using (var context = new ApplicationDbContext())
+                if (!string.IsNullOrEmpty(nivel))
                 {
-                    // Força a criação do banco/seeds se necessário
-                    context.Database.Initialize(true);
-
-                    // Verifica tabelas específicas
-                    VerificarTabelasEspecificas();
-
-                    MessageBox.Show("Banco migrado/validado com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    query = query.Where(l => l.Nivel == nivel);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro na migração: {ex.Message}\n\nDica: Verifique se o SQL Server está acessível.",
-                    "Erro na Migração", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
-        // ✅ MÉTODO NOVO: Reset completo (apenas para desenvolvimento)
-        public static void ResetarBancoDesenvolvimento()
-        {
-            if (MessageBox.Show("Isso apagará TODOS os dados. Continuar?",
-                "Reset do Banco", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-            {
-                try
-                {
-                    Database.SetInitializer(new DropCreateDatabaseAlways<ApplicationDbContext>());
-                    using (var context = new ApplicationDbContext())
-                    {
-                        context.Database.Initialize(true);
-                    }
-                    MessageBox.Show("Banco resetado com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro ao resetar banco: {ex.Message}", "Erro",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                return query.Take(quantidade).ToList();
             }
         }
     }

@@ -204,6 +204,12 @@ namespace gosti2
             }
             catch (Exception ex)
             {
+                // ✅ ADICIONE ESTE LOG DE ERRO AQUI:
+                var dbManager = new DatabaseManager();
+                dbManager.AdicionarLog("ERROR", ex.Message,
+                    null, "FormLogin", "LoginWorker_DoWork",
+                    ex.StackTrace, ex.GetType().Name, ex.InnerException?.Message);
+
                 e.Result = new ResultadoLogin { Sucesso = false, Erro = ex.Message };
             }
         }
@@ -233,7 +239,13 @@ namespace gosti2
                 SalvarUsuarioLembrado();
 
                 // Login bem-sucedido
+
                 string nomeUsuario = UsuarioManager.UsuarioLogado?.NomeUsuario ?? "Usuário";
+
+                // ✅ ADICIONE ESTE LOG AQUI:
+                var dbManager = new DatabaseManager();
+                dbManager.AdicionarLog("INFO", $"Login realizado: {nomeUsuario}",
+                    UsuarioManager.UsuarioLogado?.UsuarioId, "FormLogin", "btnEntrar_Click");
 
                 MessageBox.Show($"✅ Bem-vindo de volta, {nomeUsuario}!",
                     "Login Bem-sucedido", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -1,272 +1,580 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Threading;
+using System.Globalization;
+using System.Linq;
 using gosti2.Data;
 using gosti2.Tools;
 
 namespace gosti2
 {
-    static class Program
+    internal static class Program
     {
+        private static readonly string AppName = "BookConnect";
+        private static readonly string AppVersion = "2.0.0";
+
         [STAThread]
         static void Main()
         {
-            // ✅ CONFIGURAÇÃO INICIAL DO DIAGNOSTIC CONTEXT
-            DiagnosticContext.FormularioAtual = "Program";
-            DiagnosticContext.MetodoAtual = "Main";
+            // ✅ CONFIGURAÇÃO GLOBAL DA APLICAÇÃO
+            ConfigureApplicationGlobalSettings();
+
+            // ✅ INICIALIZAÇÃO COM TRATAMENTO DE EXCEÇÕES GLOBAL
+            AppDomain.CurrentDomain.UnhandledException += GlobalExceptionHandler;
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += ThreadExceptionHandler;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             try
             {
-                DiagnosticContext.LogarInfo("Iniciando aplicação BookConnect...");
-                ReferenceVerifier.VerificarTodasReferencias();
+                LogStartup("🚀 Iniciando aplicação BookConnect...");
 
-                // Para testes simples
-                if (ReferenceVerifier.VerificacaoRapida())
+                // ✅ INICIALIZAÇÃO EM ETAPAS COM FALBACK
+                var initializationResult = ExecuteInitializationPipeline();
+
+                if (initializationResult.Success)
                 {
-                    DiagnosticContext.LogarInfo("✅ Sistema básico operacional");
+                    LogSuccess("✅ Inicialização concluída com sucesso");
+                    RunApplication();
                 }
                 else
                 {
-                    DiagnosticContext.LogarErro("❌ Problemas críticos detectados nas referências",
-                        new Exception("Verificação rápida de referências falhou"));
-                }
-
-                // ✅ FLUXO ÚNICO E CORRETO DE INICIALIZAÇÃO
-                if (InicializarAplicacao())
-                {
-                    ExecutarAplicacaoPrincipal();
-                }
-                else
-                {
-                    MessageBox.Show("Falha na inicialização da aplicação. Verifique os logs para mais detalhes.",
-                        "Erro de Inicialização", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
+                    HandleInitializationFailure(initializationResult);
                 }
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro fatal na inicialização da aplicação", ex);
-                MessageBox.Show($"Erro fatal na inicialização: {ex.Message}",
-                    "Erro Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
+                HandleCriticalFailure(ex);
+            }
+            finally
+            {
+                LogShutdown("📋 Aplicação finalizada");
             }
         }
 
-        /// <summary>
-        /// Inicializa todos os componentes da aplicação na ordem correta
-        /// </summary>
-        private static bool InicializarAplicacao()
+        #region 🔧 CONFIGURAÇÕES GLOBAIS
+
+        private static void ConfigureApplicationGlobalSettings()
         {
-            DiagnosticContext.LogarInfo("🚀 Iniciando inicialização da aplicação...");
+            // ✅ CONFIGURAÇÃO DE CULTURA (EVITA PROBLEMAS DE FORMATAÇÃO)
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("pt-BR");
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("pt-BR");
+
+            // ✅ CONFIGURAÇÃO DE DIAGNÓSTICO
             DiagnosticContext.FormularioAtual = "Program";
-            DiagnosticContext.MetodoAtual = "InicializarAplicacao";
+            DiagnosticContext.MetodoAtual = "Main";
 
-            // 1. ✅ VERIFICAR REFERÊNCIAS
+            // ✅ CONFIGURAÇÃO DE PERFORMANCE
+            Application.UseWaitCursor = false;
+        }
+
+        #endregion
+
+        #region 🎯 PIPELINE DE INICIALIZAÇÃO
+
+        private class InitializationResult
+        {
+            public bool Success { get; set; }
+            public string FailureStep { get; set; }
+            public Exception Exception { get; set; }
+            public bool CanRecover { get; set; }
+        }
+
+        private static InitializationResult ExecuteInitializationPipeline()
+        {
+            var result = new InitializationResult { Success = true };
+
+            // ✅ ETAPA 1: VERIFICAÇÃO DE SISTEMA BÁSICO
+            if (!ExecuteStep("Verificação de Sistema", BasicSystemCheck, result))
+                return result;
+
+            // ✅ ETAPA 2: VERIFICAÇÃO DE REFERÊNCIAS
+            if (!ExecuteStep("Verificação de Referências", CheckReferences, result))
+                return result;
+
+            // ✅ ETAPA 3: CONFIGURAÇÃO DO BANCO DE DADOS
+            if (!ExecuteStep("Configuração do Banco", DatabaseConfiguration, result))
+                return result;
+
+            // ✅ ETAPA 4: VALIDAÇÃO FINAL DO SISTEMA
+            if (!ExecuteStep("Validação Final", FinalSystemValidation, result))
+                return result;
+
+            return result;
+        }
+
+        private static bool ExecuteStep(string stepName, Func<bool> stepAction, InitializationResult result)
+        {
             try
             {
-                DiagnosticContext.LogarInfo("Verificando referências...");
-                ReferenceVerifier.VerificarTodasReferencias();
-                DiagnosticContext.LogarInfo("Verificação de referências concluída.");
-            }
-            catch (Exception ex)
-            {
-                DiagnosticContext.LogarErro("Falha na verificação de referências", ex);
-                // Continua mesmo com erro (não é crítico)
-            }
+                LogStepStart(stepName);
 
-            // 2. ✅ INICIALIZAÇÃO BÁSICA DO BANCO
-            try
-            {
-                DiagnosticContext.LogarInfo("Inicializando banco...");
-                DatabaseInitializer.Initialize();
-                DiagnosticContext.LogarInfo("Inicialização do banco concluída.");
-            }
-            catch (Exception ex)
-            {
-                DiagnosticContext.LogarErro("Erro crítico na inicialização do banco", ex);
-                MessageBox.Show($"Erro crítico na inicialização do banco: {ex.Message}",
-                    "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+                var success = stepAction();
 
-            // 3. ✅ GARANTIR QUE BANCO EXISTE
-            try
-            {
-                DiagnosticContext.ExecutarComLog(() =>
+                if (success)
                 {
-                    DatabaseManager.GarantirBancoCriado();
+                    LogStepSuccess(stepName);
                     return true;
-                }, "GarantirBancoCriado");
+                }
+                else
+                {
+                    result.Success = false;
+                    result.FailureStep = stepName;
+                    result.CanRecover = false;
+                    LogStepFailure(stepName, "Ação retornou false");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro ao garantir criação do banco", ex);
-                MessageBox.Show($"Erro ao garantir criação do banco: {ex.Message}",
-                    "Erro de Banco", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result.Success = false;
+                result.FailureStep = stepName;
+                result.Exception = ex;
+                result.CanRecover = IsRecoverableError(ex);
+                LogStepFailure(stepName, ex.Message);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region 🔍 ETAPAS DE INICIALIZAÇÃO
+
+        private static bool BasicSystemCheck()
+        {
+            // ✅ VERIFICAÇÕES CRÍTICAS DO SISTEMA
+            if (!Environment.Is64BitProcess)
+            {
+                LogWarning("Aplicação executando em 32-bit - pode afetar performance");
+            }
+
+            // Verifica memória disponível
+            var memoryAvailable = GC.GetTotalMemory(false) > 1000000; // ~1MB
+            if (!memoryAvailable)
+            {
+                LogError("Memória insuficiente para executar a aplicação");
                 return false;
             }
 
-            // 4. ✅ TESTAR CONEXÃO COM BANCO
-            bool conexaoSucesso = false;
+            return true;
+        }
+
+        private static bool CheckReferences()
+        {
             try
             {
-                conexaoSucesso = DiagnosticContext.ExecutarComLog(() =>
-                    DatabaseManager.TestarConexao(), "TestarConexao");
+                // ✅ VERIFICAÇÃO COMPLETA DE REFERÊNCIAS
+                ReferenceVerifier.VerificarTodasReferencias();
+
+                // Verificação rápida adicional
+                if (!ReferenceVerifier.VerificacaoRapida())
+                {
+                    LogWarning("Verificação rápida detectou possíveis problemas");
+                    // Não bloqueia, apenas registra aviso
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Exceção ao testar conexão com banco", ex);
-                conexaoSucesso = false;
+                LogError("Falha na verificação de referências", ex);
+                // Referências são críticas - falha na inicialização
+                return false;
             }
+        }
 
-            if (!conexaoSucesso)
+        private static bool DatabaseConfiguration()
+        {
+            // ✅ CONFIGURAÇÃO ROBUSTA DO BANCO
+            try
             {
-                DiagnosticContext.LogarErro("Conexão com banco falhou",
-                    new Exception("Teste de conexão retornou false"));
+                // 1. Inicialização básica
+                DatabaseInitializer.Initialize();
 
-                // Se não conectar, mostra tela de configuração
-                using (var formConfig = new FormConfiguracaoBanco())
+                // 2. Garantir que banco existe
+                DatabaseManager.GarantirBancoCriado();
+
+                // 3. Testar conexão
+                if (!DatabaseManager.TestarConexao())
                 {
-                    if (formConfig.ShowDialog() != DialogResult.OK)
+                    LogWarning("Conexão inicial com banco falhou - tentando recuperação");
+
+                    // ✅ TENTATIVA DE RECUPERAÇÃO AUTOMÁTICA
+                    if (!AttemptDatabaseRecovery())
                     {
-                        DiagnosticContext.LogarInfo("Usuário cancelou configuração do banco");
                         return false;
                     }
                 }
 
-                // Testa novamente após configuração
-                try
-                {
-                    conexaoSucesso = DiagnosticContext.ExecutarComLog(() =>
-                        DatabaseManager.TestarConexao(), "TestarConexaoPosConfig");
-                }
-                catch (Exception ex)
-                {
-                    DiagnosticContext.LogarErro("Exceção no segundo teste de conexão", ex);
-                    conexaoSucesso = false;
-                }
+                // 4. Atualização do schema
+                DatabaseEvolutionManager.VerificarEAtualizarBanco();
 
-                if (!conexaoSucesso)
-                {
-                    DiagnosticContext.LogarErro("Conexão falhou mesmo após configuração",
-                        new Exception("Segundo teste de conexão também falhou"));
-                    MessageBox.Show("Não foi possível estabelecer conexão com o banco de dados mesmo após configuração.",
-                        "Erro de Conexão", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
-            }
-
-            DiagnosticContext.LogarInfo("Conexão com banco estabelecida com sucesso");
-
-            // 5. ✅ VERIFICAR E ATUALIZAR BANCO
-            try
-            {
-                DiagnosticContext.ExecutarComLog(() =>
-                {
-                    DatabaseEvolutionManager.VerificarEAtualizarBanco();
-                    return true;
-                }, "VerificarEAtualizarBanco");
+                // 5. Validação final
+                return ValidateDatabaseSchema();
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro na atualização do banco", ex);
-                // Não bloqueia a aplicação - continua
+                LogError("Falha crítica na configuração do banco", ex);
+                return false;
             }
+        }
 
-            // 6. ✅ VALIDAR ESQUEMA
+        private static bool AttemptDatabaseRecovery()
+        {
             try
             {
-                var tipo = typeof(DatabaseSchemaValidator);
-                var metodo = tipo.GetMethod("ValidarEsquema");
+                LogInfo("Tentando recuperação automática do banco...");
 
-                if (metodo != null)
+                // Mostra diálogo de configuração
+                using (var configForm = new FormConfiguracaoBanco())
                 {
-                    bool resultado = DiagnosticContext.ExecutarComLog(() =>
-                        (bool)metodo.Invoke(null, null), "ValidarEsquema");
+                    var result = configForm.ShowDialog();
 
-                    if (!resultado)
+                    if (result == DialogResult.OK)
                     {
-                        DiagnosticContext.LogarAviso("Problemas no esquema do banco detectados");
+                        // Testa novamente após configuração
+                        if (DatabaseManager.TestarConexao())
+                        {
+                            LogSuccess("Recuperação do banco bem-sucedida");
+                            return true;
+                        }
                     }
-                    else
+                }
+
+                LogError("Recuperação do banco falhou");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                LogError("Erro durante recuperação do banco", ex);
+                return false;
+            }
+        }
+
+        private static bool ValidateDatabaseSchema()
+        {
+            try
+            {
+                // ✅ VALIDAÇÃO FLEXÍVEL DO SCHEMA
+                var validatorType = typeof(DatabaseSchemaValidator);
+                var validateMethod = validatorType.GetMethod("ValidarEsquema");
+
+                if (validateMethod != null)
+                {
+                    var isValid = (bool)validateMethod.Invoke(null, null);
+
+                    if (!isValid)
                     {
-                        DiagnosticContext.LogarInfo("Esquema do banco validado com sucesso");
+                        LogWarning("Problemas não-críticos detectados no schema do banco");
+                        // Continua mesmo com problemas não-críticos
                     }
+
+                    return true; // Schema validation não é crítica
+                }
+
+                LogInfo("Validador de schema não disponível - continuando...");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //LogWarning("Validação de schema falhou", ex);
+                return true; // Não crítica
+            }
+        }
+
+        private static bool FinalSystemValidation()
+        {
+            // ✅ VERIFICAÇÕES FINAIS ANTES DE INICIAR
+            try
+            {
+                // Verifica se forms principais podem ser instanciados
+                var testForms = new Form[]
+                {
+                    new FormLogin(),
+                    new FormMain()
+                };
+
+                foreach (var form in testForms)
+                {
+                    form.Dispose();
+                }
+
+                LogSuccess("Todos os componentes validados com sucesso");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError("Falha na validação final", ex);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region 🎮 EXECUÇÃO DA APLICAÇÃO
+
+        private static void RunApplication()
+        {
+            try
+            {
+                LogInfo("Iniciando interface do usuário...");
+
+                // ✅ FLUXO PRINCIPAL COM FALLBACK
+                var mainForm = CreateMainForm();
+
+                if (mainForm != null)
+                {
+                    Application.Run(mainForm);
                 }
                 else
                 {
-                    DiagnosticContext.LogarInfo("Método ValidarEsquema não encontrado - continuando...");
+                    throw new InvalidOperationException("Não foi possível criar o formulário principal");
                 }
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro na validação do esquema", ex);
-                // Não bloqueia a aplicação
+                LogError("Erro ao executar aplicação", ex);
+                FallbackToSimpleMode();
             }
-
-            DiagnosticContext.LogarInfo("🎉 Inicialização da aplicação concluída com sucesso!");
-            return true;
         }
 
-        /// <summary>
-        /// Executa o fluxo principal da aplicação
-        /// </summary>
-        private static void ExecutarAplicacaoPrincipal()
+        private static Form CreateMainForm()
         {
+            // ✅ LÓGICA INTELIGENTE DE SELEÇÃO DO FORM PRINCIPAL
             try
             {
-                DiagnosticContext.FormularioAtual = "Program";
-                DiagnosticContext.MetodoAtual = "ExecutarAplicacaoPrincipal";
-                DiagnosticContext.LogarInfo("👉 Iniciando aplicação principal...");
-
-                // ✅ OPÇÃO 1: Tela de boas-vindas inicial (FormMain)
-                using (var formMain = new FormMain())
+                // Tenta mostrar tela de boas-vindas primeiro
+                using (var welcomeForm = new FormMain())
                 {
-                    if (formMain.ShowDialog() == DialogResult.OK)
+                    if (welcomeForm.ShowDialog() == DialogResult.OK)
                     {
-                        // ✅ SE USUÁRIO CONFIRMOU, INICIA APLICAÇÃO PRINCIPAL
-                        DiagnosticContext.LogarInfo("✅ Usuário confirmou, iniciando FormLogin...");
-                        Application.Run(new FormLogin());
+                        LogInfo("Usuário confirmou na tela de boas-vindas");
+                        return new FormLogin();
                     }
                     else
                     {
-                        // Usuário cancelou na tela inicial
-                        DiagnosticContext.LogarInfo("❌ Usuário cancelou na tela inicial.");
-                        MessageBox.Show("Aplicação cancelada pelo usuário.",
-                            "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LogInfo("Usuário cancelou na tela de boas-vindas");
+                        return null; // Encerra aplicação
                     }
                 }
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro ao iniciar aplicação principal", ex);
-                MessageBox.Show($"Erro ao iniciar aplicação principal: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // ✅ FALLBACK: Tentar método simplificado
-                ExecutarAplicacaoSimplificada();
+                //LogWarning("Tela de boas-vindas falhou", ex);
+                // Fallback para login direto
+                return new FormLogin();
             }
         }
 
-        // ✅ MÉTODO ALTERNATIVO SIMPLIFICADO
-        private static void ExecutarAplicacaoSimplificada()
+        private static void FallbackToSimpleMode()
         {
-            DiagnosticContext.FormularioAtual = "Program";
-            DiagnosticContext.MetodoAtual = "ExecutarAplicacaoSimplificada";
-
             try
             {
-                DiagnosticContext.LogarInfo("Tentando inicialização simplificada...");
+                LogWarning("Iniciando modo de fallback simplificado...");
+
+                // ✅ MODO DE EMERGÊNCIA - MÍNIMO FUNCIONAL
                 Application.Run(new FormLogin());
             }
             catch (Exception ex)
             {
-                DiagnosticContext.LogarErro("Erro na inicialização simplificada", ex);
-                MessageBox.Show($"Erro: {ex.Message}\n\nTente reiniciar a aplicação.",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError("Modo de fallback também falhou", ex);
+                ShowFinalErrorMessage(ex);
             }
         }
+
+        #endregion
+
+        #region 🛡️ TRATAMENTO DE ERROS
+
+        private static void HandleInitializationFailure(InitializationResult result)
+        {
+            var errorMessage = "Falha na inicialização na etapa: " + result.FailureStep;
+
+            if (result.Exception != null)
+            {
+                errorMessage += "\n\nErro: " + result.Exception.Message;
+            }
+
+            if (result.CanRecover)
+            {
+                LogWarning("Inicialização falhou mas é recuperável: " + result.FailureStep);
+
+                var userChoice = MessageBox.Show(
+                    errorMessage + "\n\nDeseja tentar executar em modo de segurança?",
+                    "Problema na Inicialização",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (userChoice == DialogResult.Yes)
+                {
+                    RunSafeMode();
+                    return;
+                }
+            }
+
+            ShowFinalErrorMessage(result.Exception ?? new Exception(errorMessage));
+        }
+
+        private static void RunSafeMode()
+        {
+            try
+            {
+                LogWarning("Executando em modo de segurança...");
+
+                // ✅ MODO SEGURO - FUNCIONALIDADES BÁSICAS
+                Application.Run(new FormLogin());
+            }
+            catch (Exception ex)
+            {
+                HandleCriticalFailure(ex);
+            }
+        }
+
+        private static void HandleCriticalFailure(Exception ex)
+        {
+            LogError("Falha crítica: " + ex.ToString(), ex);
+
+            var detailedMessage = "Ocorreu um erro crítico na aplicação.\n\n" +
+                                "Erro: " + ex.Message + "\n\n" +
+                                "Detalhes técnicos foram registrados para análise.\n" +
+                                "A aplicação será encerrada.\n\n" +
+                                "Versão: " + AppVersion + " " + AppName;
+
+            MessageBox.Show(detailedMessage,
+                "Erro Crítico - Aplicação Será Encerrada",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
+            Environment.Exit(1);
+        }
+
+        private static void ShowFinalErrorMessage(Exception ex)
+        {
+            var message = "Não foi possível iniciar a aplicação.\n\n" +
+                         "Erro: " + ex.Message + "\n\n" +
+                         "Tente:\n" +
+                         "• Reiniciar a aplicação\n" +
+                         "• Verificar se o SQL Server está executando\n" +
+                         "• Contatar o suporte técnico\n\n" +
+                         "Versão: " + AppVersion;
+
+            MessageBox.Show(message,
+                "Erro de Inicialização",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+
+        private static void GlobalExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            LogError("Exceção não tratada (Global): " + ex?.ToString(), ex);
+        }
+
+        private static void ThreadExceptionHandler(object sender, ThreadExceptionEventArgs e)
+        {
+            LogError("Exceção de thread não tratada: " + e.Exception.ToString(), e.Exception);
+        }
+
+        #endregion
+
+        #region 📝 SISTEMA DE LOGGING MELHORADO
+
+        private static void LogStartup(string message)
+        {
+            DiagnosticContext.LogarInfo(message + " - " + AppName + " v" + AppVersion);
+            Console.WriteLine("🔔 " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogShutdown(string message)
+        {
+            DiagnosticContext.LogarInfo(message);
+            Console.WriteLine("🔔 " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogStepStart(string stepName)
+        {
+            DiagnosticContext.LogarInfo("Iniciando: " + stepName);
+            Console.WriteLine("⏳ " + DateTime.Now.ToString("HH:mm:ss") + " Iniciando: " + stepName);
+        }
+
+        private static void LogStepSuccess(string stepName)
+        {
+            DiagnosticContext.LogarInfo("Concluído: " + stepName);
+            Console.WriteLine("✅ " + DateTime.Now.ToString("HH:mm:ss") + " Concluído: " + stepName);
+        }
+
+        private static void LogStepFailure(string stepName, string error)
+        {
+            DiagnosticContext.LogarErro("Falha em " + stepName + ": " + error, new Exception(error));
+            Console.WriteLine("❌ " + DateTime.Now.ToString("HH:mm:ss") + " Falha em " + stepName + ": " + error);
+        }
+
+        private static void LogInfo(string message)
+        {
+            DiagnosticContext.LogarInfo(message);
+            Console.WriteLine("ℹ️ " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogSuccess(string message)
+        {
+            DiagnosticContext.LogarInfo(message);
+            Console.WriteLine("✅ " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogWarning(string message)
+        {
+            DiagnosticContext.LogarAviso(message);
+            Console.WriteLine("⚠️ " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogError(string message)
+        {
+            // ✅ CORREÇÃO: Crie uma exceção genérica para o log
+            DiagnosticContext.LogarErro(message, new Exception(message));
+            Console.WriteLine("❌ " + DateTime.Now.ToString("HH:mm:ss") + " " + message);
+        }
+
+        private static void LogError(string message, Exception ex)
+        {
+            // ✅ SOBRECARGA: Aceita exceção específica
+            DiagnosticContext.LogarErro(message, ex);
+            Console.WriteLine("❌ " + DateTime.Now.ToString("HH:mm:ss") + " " + message + " - " + ex.Message);
+        }
+
+        private static bool IsRecoverableError(Exception ex)
+        {
+            // ✅ LÓGICA PARA DETERMINAR SE ERRO É RECUPERÁVEL
+            var nonRecoverableErrors = new[]
+            {
+                "System.OutOfMemoryException",
+                "System.IO.FileNotFoundException",
+                "System.BadImageFormatException"
+            };
+
+            return !nonRecoverableErrors.Contains(ex.GetType().FullName);
+        }
+
+        #endregion
+        private static void SafeLogError(string message, Exception ex = null)
+        {
+            try
+            {
+                if (ex != null)
+                    DiagnosticContext.LogarErro(message, ex);
+                else
+                    DiagnosticContext.LogarErro(message, new Exception(message));
+            }
+            catch
+            {
+                // Fallback para console se DiagnosticContext falhar
+                Console.WriteLine("❌ ERRO: " + message);
+                if (ex != null)
+                    Console.WriteLine("   Exceção: " + ex.Message);
+            }
+        }
+
+
     }
 }

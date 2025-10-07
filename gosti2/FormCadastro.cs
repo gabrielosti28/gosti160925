@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using gosti2.Data;
 using gosti2.Models;
+using System.Reflection; // Para MethodBase.GetCurrentMethod() se for usar
 
 namespace gosti2
 {
@@ -339,6 +340,12 @@ namespace gosti2
             }
             catch (Exception ex)
             {
+                // ✅ ADICIONE ESTE LOG DE ERRO AQUI:
+                var dbManager = new DatabaseManager();
+                dbManager.AdicionarLog("ERROR", ex.Message,
+                    null, "FormCadastro", "ValidacaoWorker_DoWork",
+                    ex.StackTrace, ex.GetType().Name, ex.InnerException?.Message);
+
                 e.Result = new ResultadoValidacao { Error = ex.Message };
             }
         }
@@ -414,6 +421,11 @@ namespace gosti2
                     context.SaveChanges();
                 }
 
+                // ✅ ADICIONE ESTE LOG AQUI (ANTES do MessageBox):
+                var dbManager = new DatabaseManager();
+                dbManager.AdicionarLog("INFO", $"Novo usuário cadastrado: {novoUsuario.NomeUsuario}",
+                    novoUsuario.UsuarioId, "FormCadastro", "RealizarCadastro");
+
                 MessageBox.Show("Cadastro realizado com sucesso!\n\nAgora você pode fazer login em sua conta.",
                     "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -422,6 +434,12 @@ namespace gosti2
             }
             catch (Exception ex)
             {
+                // ✅ ADICIONE ESTE LOG DE ERRO AQUI:
+                var dbManager = new DatabaseManager();
+                dbManager.AdicionarLog("ERROR", ex.Message,
+                    null, "FormCadastro", "RealizarCadastro",
+                    ex.StackTrace, ex.GetType().Name, ex.InnerException?.Message);
+
                 MessageBox.Show($"Erro ao cadastrar: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
