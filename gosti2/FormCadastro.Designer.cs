@@ -14,7 +14,7 @@
             if (disposing && (components != null))
             {
                 components.Dispose();
-                errorProvider?.Dispose();
+                //errorProvider?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -155,7 +155,7 @@
             this.linkLogin.TabIndex = 8;
             this.linkLogin.TabStop = true;
             this.linkLogin.Text = "Já tem uma conta? ➤ Clique aqui para entrar";
-            this.linkLogin.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLogin_LinkClicked);
+            //this.linkLogin.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLogin_LinkClicked);
             // 
             // panelForcaSenha
             // 
@@ -186,7 +186,7 @@
             this.chkMostrarSenha.TabIndex = 6;
             this.chkMostrarSenha.Text = "Mostrar senha";
             this.chkMostrarSenha.UseVisualStyleBackColor = true;
-            this.chkMostrarSenha.CheckedChanged += new System.EventHandler(this.chkMostrarSenha_CheckedChanged);
+            //this.chkMostrarSenha.CheckedChanged += new System.EventHandler(this.chkMostrarSenha_CheckedChanged);
             // 
             // txtBio
             // 
@@ -220,8 +220,8 @@
             this.txtDataNascimento.Size = new System.Drawing.Size(200, 25);
             this.txtDataNascimento.TabIndex = 2;
             this.txtDataNascimento.ValidatingType = typeof(System.DateTime);
-            this.txtDataNascimento.TextChanged += new System.EventHandler(this.txtDataNascimento_TextChanged);
-            this.txtDataNascimento.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtDataNascimento_KeyPress);
+           // this.txtDataNascimento.TextChanged += new System.EventHandler(this.txtDataNascimento_TextChanged);
+           // this.txtDataNascimento.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtDataNascimento_KeyPress);
             // 
             // label5
             // 
@@ -243,7 +243,7 @@
             //this.txtConfirmarSenha.PlaceholderText = "Digite a senha novamente";
             this.txtConfirmarSenha.Size = new System.Drawing.Size(200, 25);
             this.txtConfirmarSenha.TabIndex = 5;
-            this.txtConfirmarSenha.TextChanged += new System.EventHandler(this.txtConfirmarSenha_TextChanged);
+           // this.txtConfirmarSenha.TextChanged += new System.EventHandler(this.txtConfirmarSenha_TextChanged);
             // 
             // label4
             // 
@@ -265,7 +265,7 @@
             //this.txtSenha.PlaceholderText = "Mínimo 6 caracteres";
             this.txtSenha.Size = new System.Drawing.Size(200, 25);
             this.txtSenha.TabIndex = 3;
-            this.txtSenha.TextChanged += new System.EventHandler(this.txtSenha_TextChanged);
+            //this.txtSenha.TextChanged += new System.EventHandler(this.txtSenha_TextChanged);
             // 
             // label3
             // 
@@ -286,7 +286,7 @@
           //  this.txtEmail.PlaceholderText = "seu.email@exemplo.com";
             this.txtEmail.Size = new System.Drawing.Size(200, 25);
             this.txtEmail.TabIndex = 1;
-            this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
+           // this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
             // 
             // label2
             // 
@@ -307,7 +307,7 @@
             //this.txtNomeUsuario.PlaceholderText = "Seu nome de usuário";
             this.txtNomeUsuario.Size = new System.Drawing.Size(200, 25);
             this.txtNomeUsuario.TabIndex = 0;
-            this.txtNomeUsuario.TextChanged += new System.EventHandler(this.txtNomeUsuario_TextChanged);
+            //this.txtNomeUsuario.TextChanged += new System.EventHandler(this.txtNomeUsuario_TextChanged);
             // 
             // label1
             // 
@@ -365,7 +365,7 @@
             this.btnSair2.TabIndex = 7;
             this.btnSair2.Text = "🚪 Voltar ao Login";
             this.btnSair2.UseVisualStyleBackColor = false;
-            this.btnSair2.Click += new System.EventHandler(this.btnSair2_Click);
+            //this.btnSair2.Click += new System.EventHandler(this.btnSair2_Click);
             // 
             // panelRodape
             // 

@@ -55,7 +55,7 @@ namespace gosti2.Models
         public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
         public virtual ICollection<Avaliacao> Avaliacoes { get; set; }
-
+       
         public Livro()
         {
             Comentarios = new HashSet<Comentario>();
