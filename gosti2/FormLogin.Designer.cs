@@ -7,12 +7,6 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        //private System.Windows.Forms.ErrorProvider errorProvider;
-        //private System.Windows.Forms.CheckBox chkLembrarUsuario;
-        //private System.Windows.Forms.CheckBox chkMostrarSenha;
-        //private System.Windows.Forms.ProgressBar progressBar;
-        //private System.Windows.Forms.PictureBox pictureBoxLogo;
-
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
@@ -60,7 +54,7 @@
             this.labelCopyright = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panelSuperior.SuspendLayout();
-           ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
             this.panelBotoes.SuspendLayout();
@@ -181,7 +175,6 @@
             this.txtSenha.Location = new System.Drawing.Point(50, 160);
             this.txtSenha.Name = "txtSenha";
             this.txtSenha.PasswordChar = '•';
-            //this.txtSenha.PlaceholderText = "Digite sua senha";
             this.txtSenha.Size = new System.Drawing.Size(300, 25);
             this.txtSenha.TabIndex = 1;
             this.txtSenha.TextChanged += new System.EventHandler(this.txtSenha_TextChanged);
@@ -202,7 +195,6 @@
             this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtEmail.Location = new System.Drawing.Point(50, 70);
             this.txtEmail.Name = "txtEmail";
-            //this.txtEmail.PlaceholderText = "seu@email.com";
             this.txtEmail.Size = new System.Drawing.Size(300, 25);
             this.txtEmail.TabIndex = 0;
             this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);

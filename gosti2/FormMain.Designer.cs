@@ -110,7 +110,7 @@
             this.linkSobre.TabIndex = 10;
             this.linkSobre.TabStop = true;
             this.linkSobre.Text = "📋 Sobre o App";
-            this.linkSobre.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSobre_LinkClicked);
+           // this.linkSobre.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSobre_LinkClicked);
             // 
             // lblHoraAtual
             // 
@@ -165,7 +165,7 @@
             this.lblBoasVindas.Size = new System.Drawing.Size(300, 30);
             this.lblBoasVindas.TabIndex = 5;
             this.lblBoasVindas.Text = "🌟 Bem-vindo ao BookConnect!";
-            this.lblBoasVindas.Click += new System.EventHandler(this.lblBoasVindas_Click);
+            //this.lblBoasVindas.Click += new System.EventHandler(this.lblBoasVindas_Click);
             // 
             // btnConfiguracoes
             // 
@@ -182,7 +182,7 @@
             this.btnConfiguracoes.TabIndex = 4;
             this.btnConfiguracoes.Text = "⚙️ Configurações";
             this.btnConfiguracoes.UseVisualStyleBackColor = false;
-            this.btnConfiguracoes.Click += new System.EventHandler(this.btnConfiguracoes_Click);
+            //this.btnConfiguracoes.Click += new System.EventHandler(this.btnConfiguracoes_Click);
             // 
             // btnPerfil
             // 
@@ -199,7 +199,7 @@
             this.btnPerfil.TabIndex = 3;
             this.btnPerfil.Text = "👤 Meu Perfil";
             this.btnPerfil.UseVisualStyleBackColor = false;
-            this.btnPerfil.Click += new System.EventHandler(this.btnPerfil_Click);
+            //this.btnPerfil.Click += new System.EventHandler(this.btnPerfil_Click);
             // 
             // btnExplorar
             // 
@@ -216,7 +216,7 @@
             this.btnExplorar.TabIndex = 2;
             this.btnExplorar.Text = "🔍 Explorar Livros";
             this.btnExplorar.UseVisualStyleBackColor = false;
-            this.btnExplorar.Click += new System.EventHandler(this.btnExplorar_Click);
+           // this.btnExplorar.Click += new System.EventHandler(this.btnExplorar_Click);
             // 
             // btnMeusLivros
             // 
@@ -278,7 +278,7 @@
             // 
             this.timerAtualizacao.Enabled = true;
             this.timerAtualizacao.Interval = 1000;
-            this.timerAtualizacao.Tick += new System.EventHandler(this.timerAtualizacao_Tick);
+           // this.timerAtualizacao.Tick += new System.EventHandler(this.timerAtualizacao_Tick);
             // 
             // FormMain
             // 
@@ -297,7 +297,7 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BookConnect - Dashboard";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
+           // this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.panelSuperior.ResumeLayout(false);
             this.panelSuperior.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();

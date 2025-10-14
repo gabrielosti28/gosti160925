@@ -254,7 +254,7 @@
             this.txtNovoComentario.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtNovoComentario.Size = new System.Drawing.Size(570, 70);
             this.txtNovoComentario.TabIndex = 1;
-            this.txtNovoComentario.TextChanged += new System.EventHandler(this.txtNovoComentario_TextChanged);
+           // this.txtNovoComentario.TextChanged += new System.EventHandler(this.txtNovoComentario_TextChanged);
             this.txtNovoComentario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNovoComentario_KeyPress);
             // 
             // label4

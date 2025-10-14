@@ -98,7 +98,7 @@
             this.linkAjuda.TabIndex = 6;
             this.linkAjuda.TabStop = true;
             this.linkAjuda.Text = "🆘 Precisa de ajuda?";
-            this.linkAjuda.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAjuda_LinkClicked);
+           // this.linkAjuda.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAjuda_LinkClicked);
             // 
             // lblInstrucoes
             // 
@@ -120,7 +120,7 @@
             this.lblBoasVindas.Size = new System.Drawing.Size(300, 30);
             this.lblBoasVindas.TabIndex = 1;
             this.lblBoasVindas.Text = "🌟 Bem-vindo ao BookConnect!";
-            this.lblBoasVindas.Click += new System.EventHandler(this.lblBoasVindas_Click);
+           // this.lblBoasVindas.Click += new System.EventHandler(this.lblBoasVindas_Click);
             // 
             // panelBotoes
             // 
@@ -152,7 +152,7 @@
             this.btnSobre.TabIndex = 4;
             this.btnSobre.Text = "📋 Sobre o App";
             this.btnSobre.UseVisualStyleBackColor = false;
-            this.btnSobre.Click += new System.EventHandler(this.btnSobre_Click);
+            //this.btnSobre.Click += new System.EventHandler(this.btnSobre_Click);
             // 
             // btnExplorar
             // 
@@ -261,7 +261,7 @@
             this.Name = "FormMenu";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BookConnect - Menu Principal";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMenu_FormClosing);
+           // this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMenu_FormClosing);
             this.panelSuperior.ResumeLayout(false);
             this.panelSuperior.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();

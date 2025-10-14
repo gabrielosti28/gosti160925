@@ -12,15 +12,21 @@ namespace gosti2
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Configuração simples do banco
+            // Inicialização direta
             try
             {
-                DatabaseManager.CriarBancoSeNecessario();
-                Application.Run(new FormLogin());
+                // Tela de login primeiro
+                using (var login = new FormLogin())
+                {
+                    if (login.ShowDialog() == DialogResult.OK)
+                    {
+                        Application.Run(new FormPrincipal());
+                    }
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao iniciar: " + ex.Message, "Erro");
+                MessageBox.Show($"Erro ao iniciar: {ex.Message}", "Erro");
             }
         }
     }

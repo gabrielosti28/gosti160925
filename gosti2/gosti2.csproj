@@ -60,17 +60,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConfig.cs" />
     <Compile Include="ApplicationDbContext.cs" />
+    <Compile Include="AppManager.cs" />
     <Compile Include="Avaliacao.cs" />
     <Compile Include="CategoriaTier.cs" />
-    <Compile Include="DatabaseHelper.cs" />
     <Compile Include="Comentario.cs" />
-    <Compile Include="DatabaseEvolutionManager.cs" />
-    <Compile Include="DatabaseExporter.cs" />
-    <Compile Include="DatabaseInitializer.cs" />
-    <Compile Include="DatabaseManager.cs" />
-    <Compile Include="DatabaseSchemaValidator.cs" />
-    <Compile Include="DiagnosticContext.cs" />
+    <Compile Include="DatabaseConfig.cs" />
+    <Compile Include="DatabaseService.cs" />
     <Compile Include="FormAdicionarLivro.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,18 +85,6 @@
     </Compile>
     <Compile Include="FormConfiguracaoBanco.Designer.cs">
       <DependentUpon>FormConfiguracaoBanco.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormConfiguracaoEmergencia.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormConfiguracaoEmergencia.Designer.cs">
-      <DependentUpon>FormConfiguracaoEmergencia.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormDiagnosticos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormDiagnosticos.Designer.cs">
-      <DependentUpon>FormDiagnosticos.cs</DependentUpon>
     </Compile>
     <Compile Include="FormLivroAberto.cs">
       <SubType>Form</SubType>
@@ -145,13 +130,11 @@
     </Compile>
     <Compile Include="LikeDislike.cs" />
     <Compile Include="Livro.cs" />
+    <Compile Include="LivroManager.cs" />
     <Compile Include="Mensagem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SistemaLog.cs" />
     <Compile Include="Usuario.cs" />
-    <Compile Include="UsuarioManager.cs" />
-    <Compile Include="VerifyReferences.cs" />
     <EmbeddedResource Include="FormAdicionarLivro.resx">
       <DependentUpon>FormAdicionarLivro.cs</DependentUpon>
     </EmbeddedResource>
@@ -160,9 +143,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormConfiguracaoBanco.resx">
       <DependentUpon>FormConfiguracaoBanco.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormDiagnosticos.resx">
-      <DependentUpon>FormDiagnosticos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormLivroAberto.resx">
       <DependentUpon>FormLivroAberto.cs</DependentUpon>
@@ -195,7 +175,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Application Configuration File.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

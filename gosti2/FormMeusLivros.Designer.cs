@@ -29,7 +29,6 @@
             this.colAutor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colGenero = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCategoria = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDataAdicao = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelBotoes = new System.Windows.Forms.Panel();
             this.btnAtualizar = new System.Windows.Forms.Button();
@@ -120,7 +119,6 @@
             this.colAutor,
             this.colGenero,
             this.colStatus,
-            this.colCategoria,
             this.colDataAdicao});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
@@ -151,8 +149,6 @@
             this.dataGridViewLivros.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewLivros.Size = new System.Drawing.Size(938, 438);
             this.dataGridViewLivros.TabIndex = 1;
-            this.dataGridViewLivros.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewLivros_CellDoubleClick);
-            this.dataGridViewLivros.SelectionChanged += new System.EventHandler(this.dataGridViewLivros_SelectionChanged);
             // 
             // colLivroId
             // 
@@ -196,12 +192,6 @@
             this.colStatus.Name = "colStatus";
             this.colStatus.ReadOnly = true;
             // 
-            // colCategoria
-            // 
-            this.colCategoria.HeaderText = "Categoria";
-            this.colCategoria.Name = "colCategoria";
-            this.colCategoria.ReadOnly = true;
-            // 
             // colDataAdicao
             // 
             this.colDataAdicao.HeaderText = "Data de Adição";
@@ -235,7 +225,6 @@
             this.btnAtualizar.TabIndex = 4;
             this.btnAtualizar.Text = "🔄 Atualizar";
             this.btnAtualizar.UseVisualStyleBackColor = false;
-            this.btnAtualizar.Click += new System.EventHandler(this.btnAtualizar_Click);
             // 
             // btnAdicionar
             // 
@@ -313,7 +302,7 @@
             // 
             // txtPesquisa
             // 
-            this.txtPesquisa.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtPesquisa.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPesquisa.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPesquisa.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -321,7 +310,6 @@
             this.txtPesquisa.Name = "txtPesquisa";
             this.txtPesquisa.Size = new System.Drawing.Size(855, 25);
             this.txtPesquisa.TabIndex = 1;
-            this.txtPesquisa.TextChanged += new System.EventHandler(this.txtPesquisa_TextChanged);
             // 
             // lblPesquisa
             // 
@@ -376,7 +364,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colAutor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colGenero;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStatus;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCategoria;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDataAdicao;
         private System.Windows.Forms.Panel panelPesquisa;
         private System.Windows.Forms.TextBox txtPesquisa;

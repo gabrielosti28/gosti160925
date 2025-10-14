@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.panelSuperior = new System.Windows.Forms.Panel();
-            this.btnDiagnosticos = new System.Windows.Forms.Button();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.panelLogo = new System.Windows.Forms.Panel();
             this.panelLateral = new System.Windows.Forms.Panel();
@@ -72,7 +71,6 @@
             // panelSuperior
             // 
             this.panelSuperior.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.panelSuperior.Controls.Add(this.btnDiagnosticos);
             this.panelSuperior.Controls.Add(this.lblUsuario);
             this.panelSuperior.Controls.Add(this.panelLogo);
             this.panelSuperior.Dock = System.Windows.Forms.DockStyle.Top;
@@ -80,23 +78,6 @@
             this.panelSuperior.Name = "panelSuperior";
             this.panelSuperior.Size = new System.Drawing.Size(1200, 90);
             this.panelSuperior.TabIndex = 0;
-            // 
-            // btnDiagnosticos
-            // 
-            this.btnDiagnosticos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDiagnosticos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnDiagnosticos.FlatAppearance.BorderSize = 0;
-            this.btnDiagnosticos.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(91)))), ((int)(((byte)(98)))));
-            this.btnDiagnosticos.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(137)))), ((int)(((byte)(145)))));
-            this.btnDiagnosticos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDiagnosticos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDiagnosticos.ForeColor = System.Drawing.Color.White;
-            this.btnDiagnosticos.Location = new System.Drawing.Point(1050, 25);
-            this.btnDiagnosticos.Name = "btnDiagnosticos";
-            this.btnDiagnosticos.Size = new System.Drawing.Size(120, 40);
-            this.btnDiagnosticos.TabIndex = 2;
-            this.btnDiagnosticos.Text = "🔧 Diagnósticos";
-            this.btnDiagnosticos.UseVisualStyleBackColor = false;
             // 
             // lblUsuario
             // 
@@ -108,7 +89,6 @@
             this.lblUsuario.Size = new System.Drawing.Size(236, 32);
             this.lblUsuario.TabIndex = 1;
             this.lblUsuario.Text = "Bem-vindo, Usuário!";
-            this.lblUsuario.Click += new System.EventHandler(this.lblUsuario_Click);
             // 
             // panelLogo
             // 
@@ -367,7 +347,6 @@
             this.pictureBoxPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxPerfil.TabIndex = 7;
             this.pictureBoxPerfil.TabStop = false;
-            this.pictureBoxPerfil.Click += new System.EventHandler(this.pictureBoxPerfil_Click);
             // 
             // lblBio
             // 
@@ -423,7 +402,6 @@
             this.listBoxAtividades.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.listBoxAtividades.Size = new System.Drawing.Size(884, 275);
             this.listBoxAtividades.TabIndex = 1;
-            this.listBoxAtividades.SelectedIndexChanged += new System.EventHandler(this.listBoxAtividades_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -518,7 +496,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btnDiagnosticos;
         private System.Windows.Forms.Panel panelLivros;
         private System.Windows.Forms.Panel panelAmigos;
         private System.Windows.Forms.Panel panelMensagens;

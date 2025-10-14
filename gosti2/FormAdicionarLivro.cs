@@ -94,7 +94,7 @@ namespace gosti2
                     else
                     {
                         livro = new Livro();
-                        livro.UsuarioId = UsuarioManager.UsuarioLogado.UsuarioId;
+                        livro.UsuarioId = AppManager.UsuarioLogado.UsuarioId;
                         livro.DataAdicao = DateTime.Now; // Garante a data de adição
                         context.Livros.Add(livro);
                     }
