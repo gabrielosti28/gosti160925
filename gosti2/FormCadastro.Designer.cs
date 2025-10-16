@@ -3,18 +3,13 @@
     partial class FormCadastro
     {
         private System.ComponentModel.IContainer components = null;
-        //private System.Windows.Forms.ErrorProvider errorProvider;
-        //private System.Windows.Forms.CheckBox chkMostrarSenha;
-        //private System.Windows.Forms.LinkLabel linkLogin;
-        //private System.Windows.Forms.Panel panelForcaSenha;
-        //private System.Windows.Forms.Label lblForcaSenha;
 
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
             {
                 components.Dispose();
-                //errorProvider?.Dispose();
+                errorProvider?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -23,6 +18,7 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelSuperior = new System.Windows.Forms.Panel();
             this.lblEstatistica = new System.Windows.Forms.Label();
             this.labelTitulo = new System.Windows.Forms.Label();
@@ -32,7 +28,7 @@
             this.linkLogin = new System.Windows.Forms.LinkLabel();
             this.panelForcaSenha = new System.Windows.Forms.Panel();
             this.lblForcaSenha = new System.Windows.Forms.Label();
-            this.chkMostrarSenha = new System.Windows.Forms.CheckBox();
+            this.btnMostrarSenha = new System.Windows.Forms.CheckBox();
             this.txtBio = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtDataNascimento = new System.Windows.Forms.MaskedTextBox();
@@ -46,16 +42,18 @@
             this.txtNomeUsuario = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panelBotoes = new System.Windows.Forms.Panel();
-            this.btnCadastrar2 = new System.Windows.Forms.Button();
-            this.btnSair2 = new System.Windows.Forms.Button();
+            this.btnCadastrar = new System.Windows.Forms.Button();
+            this.btnSair = new System.Windows.Forms.Button();
             this.panelRodape = new System.Windows.Forms.Panel();
             this.labelCopyright = new System.Windows.Forms.Label();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panelSuperior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
             this.panelBotoes.SuspendLayout();
             this.panelRodape.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSuperior
@@ -102,7 +100,6 @@
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxLogo.TabIndex = 0;
             this.pictureBoxLogo.TabStop = false;
-            //this.pictureBoxLogo.Click += new System.EventHandler(this.pictureBoxLogo_Click);
             // 
             // panelConteudo
             // 
@@ -121,7 +118,7 @@
             this.panelFormulario.Controls.Add(this.linkLogin);
             this.panelFormulario.Controls.Add(this.panelForcaSenha);
             this.panelFormulario.Controls.Add(this.lblForcaSenha);
-            this.panelFormulario.Controls.Add(this.chkMostrarSenha);
+            this.panelFormulario.Controls.Add(this.btnMostrarSenha);
             this.panelFormulario.Controls.Add(this.txtBio);
             this.panelFormulario.Controls.Add(this.label6);
             this.panelFormulario.Controls.Add(this.txtDataNascimento);
@@ -172,16 +169,18 @@
             this.lblForcaSenha.TabIndex = 14;
             this.lblForcaSenha.Text = "Força da senha";
             // 
-            // chkMostrarSenha
+            // btnMostrarSenha
             // 
-            this.chkMostrarSenha.AutoSize = true;
-            this.chkMostrarSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkMostrarSenha.Location = new System.Drawing.Point(350, 280);
-            this.chkMostrarSenha.Name = "chkMostrarSenha";
-            this.chkMostrarSenha.Size = new System.Drawing.Size(101, 19);
-            this.chkMostrarSenha.TabIndex = 6;
-            this.chkMostrarSenha.Text = "Mostrar senha";
-            this.chkMostrarSenha.UseVisualStyleBackColor = true;
+            this.btnMostrarSenha.AutoSize = true;
+            this.btnMostrarSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMostrarSenha.Location = new System.Drawing.Point(350, 280);
+            this.btnMostrarSenha.Name = "btnMostrarSenha";
+            this.btnMostrarSenha.Size = new System.Drawing.Size(101, 19);
+            this.btnMostrarSenha.TabIndex = 6;
+            this.btnMostrarSenha.Text = "Mostrar senha";
+            this.btnMostrarSenha.UseVisualStyleBackColor = true;
+            this.btnMostrarSenha.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMostrarSenha_MouseDown);
+            this.btnMostrarSenha.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMostrarSenha_MouseUp);
             // 
             // txtBio
             // 
@@ -213,6 +212,8 @@
             this.txtDataNascimento.Size = new System.Drawing.Size(200, 25);
             this.txtDataNascimento.TabIndex = 2;
             this.txtDataNascimento.ValidatingType = typeof(System.DateTime);
+            this.txtDataNascimento.Enter += new System.EventHandler(this.txtDataNascimento_Enter);
+            this.txtDataNascimento.Leave += new System.EventHandler(this.txtDataNascimento_Leave);
             // 
             // label5
             // 
@@ -305,8 +306,8 @@
             // panelBotoes
             // 
             this.panelBotoes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(240)))), ((int)(((byte)(250)))));
-            this.panelBotoes.Controls.Add(this.btnCadastrar2);
-            this.panelBotoes.Controls.Add(this.btnSair2);
+            this.panelBotoes.Controls.Add(this.btnCadastrar);
+            this.panelBotoes.Controls.Add(this.btnSair);
             this.panelBotoes.Dock = System.Windows.Forms.DockStyle.Right;
             this.panelBotoes.Location = new System.Drawing.Point(620, 20);
             this.panelBotoes.Name = "panelBotoes";
@@ -314,39 +315,41 @@
             this.panelBotoes.Size = new System.Drawing.Size(260, 460);
             this.panelBotoes.TabIndex = 1;
             // 
-            // btnCadastrar2
+            // btnCadastrar
             // 
-            this.btnCadastrar2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
-            this.btnCadastrar2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnCadastrar2.FlatAppearance.BorderSize = 0;
-            this.btnCadastrar2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(159)))), ((int)(((byte)(103)))));
-            this.btnCadastrar2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(205)))), ((int)(((byte)(50)))));
-            this.btnCadastrar2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCadastrar2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnCadastrar2.ForeColor = System.Drawing.Color.White;
-            this.btnCadastrar2.Location = new System.Drawing.Point(20, 20);
-            this.btnCadastrar2.Name = "btnCadastrar2";
-            this.btnCadastrar2.Size = new System.Drawing.Size(220, 80);
-            this.btnCadastrar2.TabIndex = 6;
-            this.btnCadastrar2.Text = "✅ Cadastrar";
-            this.btnCadastrar2.UseVisualStyleBackColor = false;
+            this.btnCadastrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
+            this.btnCadastrar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnCadastrar.FlatAppearance.BorderSize = 0;
+            this.btnCadastrar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(159)))), ((int)(((byte)(103)))));
+            this.btnCadastrar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(205)))), ((int)(((byte)(50)))));
+            this.btnCadastrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCadastrar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnCadastrar.ForeColor = System.Drawing.Color.White;
+            this.btnCadastrar.Location = new System.Drawing.Point(20, 20);
+            this.btnCadastrar.Name = "btnCadastrar";
+            this.btnCadastrar.Size = new System.Drawing.Size(220, 80);
+            this.btnCadastrar.TabIndex = 6;
+            this.btnCadastrar.Text = "✅ Cadastrar";
+            this.btnCadastrar.UseVisualStyleBackColor = false;
+            this.btnCadastrar.Click += new System.EventHandler(this.btnCadastrar_Click);
             // 
-            // btnSair2
+            // btnSair
             // 
-            this.btnSair2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(20)))), ((int)(((byte)(60)))));
-            this.btnSair2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnSair2.FlatAppearance.BorderSize = 0;
-            this.btnSair2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(40)))));
-            this.btnSair2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(69)))), ((int)(((byte)(0)))));
-            this.btnSair2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSair2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnSair2.ForeColor = System.Drawing.Color.White;
-            this.btnSair2.Location = new System.Drawing.Point(20, 360);
-            this.btnSair2.Name = "btnSair2";
-            this.btnSair2.Size = new System.Drawing.Size(220, 80);
-            this.btnSair2.TabIndex = 7;
-            this.btnSair2.Text = "🚪 Voltar ao Login";
-            this.btnSair2.UseVisualStyleBackColor = false;
+            this.btnSair.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(20)))), ((int)(((byte)(60)))));
+            this.btnSair.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnSair.FlatAppearance.BorderSize = 0;
+            this.btnSair.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(0)))), ((int)(((byte)(40)))));
+            this.btnSair.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(69)))), ((int)(((byte)(0)))));
+            this.btnSair.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSair.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.btnSair.ForeColor = System.Drawing.Color.White;
+            this.btnSair.Location = new System.Drawing.Point(20, 360);
+            this.btnSair.Name = "btnSair";
+            this.btnSair.Size = new System.Drawing.Size(220, 80);
+            this.btnSair.TabIndex = 7;
+            this.btnSair.Text = "🚪 Voltar ao Login";
+            this.btnSair.UseVisualStyleBackColor = false;
+            this.btnSair.Click += new System.EventHandler(this.btnSair_Click);
             // 
             // panelRodape
             // 
@@ -369,6 +372,10 @@
             this.labelCopyright.TabIndex = 0;
             this.labelCopyright.Text = "© 2024 BookConnect - Sua rede social literária favorita";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
             // 
             // FormCadastro
             // 
@@ -394,6 +401,7 @@
             this.panelFormulario.PerformLayout();
             this.panelBotoes.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -408,8 +416,8 @@
         private System.Windows.Forms.Label labelCopyright;
         private System.Windows.Forms.Panel panelFormulario;
         private System.Windows.Forms.Panel panelBotoes;
-        private System.Windows.Forms.Button btnCadastrar2;
-        private System.Windows.Forms.Button btnSair2;
+        private System.Windows.Forms.Button btnCadastrar;
+        private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.TextBox txtBio;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.MaskedTextBox txtDataNascimento;
@@ -424,7 +432,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ErrorProvider errorProvider;
         private System.Windows.Forms.LinkLabel linkLogin;
-        private System.Windows.Forms.CheckBox chkMostrarSenha;
+        private System.Windows.Forms.CheckBox btnMostrarSenha;
         private System.Windows.Forms.Panel panelForcaSenha;
         private System.Windows.Forms.Label lblForcaSenha;
         private System.Windows.Forms.Label lblEstatistica;
