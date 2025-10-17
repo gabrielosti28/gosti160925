@@ -33,19 +33,17 @@ namespace gosti2
         {
             try
             {
-                using (var context = new ApplicationDbContext())
-                {
-                    var usuarioId = AppManager.UsuarioLogado.UsuarioId;
-                    var totalLivros = context.Livros.Count(l => l.UsuarioId == usuarioId);
-                    var livrosLidos = context.Livros.Count(l => l.UsuarioId == usuarioId && l.Lido);
+                // Usar o método consolidado do AppManager
+                var (totalLivros, livrosLidos, livrosFavoritos) =
+                    AppManager.ObterEstatisticasUsuario();
 
-                    lblLivrosCadastrados.Text = totalLivros.ToString();
-                    // Outras estatísticas podem ser adicionadas aqui
-                }
+                lblLivrosCadastrados.Text = totalLivros.ToString();
+                // Adicionar outros labels conforme necessário
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar estatísticas: {ex.Message}");
+                MessageBox.Show($"Erro ao carregar estatísticas: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -78,9 +76,8 @@ namespace gosti2
         private void btnSair_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Deseja sair?", "Confirmação",
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                // CORREÇÃO: Logout pelo AppManager
                 AppManager.Logout();
                 this.Close();
             }

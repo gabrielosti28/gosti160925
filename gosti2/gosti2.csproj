@@ -67,7 +67,6 @@
     <Compile Include="CategoriaTier.cs" />
     <Compile Include="Comentario.cs" />
     <Compile Include="DatabaseConfig.cs" />
-    <Compile Include="DatabaseService.cs" />
     <Compile Include="FormAdicionarLivro.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,12 +97,6 @@
     <Compile Include="FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormMain.Designer.cs">
-      <DependentUpon>FormMain.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormMenu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,7 +123,6 @@
     </Compile>
     <Compile Include="LikeDislike.cs" />
     <Compile Include="Livro.cs" />
-    <Compile Include="LivroManager.cs" />
     <Compile Include="Mensagem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -149,9 +141,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
-      <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMenu.resx">
       <DependentUpon>FormMenu.cs</DependentUpon>

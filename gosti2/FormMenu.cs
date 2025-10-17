@@ -22,17 +22,15 @@ namespace gosti2
 
         private void VerificarUsuarioLogado()
         {
-            // CORREÇÃO: Verifica direto do AppManager
             AtualizarInterfaceUsuario();
         }
 
         private void AtualizarInterfaceUsuario()
         {
-            var usuarioLogado = AppManager.UsuarioLogado;
-
-            if (usuarioLogado != null)
+            if (AppManager.EstaLogado)
             {
-                lblBoasVindas.Text = $"🌟 Olá, {usuarioLogado.NomeUsuario}!";
+                var usuario = AppManager.UsuarioLogado;
+                lblBoasVindas.Text = $"🌟 Olá, {usuario.NomeUsuario}!";
                 lblInstrucoes.Text = "Você já está conectado. Acesse o sistema principal.";
                 btnLogin.Text = "🚀 Continuar para o Sistema";
                 btnLogin.BackColor = Color.FromArgb(60, 179, 113);
@@ -50,9 +48,9 @@ namespace gosti2
         {
             try
             {
-                if (AppManager.UsuarioLogado != null)
+                if (AppManager.EstaLogado)
                 {
-                    // Usuário já logado - vai direto para o principal
+                    // Usuário já logado - vai direto
                     this.Hide();
                     using (var formMain = new FormPrincipal())
                     {
@@ -63,17 +61,16 @@ namespace gosti2
                 }
                 else
                 {
-                    // Usuário não logado - mostra tela de login
+                    // Login necessário
                     this.Hide();
                     using (var formLogin = new FormLogin())
                     {
                         if (formLogin.ShowDialog() == DialogResult.OK)
                         {
-                            // Login bem-sucedido
                             VerificarUsuarioLogado();
-                            MessageBox.Show($"✅ Bem-vindo de volta, {AppManager.UsuarioLogado.NomeUsuario}!", "Sucesso");
+                            MessageBox.Show($"✅ Bem-vindo, {AppManager.UsuarioLogado.NomeUsuario}!",
+                                "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            // Vai automaticamente para o sistema principal
                             using (var formMain = new FormPrincipal())
                             {
                                 formMain.ShowDialog();
@@ -86,7 +83,8 @@ namespace gosti2
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Erro: {ex.Message}", "Erro");
+                MessageBox.Show($"❌ Erro: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Show();
             }
         }
@@ -138,10 +136,9 @@ namespace gosti2
         private void btnSair_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Deseja sair do BookConnect?", "Confirmação",
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                // CORREÇÃO: Logout pelo AppManager
-                if (AppManager.UsuarioLogado != null)
+                if (AppManager.EstaLogado)
                 {
                     AppManager.Logout();
                 }

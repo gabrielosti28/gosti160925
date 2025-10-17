@@ -248,9 +248,10 @@ namespace gosti2
 
         private void btnComentar_Click(object sender, EventArgs e)
         {
-            if (_usuarioLogadoId == 0)
+            if (!AppManager.EstaLogado)
             {
-                MessageBox.Show("Você precisa estar logado para comentar.", "Acesso Negado");
+                MessageBox.Show("Você precisa estar logado para comentar.", "Acesso Negado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -258,39 +259,24 @@ namespace gosti2
                 string.IsNullOrWhiteSpace(txtNovoComentario.Text) ||
                 txtNovoComentario.Text == "Digite seu comentário aqui...")
             {
-                MessageBox.Show("Digite um comentário antes de enviar.", "Aviso");
+                MessageBox.Show("Digite um comentário antes de enviar.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (txtNovoComentario.Text.Length < 5)
             {
-                MessageBox.Show("Comentário muito curto. Mínimo 5 caracteres.", "Aviso");
+                MessageBox.Show("Comentário muito curto. Mínimo 5 caracteres.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            try
+            if (AppManager.AdicionarComentario(_livroId, txtNovoComentario.Text.Trim()))
             {
-                using (var context = new ApplicationDbContext())
-                {
-                    var comentario = new Comentario
-                    {
-                        Texto = txtNovoComentario.Text.Trim(),
-                        LivroId = _livroId,
-                        UsuarioId = _usuarioLogadoId,
-                        DataComentario = DateTime.Now
-                    };
-
-                    context.Comentarios.Add(comentario);
-                    context.SaveChanges();
-
-                    txtNovoComentario.Clear();
-                    CarregarComentarios();
-                    MessageBox.Show("Comentário adicionado com sucesso!", "Sucesso");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao adicionar comentário: {ex.Message}", "Erro");
+                txtNovoComentario.Clear();
+                CarregarComentarios();
+                MessageBox.Show("Comentário adicionado!", "Sucesso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -316,38 +302,10 @@ namespace gosti2
 
         private void RegistrarVotoLivro(bool isLike)
         {
-            try
+            if (AppManager.VotarLivro(_livroId, isLike))
             {
-                using (var context = new ApplicationDbContext())
-                {
-                    var existingVote = context.LikesDislikes
-                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
-
-                    if (existingVote != null)
-                    {
-                        existingVote.IsLike = isLike;
-                        existingVote.DataAcao = DateTime.Now;
-                    }
-                    else
-                    {
-                        var vote = new LikeDislike
-                        {
-                            LivroId = _livroId,
-                            UsuarioId = _usuarioLogadoId,
-                            IsLike = isLike,
-                            DataAcao = DateTime.Now
-                        };
-                        context.LikesDislikes.Add(vote);
-                    }
-
-                    context.SaveChanges();
-                    CarregarLikesDislikes();
-                    VerificarVotoUsuario();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao registrar voto: {ex.Message}", "Erro");
+                CarregarLikesDislikes();
+                VerificarVotoUsuario();
             }
         }
 
@@ -404,50 +362,36 @@ namespace gosti2
 
         private void CarregarLikesDislikes()
         {
-            try
-            {
-                using (var context = new ApplicationDbContext())
-                {
-                    var likes = context.LikesDislikes.Count(ld => ld.LivroId == _livroId && ld.IsLike);
-                    var dislikes = context.LikesDislikes.Count(ld => ld.LivroId == _livroId && !ld.IsLike);
+            var (likes, dislikes, votoUsuario) = AppManager.ObterVotosLivro(_livroId);
 
-                    lblLikes.Text = $"👍 {likes}";
-                    lblDislikes.Text = $"👎 {dislikes}";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar likes: {ex.Message}", "Erro");
-            }
+            lblLikes.Text = $"👍 {likes}";
+            lblDislikes.Text = $"👎 {dislikes}";
         }
 
         private void VerificarVotoUsuario()
         {
-            try
-            {
-                using (var context = new ApplicationDbContext())
-                {
-                    var userVote = context.LikesDislikes
-                        .FirstOrDefault(ld => ld.LivroId == _livroId && ld.UsuarioId == _usuarioLogadoId);
+            if (!AppManager.EstaLogado) return;
 
-                    if (userVote != null)
-                    {
-                        if (userVote.IsLike)
-                        {
-                            btnLikeLivro.BackColor = Color.LightGreen;
-                            btnLikeLivro.Text = "👍 Você curtiu";
-                        }
-                        else
-                        {
-                            btnDislikeLivro.BackColor = Color.LightCoral;
-                            btnDislikeLivro.Text = "👎 Você não curtiu";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
+            var (likes, dislikes, votoUsuario) = AppManager.ObterVotosLivro(_livroId);
+
+            // Resetar cores
+            btnLikeLivro.BackColor = Color.FromArgb(248, 249, 250);
+            btnDislikeLivro.BackColor = Color.FromArgb(248, 249, 250);
+            btnLikeLivro.Text = "👍";
+            btnDislikeLivro.Text = "👎";
+
+            if (votoUsuario.HasValue)
             {
-                // Não mostra erro - funcionalidade não crítica
+                if (votoUsuario.Value)
+                {
+                    btnLikeLivro.BackColor = Color.LightGreen;
+                    btnLikeLivro.Text = "👍 Você curtiu";
+                }
+                else
+                {
+                    btnDislikeLivro.BackColor = Color.LightCoral;
+                    btnDislikeLivro.Text = "👎 Você não curtiu";
+                }
             }
         }
 

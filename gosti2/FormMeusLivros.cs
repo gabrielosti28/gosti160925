@@ -17,8 +17,17 @@ namespace gosti2
         public FormMeusLivros()
         {
             InitializeComponent();
-            // CORREÇÃO: Acessa diretamente do AppManager
-            usuarioLogadoId = AppManager.UsuarioLogado?.UsuarioId ?? 0;
+
+            // Verificar se está logado
+            if (!AppManager.EstaLogado)
+            {
+                MessageBox.Show("É necessário estar logado.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
+            }
+
+            usuarioLogadoId = AppManager.UsuarioLogado.UsuarioId;
             ConfigurarDataGridView();
             CarregarLivros();
         }
@@ -53,17 +62,21 @@ namespace gosti2
                             livro.DataAdicao.ToString("dd/MM/yyyy")
                         );
 
-                        // Destaca favoritos
                         if (livro.Favorito)
                         {
                             dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
                         }
                     }
+
+                    // Atualizar estatísticas
+                    var (total, lidos, favoritos) = AppManager.ObterEstatisticasUsuario();
+                    lblEstatisticas.Text = $"📚 {total} Livros | ✅ {lidos} Lidos | ⭐ {favoritos} Favoritos";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar livros: {ex.Message}", "Erro");
+                MessageBox.Show($"Erro ao carregar livros: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -100,17 +113,17 @@ namespace gosti2
         {
             if (dataGridViewLivros.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Selecione um livro para remover", "Aviso");
+                MessageBox.Show("Selecione um livro para remover.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             var livroId = Convert.ToInt32(dataGridViewLivros.SelectedRows[0].Cells[0].Value);
             var titulo = dataGridViewLivros.SelectedRows[0].Cells[1].Value.ToString();
 
-            if (MessageBox.Show($"Remover '{titulo}'?", "Confirmar",
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show($"Deseja realmente remover '{titulo}'?", "Confirmação",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                // CORREÇÃO: Usa o AppManager simplificado
                 if (AppManager.RemoverLivro(livroId))
                 {
                     CarregarLivros();

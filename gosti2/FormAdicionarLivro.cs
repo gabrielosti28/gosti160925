@@ -71,14 +71,6 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Verifica se a conexão com o banco está funcionando
-                    if (!context.Database.Exists())
-                    {
-                        MessageBox.Show("Não foi possível conectar ao banco de dados.", "Erro",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
                     Livro livro;
 
                     if (_modoEdicao)
@@ -90,24 +82,34 @@ namespace gosti2
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
+
+                        // Verificar permissão
+                        if (livro.UsuarioId != AppManager.UsuarioLogado.UsuarioId)
+                        {
+                            MessageBox.Show("Você não tem permissão para editar este livro.", "Aviso",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                     else
                     {
-                        livro = new Livro();
-                        livro.UsuarioId = AppManager.UsuarioLogado.UsuarioId;
-                        livro.DataAdicao = DateTime.Now; // Garante a data de adição
+                        livro = new Livro
+                        {
+                            UsuarioId = AppManager.UsuarioLogado.UsuarioId,
+                            DataAdicao = DateTime.Now
+                        };
                         context.Livros.Add(livro);
                     }
 
                     // Atualizar dados
-                    livro.Titulo = txtTitulo.Text;
-                    livro.Autor = txtAutor.Text;
+                    livro.Titulo = txtTitulo.Text.Trim();
+                    livro.Autor = txtAutor.Text.Trim();
                     livro.Genero = cmbGenero.Text;
-                    livro.Descricao = txtDescricao.Text;
+                    livro.Descricao = txtDescricao.Text.Trim();
                     livro.Lido = checkBoxLido.Checked;
                     livro.Favorito = checkBoxFavorito.Checked;
 
-                    // Salvar imagem se foi selecionada
+                    // Salvar imagem
                     if (pictureBoxCapa.Image != null)
                     {
                         using (var ms = new System.IO.MemoryStream())
@@ -116,52 +118,23 @@ namespace gosti2
                             livro.Capa = ms.ToArray();
                         }
                     }
-                    else
-                    {
-                        livro.Capa = null; // Garante que seja NULL se não houver imagem
-                    }
-
-                    // Valida as entidades antes de salvar
-                    var validationErrors = context.GetValidationErrors();
-                    if (validationErrors.Any())
-                    {
-                        var errorMessages = validationErrors.SelectMany(err => err.ValidationErrors.Select(ve => ve.ErrorMessage));
-                        MessageBox.Show($"Erros de validação:\n{string.Join("\n", errorMessages)}", "Erro de Validação",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
 
                     context.SaveChanges();
 
-                    MessageBox.Show(_modoEdicao ? "Livro atualizado com sucesso!" : "Livro adicionado com sucesso!",
+                    MessageBox.Show(_modoEdicao ? "Livro atualizado!" : "Livro adicionado!",
                         "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
             }
-            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            {
-                // Captura erros específicos de validação do Entity Framework
-                var errorMessages = ex.EntityValidationErrors
-                    .SelectMany(x => x.ValidationErrors)
-                    .Select(x => x.PropertyName + ": " + x.ErrorMessage);
-
-                MessageBox.Show($"Erros de validação:\n{string.Join("\n", errorMessages)}", "Erro de Validação",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (System.Data.SqlClient.SqlException sqlEx)
-            {
-                MessageBox.Show($"Erro de banco de dados: {sqlEx.Message}", "Erro de Banco de Dados",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao salvar livro: {ex.Message}\n\nDetalhes: {ex.InnerException?.Message}", "Erro",
+                MessageBox.Show($"Erro ao salvar livro: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-      
+
         private bool ValidarCampos()
         {
             if (string.IsNullOrWhiteSpace(txtTitulo.Text))
