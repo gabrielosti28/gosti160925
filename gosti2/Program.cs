@@ -16,7 +16,7 @@ namespace gosti2
             try
             {
                 // Tela de login primeiro
-                using (var login = new FormLogin())
+                using (var login = new FormMenu())
                 {
                     if (login.ShowDialog() == DialogResult.OK)
                     {

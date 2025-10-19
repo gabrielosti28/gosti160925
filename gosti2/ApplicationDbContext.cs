@@ -13,39 +13,35 @@ namespace gosti2.Data
             Configuration.ProxyCreationEnabled = false;
             Configuration.AutoDetectChangesEnabled = true;
 
-            // Estratégia de banco simples
-            Database.SetInitializer(new SimpleDatabaseInitializer());
+            // Não criar banco automaticamente - usar o script SQL fornecido
+            Database.SetInitializer<ApplicationDbContext>(null);
         }
 
-        // DbSets
+        // DbSets - APENAS O QUE É USADO
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Livro> Livros { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
-        public DbSet<LikeDislike> LikesDislikes { get; set; }
         public DbSet<Mensagem> Mensagens { get; set; }
-        public DbSet<Avaliacao> Avaliacoes { get; set; }
-        public DbSet<CategoriaTier> CategoriaTiers { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // Remove convenção de pluralização para simplificar
+            // Remove convenção de pluralização
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
+            // Configurações específicas se necessário
+            modelBuilder.Entity<Mensagem>()
+                .HasRequired(m => m.Remetente)
+                .WithMany(u => u.MensagensEnviadas)
+                .HasForeignKey(m => m.RemetenteId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Mensagem>()
+                .HasRequired(m => m.Destinatario)
+                .WithMany(u => u.MensagensRecebidas)
+                .HasForeignKey(m => m.DestinatarioId)
+                .WillCascadeOnDelete(false);
+
             base.OnModelCreating(modelBuilder);
-        }
-    }
-
-    // Inicializador simples do banco
-    public class SimpleDatabaseInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
-    {
-        protected override void Seed(ApplicationDbContext context)
-        {
-            // Adiciona categorias tier padrão se necessário
-            var categoriasPadrao = CategoriaTierHelper.ObterCategoriasPadrao();
-            context.CategoriaTiers.AddRange(categoriasPadrao);
-
-            context.SaveChanges();
-            base.Seed(context);
         }
     }
 }

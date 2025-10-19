@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using gosti2.Models;
+using System.Drawing;
+using System.Data.Entity;
 using gosti2.Data;
-
+using gosti2.Models;
 namespace gosti2
 {
     public partial class FormAdicionarLivro : Form
@@ -11,21 +12,23 @@ namespace gosti2
         private int _livroId;
         private bool _modoEdicao = false;
 
-        // Construtor padrão (para adicionar novo livro)
+        // Construtor para ADICIONAR novo livro
         public FormAdicionarLivro()
         {
             InitializeComponent();
             _modoEdicao = false;
             this.Text = "Adicionar Novo Livro";
+            lblTitulo.Text = "Adicionar Novo Livro";
         }
 
-        // Construtor para edição (com ID do livro)
+        // Construtor para EDITAR livro existente
         public FormAdicionarLivro(int livroId)
         {
             InitializeComponent();
             _livroId = livroId;
             _modoEdicao = true;
             this.Text = "Editar Livro";
+            lblTitulo.Text = "Editar Livro";
             CarregarDadosLivro();
         }
 
@@ -36,22 +39,38 @@ namespace gosti2
                 using (var context = new ApplicationDbContext())
                 {
                     var livro = context.Livros.Find(_livroId);
-                    if (livro != null)
-                    {
-                        txtTitulo.Text = livro.Titulo;
-                        txtAutor.Text = livro.Autor;
-                        cmbGenero.Text = livro.Genero;
-                        txtDescricao.Text = livro.Descricao;
-                        checkBoxLido.Checked = livro.Lido;
-                        checkBoxFavorito.Checked = livro.Favorito;
 
-                        // Carregar imagem se existir
-                        if (livro.Capa != null && livro.Capa.Length > 0)
+                    if (livro == null)
+                    {
+                        MessageBox.Show("Livro não encontrado.", "Erro",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close();
+                        return;
+                    }
+
+                    // Verificar permissão
+                    if (livro.UsuarioId != AppManager.UsuarioLogado.UsuarioId)
+                    {
+                        MessageBox.Show("Você não tem permissão para editar este livro.", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        this.Close();
+                        return;
+                    }
+
+                    // Carregar dados nos campos
+                    txtTitulo.Text = livro.Titulo;
+                    txtAutor.Text = livro.Autor;
+                    cmbGenero.Text = livro.Genero;
+                    txtDescricao.Text = livro.Descricao;
+                    checkBoxLido.Checked = livro.Lido;
+                    checkBoxFavorito.Checked = livro.Favorito;
+
+                    // Carregar imagem se existir
+                    if (livro.Capa != null && livro.Capa.Length > 0)
+                    {
+                        using (var ms = new System.IO.MemoryStream(livro.Capa))
                         {
-                            using (var ms = new System.IO.MemoryStream(livro.Capa))
-                            {
-                                pictureBoxCapa.Image = System.Drawing.Image.FromStream(ms);
-                            }
+                            pictureBoxCapa.Image = Image.FromStream(ms);
                         }
                     }
                 }
@@ -60,12 +79,17 @@ namespace gosti2
             {
                 MessageBox.Show($"Erro ao carregar dados do livro: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
             }
         }
 
         private void btnSalvar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCampos()) return;
+            if (!ValidarCampos())
+                return;
+
+            this.Cursor = Cursors.WaitCursor;
+            btnSalvar.Enabled = false;
 
             try
             {
@@ -75,7 +99,9 @@ namespace gosti2
 
                     if (_modoEdicao)
                     {
+                        // EDIÇÃO
                         livro = context.Livros.Find(_livroId);
+
                         if (livro == null)
                         {
                             MessageBox.Show("Livro não encontrado!", "Erro",
@@ -83,7 +109,7 @@ namespace gosti2
                             return;
                         }
 
-                        // Verificar permissão
+                        // Verificar permissão novamente
                         if (livro.UsuarioId != AppManager.UsuarioLogado.UsuarioId)
                         {
                             MessageBox.Show("Você não tem permissão para editar este livro.", "Aviso",
@@ -93,6 +119,7 @@ namespace gosti2
                     }
                     else
                     {
+                        // NOVO LIVRO
                         livro = new Livro
                         {
                             UsuarioId = AppManager.UsuarioLogado.UsuarioId,
@@ -104,12 +131,12 @@ namespace gosti2
                     // Atualizar dados
                     livro.Titulo = txtTitulo.Text.Trim();
                     livro.Autor = txtAutor.Text.Trim();
-                    livro.Genero = cmbGenero.Text;
+                    livro.Genero = cmbGenero.Text.Trim();
                     livro.Descricao = txtDescricao.Text.Trim();
                     livro.Lido = checkBoxLido.Checked;
                     livro.Favorito = checkBoxFavorito.Checked;
 
-                    // Salvar imagem
+                    // Salvar imagem se houver
                     if (pictureBoxCapa.Image != null)
                     {
                         using (var ms = new System.IO.MemoryStream())
@@ -121,8 +148,11 @@ namespace gosti2
 
                     context.SaveChanges();
 
-                    MessageBox.Show(_modoEdicao ? "Livro atualizado!" : "Livro adicionado!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        _modoEdicao ? "Livro atualizado com sucesso!" : "Livro adicionado com sucesso!",
+                        "Sucesso",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
                     this.DialogResult = DialogResult.OK;
                     this.Close();
@@ -132,6 +162,11 @@ namespace gosti2
             {
                 MessageBox.Show($"Erro ao salvar livro: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                btnSalvar.Enabled = true;
             }
         }
 
@@ -153,6 +188,14 @@ namespace gosti2
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(cmbGenero.Text))
+            {
+                MessageBox.Show("Por favor, selecione ou informe o gênero do livro.", "Campo Obrigatório",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbGenero.Focus();
+                return false;
+            }
+
             return true;
         }
 
@@ -160,14 +203,14 @@ namespace gosti2
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Imagens|*.jpg;*.jpeg;*.png;*.bmp";
+                openFileDialog.Filter = "Imagens|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
                 openFileDialog.Title = "Selecionar Capa do Livro";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        pictureBoxCapa.Image = System.Drawing.Image.FromFile(openFileDialog.FileName);
+                        pictureBoxCapa.Image = Image.FromFile(openFileDialog.FileName);
                     }
                     catch (Exception ex)
                     {
@@ -180,36 +223,12 @@ namespace gosti2
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
-        }
-
-
-        public static class DatabaseHelper
-        {
-            public static void VerificarEstruturaBanco()
+            if (MessageBox.Show("Deseja cancelar? As alterações não serão salvas.", "Confirmar",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
-                {
-                    using (var context = new ApplicationDbContext())
-                    {
-                        // Tenta uma operação simples para verificar se a estrutura está OK
-                        var count = context.Livros.Count();
-                        Console.WriteLine("Estrutura do banco verificada com sucesso.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Problema na estrutura do banco: {ex.Message}\n\nExecute o script SQL de correção.",
-                        "Erro de Banco de Dados", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
             }
         }
-
-        
-
-
-
-
     }
 }

@@ -63,8 +63,6 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="ApplicationDbContext.cs" />
     <Compile Include="AppManager.cs" />
-    <Compile Include="Avaliacao.cs" />
-    <Compile Include="CategoriaTier.cs" />
     <Compile Include="Comentario.cs" />
     <Compile Include="DatabaseConfig.cs" />
     <Compile Include="FormAdicionarLivro.cs">
@@ -121,7 +119,6 @@
     <Compile Include="infoTela.Designer.cs">
       <DependentUpon>infoTela.cs</DependentUpon>
     </Compile>
-    <Compile Include="LikeDislike.cs" />
     <Compile Include="Livro.cs" />
     <Compile Include="Mensagem.cs" />
     <Compile Include="Program.cs" />

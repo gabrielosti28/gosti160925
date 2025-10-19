@@ -10,12 +10,11 @@ namespace gosti2.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UsuarioId { get; set; }  // ✅ CORRIGIDO: UserId → UsuarioId
+        public int UsuarioId { get; set; }
 
         [Required]
         [MaxLength(100)]
-        [Column("NomeUsuario")] // ✅ CORRIGIDO: Mapeia para o nome correto no SQL
-        public string NomeUsuario { get; set; } // ✅ CORRIGIDO: Nome → NomeUsuario
+        public string NomeUsuario { get; set; }
 
         [Required]
         [EmailAddress]
@@ -27,18 +26,14 @@ namespace gosti2.Models
         public string Senha { get; set; }
 
         [Required]
-        [Column(TypeName = "DATE")] // ✅ CORRIGIDO: Tipo correto para SQL
-        public DateTime DataNascimento { get; set; } // ✅ CORRIGIDO: string → DateTime
-
-        public byte[] FotoPerfil { get; set; }
+        [Column(TypeName = "DATE")]
+        public DateTime DataNascimento { get; set; }
 
         [MaxLength(500)]
         public string Bio { get; set; }
 
-        // ✅ REMOVIDOS CAMPOS QUE NÃO EXISTEM NO SQL:
-        // BioProfissional, Especialidade, Twitter, Instagram (não criados no SQL)
+        public byte[] FotoPerfil { get; set; }
 
-        // ✅ CAMPOS EXISTENTES NO SQL:
         [MaxLength(255)]
         public string Website { get; set; }
 
@@ -51,7 +46,7 @@ namespace gosti2.Models
 
         public bool Ativo { get; set; } = true;
 
-        // ✅ RELAÇÕES COMPATIVEIS
+        // Navegações
         public virtual ICollection<Livro> Livros { get; set; }
         public virtual ICollection<Comentario> Comentarios { get; set; }
 
@@ -61,21 +56,16 @@ namespace gosti2.Models
         [InverseProperty("Destinatario")]
         public virtual ICollection<Mensagem> MensagensRecebidas { get; set; }
 
-        public virtual ICollection<LikeDislike> LikesDislikes { get; set; }
-        public virtual ICollection<Avaliacao> Avaliacoes { get; set; }
-
         public Usuario()
         {
-            // ✅ INICIALIZAÇÃO SEGURA
             Livros = new HashSet<Livro>();
             Comentarios = new HashSet<Comentario>();
             MensagensEnviadas = new HashSet<Mensagem>();
             MensagensRecebidas = new HashSet<Mensagem>();
-            LikesDislikes = new HashSet<LikeDislike>();
-            Avaliacoes = new HashSet<Avaliacao>();
         }
 
-        // ✅ MÉTODOS DE NEGÓCIO (OPCIONAIS)
+        // Propriedade calculada
+        [NotMapped]
         public int Idade
         {
             get
@@ -86,16 +76,5 @@ namespace gosti2.Models
                 return idade;
             }
         }
-
-        public bool EhMaiorDeIdade() => Idade >= 18;
-
-        public string NomeCompleto => NomeUsuario; // Para compatibilidade com código existente
-
-        public void AtualizarUltimoLogin()
-        {
-            UltimoLogin = DateTime.Now;
-        }
-
-        public bool PodeRealizarAcao() => Ativo && EhMaiorDeIdade();
     }
 }

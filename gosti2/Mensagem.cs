@@ -11,18 +11,17 @@ namespace gosti2.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MensagemId { get; set; }
 
-        [Required(ErrorMessage = "O conteúdo da mensagem é obrigatório")]
-        [MaxLength(2000, ErrorMessage = "A mensagem não pode ter mais de 2000 caracteres")]
-        [Column("Texto")]
-        public string Conteudo { get; set; }
-
-        [Required(ErrorMessage = "Remetente é obrigatório")]
+        [Required]
         [ForeignKey("Remetente")]
         public int RemetenteId { get; set; }
 
-        [Required(ErrorMessage = "Destinatário é obrigatório")]
+        [Required]
         [ForeignKey("Destinatario")]
         public int DestinatarioId { get; set; }
+
+        [Required]
+        [MaxLength(2000)]
+        public string Texto { get; set; }
 
         [Required]
         public DateTime DataEnvio { get; set; } = DateTime.Now;
@@ -30,23 +29,8 @@ namespace gosti2.Models
         [Required]
         public bool Lida { get; set; } = false;
 
-        // ✅ NAVEGAÇÕES (LAZY LOADING)
+        // Navegações
         public virtual Usuario Remetente { get; set; }
         public virtual Usuario Destinatario { get; set; }
-
-        // ✅ MÉTODOS DE NEGÓCIO (OPCIONAIS)
-        public bool EhRecente() => (DateTime.Now - DataEnvio).TotalHours < 24;
-
-        public bool PodeSerEditada() => (DateTime.Now - DataEnvio).TotalMinutes < 5;
-
-        public void MarcarComoLida()
-        {
-            Lida = true;
-        }
-
-        public string ObterStatus() => Lida ? "📖 Lida" : "📨 Não lida";
-
-        public bool EnvolveUsuario(int usuarioId)
-            => RemetenteId == usuarioId || DestinatarioId == usuarioId;
     }
 }

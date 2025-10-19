@@ -11,18 +11,12 @@ namespace gosti2
         {
             InitializeComponent();
             ConfigurarInterface();
-            VerificarUsuarioLogado();
+            AtualizarInterfaceUsuario();
         }
 
         private void ConfigurarInterface()
         {
             this.Text = "BookConnect - Menu Principal";
-            AtualizarInterfaceUsuario();
-        }
-
-        private void VerificarUsuarioLogado()
-        {
-            AtualizarInterfaceUsuario();
         }
 
         private void AtualizarInterfaceUsuario()
@@ -30,6 +24,7 @@ namespace gosti2
             if (AppManager.EstaLogado)
             {
                 var usuario = AppManager.UsuarioLogado;
+
                 lblBoasVindas.Text = $"🌟 Olá, {usuario.NomeUsuario}!";
                 lblInstrucoes.Text = "Você já está conectado. Acesse o sistema principal.";
                 btnLogin.Text = "🚀 Continuar para o Sistema";
@@ -38,7 +33,7 @@ namespace gosti2
             else
             {
                 lblBoasVindas.Text = "🌟 Bem-vindo ao BookConnect!";
-                lblInstrucoes.Text = "Faça login ou crie uma conta para começar.";
+                lblInstrucoes.Text = "Faça login ou crie uma conta para começar sua jornada literária.";
                 btnLogin.Text = "🔑 Fazer Login";
                 btnLogin.BackColor = Color.FromArgb(70, 130, 180);
             }
@@ -50,35 +45,34 @@ namespace gosti2
             {
                 if (AppManager.EstaLogado)
                 {
-                    // Usuário já logado - vai direto
+                    // Usuário já logado - vai direto para o principal
                     this.Hide();
-                    using (var formMain = new FormPrincipal())
+                    using (var formPrincipal = new FormPrincipal())
                     {
-                        formMain.ShowDialog();
+                        formPrincipal.ShowDialog();
                     }
                     this.Show();
-                    VerificarUsuarioLogado();
+                    AtualizarInterfaceUsuario();
                 }
                 else
                 {
-                    // Login necessário
+                    // Precisa fazer login
                     this.Hide();
                     using (var formLogin = new FormLogin())
                     {
                         if (formLogin.ShowDialog() == DialogResult.OK)
                         {
-                            VerificarUsuarioLogado();
-                            MessageBox.Show($"✅ Bem-vindo, {AppManager.UsuarioLogado.NomeUsuario}!",
-                                "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            AtualizarInterfaceUsuario();
 
-                            using (var formMain = new FormPrincipal())
+                            // Vai automaticamente para o sistema principal
+                            using (var formPrincipal = new FormPrincipal())
                             {
-                                formMain.ShowDialog();
+                                formPrincipal.ShowDialog();
                             }
                         }
                     }
                     this.Show();
-                    VerificarUsuarioLogado();
+                    AtualizarInterfaceUsuario();
                 }
             }
             catch (Exception ex)
@@ -93,9 +87,10 @@ namespace gosti2
         {
             try
             {
-                if (AppManager.UsuarioLogado != null)
+                if (AppManager.EstaLogado)
                 {
-                    MessageBox.Show("📝 Você já está logado!\n\nPara criar nova conta, faça logout primeiro.", "Informação");
+                    MessageBox.Show("📝 Você já está logado!\n\nPara criar nova conta, faça logout primeiro.",
+                        "Informação", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -105,33 +100,16 @@ namespace gosti2
                     formCadastro.ShowDialog();
                 }
                 this.Show();
-                VerificarUsuarioLogado();
+                AtualizarInterfaceUsuario();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Erro: {ex.Message}", "Erro");
+                MessageBox.Show($"❌ Erro: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Show();
             }
         }
 
-        private void btnExplorar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                this.Hide();
-                using (var formPrincipal = new FormPrincipal())
-                {
-                    formPrincipal.ShowDialog();
-                }
-                this.Show();
-                VerificarUsuarioLogado();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"❌ Erro: {ex.Message}", "Erro");
-                this.Show();
-            }
-        }
 
         private void btnSair_Click(object sender, EventArgs e)
         {
@@ -142,8 +120,19 @@ namespace gosti2
                 {
                     AppManager.Logout();
                 }
-                this.Close();
+                Application.Exit();
             }
+        }
+
+        private void btnSobre_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            using (var infoTela = new infoTela())
+            {
+                infoTela.ShowDialog();
+            }
+            this.Show();
+            AtualizarInterfaceUsuario();
         }
     }
 }

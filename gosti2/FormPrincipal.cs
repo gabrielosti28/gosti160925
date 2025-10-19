@@ -10,35 +10,41 @@ namespace gosti2
         public FormPrincipal()
         {
             InitializeComponent();
+
+            // Verificar se está logado
+            if (!AppManager.EstaLogado)
+            {
+                MessageBox.Show("É necessário fazer login primeiro.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
+            }
+
             CarregarDadosUsuario();
         }
 
         private void CarregarDadosUsuario()
         {
-            // CORREÇÃO: Referência direta ao AppManager
-            if (AppManager.UsuarioLogado != null)
-            {
-                var usuario = AppManager.UsuarioLogado;
+            var usuario = AppManager.UsuarioLogado;
 
-                lblUsuario.Text = $"Bem-vindo, {usuario.NomeUsuario}!";
-                lblBemVindo.Text = $"Olá, {usuario.NomeUsuario.Split(' ')[0]}!";
-                lblBio.Text = string.IsNullOrEmpty(usuario.Bio) ? "🌟 Apaixonado por livros..." : usuario.Bio;
+            lblUsuario.Text = $"Bem-vindo, {usuario.NomeUsuario}!";
+            lblBemVindo.Text = $"Olá, {usuario.NomeUsuario.Split(' ')[0]}!";
+            lblBio.Text = string.IsNullOrEmpty(usuario.Bio)
+                ? "🌟 Apaixonado por livros..."
+                : usuario.Bio;
 
-                // Carrega estatísticas simples
-                CarregarEstatisticas();
-            }
+            CarregarEstatisticas();
         }
 
         private void CarregarEstatisticas()
         {
             try
             {
-                // Usar o método consolidado do AppManager
                 var (totalLivros, livrosLidos, livrosFavoritos) =
                     AppManager.ObterEstatisticasUsuario();
 
                 lblLivrosCadastrados.Text = totalLivros.ToString();
-                // Adicionar outros labels conforme necessário
+                // Estatísticas adicionais podem ser exibidas aqui
             }
             catch (Exception ex)
             {
@@ -55,27 +61,30 @@ namespace gosti2
                 formLivros.ShowDialog();
             }
             this.Show();
-            CarregarEstatisticas(); // Atualiza estatísticas ao retornar
+            CarregarEstatisticas();
         }
 
         private void btnMensagens_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("✉️ Mensagens em desenvolvimento!", "Em Breve");
+            MessageBox.Show("✉️ Funcionalidade de mensagens em desenvolvimento!",
+                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnTierList_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("⭐ Tier Lists em desenvolvimento!", "Em Breve");
+            MessageBox.Show("⭐ Funcionalidade de tier lists em desenvolvimento!",
+                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnPerfil_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("👤 Perfil em desenvolvimento!", "Em Breve");
+            MessageBox.Show("👤 Funcionalidade de perfil em desenvolvimento!",
+                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnSair_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Deseja sair?", "Confirmação",
+            if (MessageBox.Show("Deseja sair do sistema?", "Confirmação",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 AppManager.Logout();

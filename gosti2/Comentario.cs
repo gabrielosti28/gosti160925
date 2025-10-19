@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,10 +18,8 @@ namespace gosti2.Models
         [Required]
         public DateTime DataComentario { get; set; } = DateTime.Now;
 
-        public int Likes { get; set; } = 0;
-        public int Dislikes { get; set; } = 0;
-
         public bool Editado { get; set; } = false;
+
         public DateTime? DataEdicao { get; set; }
 
         // Chaves estrangeiras
@@ -38,23 +35,7 @@ namespace gosti2.Models
         public virtual Livro Livro { get; set; }
         public virtual Usuario Usuario { get; set; }
 
-        // Construtor
-        public Comentario() { }
-
-        public Comentario(string texto, int livroId, int usuarioId)
-        {
-            Texto = texto;
-            LivroId = livroId;
-            UsuarioId = usuarioId;
-            DataComentario = DateTime.Now;
-        }
-
-        // === MÉTODOS ESSENCIAIS ===
-
-        // Propriedades calculadas simples
-        [NotMapped]
-        public int Pontuacao => Likes - Dislikes;
-
+        // Propriedade calculada - Tempo relativo
         [NotMapped]
         public string TempoRelativo
         {
@@ -69,52 +50,6 @@ namespace gosti2.Models
 
                 return DataComentario.ToString("dd/MM/yy");
             }
-        }
-
-        // Métodos de reação SIMPLES
-        public void AdicionarLike() => Likes++;
-        public void AdicionarDislike() => Dislikes++;
-
-        // Método de edição SIMPLES
-        public bool Editar(string novoTexto)
-        {
-            if (string.IsNullOrWhiteSpace(novoTexto) || novoTexto.Length > 2000)
-                return false;
-
-            Texto = novoTexto.Trim();
-            Editado = true;
-            DataEdicao = DateTime.Now;
-            return true;
-        }
-
-        // Validações de permissão SIMPLES
-        public bool PodeEditar(int usuarioId)
-        {
-            return UsuarioId == usuarioId &&
-                   (DateTime.Now - DataComentario).TotalMinutes <= 30;
-        }
-
-        public bool PodeExcluir(int usuarioId)
-        {
-            return UsuarioId == usuarioId &&
-                   (DateTime.Now - DataComentario).TotalHours <= 1;
-        }
-
-        // Validação básica
-        public bool Validar()
-        {
-            return !string.IsNullOrWhiteSpace(Texto) &&
-                   Texto.Length >= 5 &&
-                   Texto.Length <= 2000 &&
-                   LivroId > 0 &&
-                   UsuarioId > 0;
-        }
-
-        // ToString útil
-        public override string ToString()
-        {
-            var texto = Texto.Length > 50 ? Texto.Substring(0, 47) + "..." : Texto;
-            return $"{Usuario?.NomeUsuario ?? "Usuário"}: {texto}";
         }
     }
 }

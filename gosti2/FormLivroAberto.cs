@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using System.Data.Entity;
 using gosti2.Models;
 using gosti2.Data;
-using System.Collections.Generic;
 
 namespace gosti2
 {
@@ -19,22 +18,18 @@ namespace gosti2
         {
             InitializeComponent();
             _livroId = livroId;
-            _usuarioLogadoId = usuarioLogadoId;
+            _usuarioLogadoId = usuarioLogadoId > 0 ? usuarioLogadoId : (AppManager.UsuarioLogado?.UsuarioId ?? 0);
 
-            // CORREÇÃO: Removido DiagnosticContext completamente
             ConfigureUI();
             CarregarLivro();
             CarregarComentarios();
-            CarregarLikesDislikes();
-            VerificarVotoUsuario();
         }
 
         private void ConfigureUI()
         {
-            // Configurações básicas de UI
             flowLayoutPanelComentarios.AutoScroll = true;
 
-            // Placeholder simples para comentário
+            // Placeholder para comentário
             txtNovoComentario.Text = "Digite seu comentário aqui...";
             txtNovoComentario.ForeColor = Color.Gray;
 
@@ -61,32 +56,30 @@ namespace gosti2
         {
             try
             {
-                using (var context = new ApplicationDbContext())
+                _livro = AppManager.ObterLivro(_livroId);
+
+                if (_livro != null)
                 {
-                    _livro = context.Livros
-                        .Include(l => l.Usuario)
-                        .FirstOrDefault(l => l.LivroId == _livroId);
+                    lblTitulo.Text = _livro.Titulo;
+                    lblAutor.Text = $"Autor: {_livro.Autor}";
+                    lblGenero.Text = $"Gênero: {_livro.Genero}";
+                    lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario?.NomeUsuario ?? "Usuário desconhecido"}";
+                    txtDescricao.Text = _livro.Descricao ?? "Sem descrição disponível";
 
-                    if (_livro != null)
-                    {
-                        lblTitulo.Text = _livro.Titulo;
-                        lblAutor.Text = $"Autor: {_livro.Autor}";
-                        lblGenero.Text = $"Gênero: {_livro.Genero}";
-                        lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario?.NomeUsuario ?? "Usuário desconhecido"}";
-                        txtDescricao.Text = _livro.Descricao ?? "Sem descrição";
-
-                        CarregarCapaLivro(_livro.Capa);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Livro não encontrado.", "Erro");
-                        this.Close();
-                    }
+                    CarregarCapaLivro(_livro.Capa);
+                }
+                else
+                {
+                    MessageBox.Show("Livro não encontrado.", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar livro: {ex.Message}", "Erro");
+                MessageBox.Show($"Erro ao carregar livro: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
             }
         }
 
@@ -133,38 +126,32 @@ namespace gosti2
             {
                 flowLayoutPanelComentarios.Controls.Clear();
 
-                using (var context = new ApplicationDbContext())
-                {
-                    var comentarios = context.Comentarios
-                        .Include(c => c.Usuario)
-                        .Where(c => c.LivroId == _livroId)
-                        .OrderByDescending(c => c.DataComentario)
-                        .ToList();
+                var comentarios = AppManager.CarregarComentarios(_livroId);
 
-                    if (comentarios.Any())
+                if (comentarios.Any())
+                {
+                    foreach (var comentario in comentarios)
                     {
-                        foreach (var comentario in comentarios)
-                        {
-                            AdicionarComentarioPanel(comentario);
-                        }
+                        AdicionarComentarioPanel(comentario);
                     }
-                    else
+                }
+                else
+                {
+                    var lblSemComentarios = new Label
                     {
-                        var lblSemComentarios = new Label
-                        {
-                            Text = "📝 Seja o primeiro a comentar sobre este livro!",
-                            Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                            ForeColor = Color.Gray,
-                            AutoSize = true,
-                            Margin = new Padding(10)
-                        };
-                        flowLayoutPanelComentarios.Controls.Add(lblSemComentarios);
-                    }
+                        Text = "📝 Seja o primeiro a comentar sobre este livro!",
+                        Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                        ForeColor = Color.Gray,
+                        AutoSize = true,
+                        Margin = new Padding(10)
+                    };
+                    flowLayoutPanelComentarios.Controls.Add(lblSemComentarios);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}", "Erro");
+                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -173,14 +160,14 @@ namespace gosti2
             var panel = new Panel
             {
                 Width = flowLayoutPanelComentarios.Width - 25,
-                Height = 120,
+                Height = 100,
                 BorderStyle = BorderStyle.FixedSingle,
                 Margin = new Padding(5),
                 BackColor = Color.White,
                 Padding = new Padding(10)
             };
 
-            // Cabeçalho do comentário
+            // Nome do usuário
             var lblUsuario = new Label
             {
                 Text = comentario.Usuario?.NomeUsuario ?? "Usuário desconhecido",
@@ -190,6 +177,7 @@ namespace gosti2
                 ForeColor = Color.FromArgb(70, 130, 180)
             };
 
+            // Data do comentário
             var lblData = new Label
             {
                 Text = comentario.DataComentario.ToString("dd/MM/yyyy HH:mm"),
@@ -213,35 +201,9 @@ namespace gosti2
                 ScrollBars = ScrollBars.Vertical
             };
 
-            // Botões de like/dislike
-            var btnLike = new Button
-            {
-                Text = $"👍 {comentario.Likes}",
-                Tag = comentario.ComentarioId,
-                Size = new Size(60, 25),
-                Location = new Point(10, 90),
-                Font = new Font("Segoe UI", 8),
-                FlatStyle = FlatStyle.Flat
-            };
-            btnLike.Click += BtnLikeComentario_Click;
-
-            var btnDislike = new Button
-            {
-                Text = $"👎 {comentario.Dislikes}",
-                Tag = comentario.ComentarioId,
-                Size = new Size(60, 25),
-                Location = new Point(80, 90),
-                Font = new Font("Segoe UI", 8),
-                FlatStyle = FlatStyle.Flat
-            };
-            btnDislike.Click += BtnDislikeComentario_Click;
-
-            // Adicionar controles ao painel
             panel.Controls.Add(lblUsuario);
             panel.Controls.Add(lblData);
             panel.Controls.Add(txtComentario);
-            panel.Controls.Add(btnLike);
-            panel.Controls.Add(btnDislike);
 
             flowLayoutPanelComentarios.Controls.Add(panel);
         }
@@ -274,126 +236,23 @@ namespace gosti2
             if (AppManager.AdicionarComentario(_livroId, txtNovoComentario.Text.Trim()))
             {
                 txtNovoComentario.Clear();
+                txtNovoComentario.Text = "Digite seu comentário aqui...";
+                txtNovoComentario.ForeColor = Color.Gray;
                 CarregarComentarios();
-                MessageBox.Show("Comentário adicionado!", "Sucesso",
+                MessageBox.Show("Comentário adicionado com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        private void btnLikeLivro_Click(object sender, EventArgs e)
-        {
-            if (_usuarioLogadoId == 0)
-            {
-                MessageBox.Show("Você precisa estar logado para curtir.", "Acesso Negado");
-                return;
-            }
-            RegistrarVotoLivro(true);
-        }
+      
 
-        private void btnDislikeLivro_Click(object sender, EventArgs e)
-        {
-            if (_usuarioLogadoId == 0)
-            {
-                MessageBox.Show("Você precisa estar logado para não curtir.", "Acesso Negado");
-                return;
-            }
-            RegistrarVotoLivro(false);
-        }
+       
 
-        private void RegistrarVotoLivro(bool isLike)
-        {
-            if (AppManager.VotarLivro(_livroId, isLike))
-            {
-                CarregarLikesDislikes();
-                VerificarVotoUsuario();
-            }
-        }
+      
 
-        private void BtnLikeComentario_Click(object sender, EventArgs e)
-        {
-            if (_usuarioLogadoId == 0)
-            {
-                MessageBox.Show("Você precisa estar logado para curtir comentários.", "Acesso Negado");
-                return;
-            }
+      
 
-            var button = (Button)sender;
-            int comentarioId = (int)button.Tag;
-            RegistrarVotoComentario(comentarioId, true);
-        }
-
-        private void BtnDislikeComentario_Click(object sender, EventArgs e)
-        {
-            if (_usuarioLogadoId == 0)
-            {
-                MessageBox.Show("Você precisa estar logado para não curtir comentários.", "Acesso Negado");
-                return;
-            }
-
-            var button = (Button)sender;
-            int comentarioId = (int)button.Tag;
-            RegistrarVotoComentario(comentarioId, false);
-        }
-
-        private void RegistrarVotoComentario(int comentarioId, bool isLike)
-        {
-            try
-            {
-                using (var context = new ApplicationDbContext())
-                {
-                    var comentario = context.Comentarios.Find(comentarioId);
-                    if (comentario != null)
-                    {
-                        if (isLike)
-                            comentario.Likes++;
-                        else
-                            comentario.Dislikes++;
-
-                        context.SaveChanges();
-                        CarregarComentarios();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao votar no comentário: {ex.Message}", "Erro");
-            }
-        }
-
-        private void CarregarLikesDislikes()
-        {
-            var (likes, dislikes, votoUsuario) = AppManager.ObterVotosLivro(_livroId);
-
-            lblLikes.Text = $"👍 {likes}";
-            lblDislikes.Text = $"👎 {dislikes}";
-        }
-
-        private void VerificarVotoUsuario()
-        {
-            if (!AppManager.EstaLogado) return;
-
-            var (likes, dislikes, votoUsuario) = AppManager.ObterVotosLivro(_livroId);
-
-            // Resetar cores
-            btnLikeLivro.BackColor = Color.FromArgb(248, 249, 250);
-            btnDislikeLivro.BackColor = Color.FromArgb(248, 249, 250);
-            btnLikeLivro.Text = "👍";
-            btnDislikeLivro.Text = "👎";
-
-            if (votoUsuario.HasValue)
-            {
-                if (votoUsuario.Value)
-                {
-                    btnLikeLivro.BackColor = Color.LightGreen;
-                    btnLikeLivro.Text = "👍 Você curtiu";
-                }
-                else
-                {
-                    btnDislikeLivro.BackColor = Color.LightCoral;
-                    btnDislikeLivro.Text = "👎 Você não curtiu";
-                }
-            }
-        }
+        
 
         private void btnFechar_Click(object sender, EventArgs e)
         {
@@ -404,7 +263,8 @@ namespace gosti2
         {
             if (e.KeyChar == (char)Keys.Enter && ModifierKeys != Keys.Shift)
             {
-                if (!string.IsNullOrWhiteSpace(txtNovoComentario.Text) && txtNovoComentario.ForeColor != Color.Gray)
+                if (!string.IsNullOrWhiteSpace(txtNovoComentario.Text) &&
+                    txtNovoComentario.ForeColor != Color.Gray)
                 {
                     btnComentar.PerformClick();
                 }
@@ -414,7 +274,7 @@ namespace gosti2
 
         private void FormLivroAberto_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Limpeza segura de recursos
+            // Limpeza de recursos
             if (pictureBoxCapa.Image != null)
             {
                 pictureBoxCapa.Image.Dispose();
