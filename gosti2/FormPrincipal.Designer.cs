@@ -402,6 +402,7 @@
             this.listBoxAtividades.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.listBoxAtividades.Size = new System.Drawing.Size(884, 275);
             this.listBoxAtividades.TabIndex = 1;
+            this.listBoxAtividades.SelectedIndexChanged += new System.EventHandler(this.listBoxAtividades_SelectedIndexChanged);
             // 
             // label1
             // 

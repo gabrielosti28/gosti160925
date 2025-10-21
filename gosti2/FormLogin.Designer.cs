@@ -32,7 +32,6 @@
             this.components = new System.ComponentModel.Container();
             this.panelSuperior = new System.Windows.Forms.Panel();
             this.labelTitulo = new System.Windows.Forms.Label();
-            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
             this.txtSenha = new System.Windows.Forms.TextBox();
@@ -49,7 +48,6 @@
             this.labelCopyright = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panelSuperior.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
             this.panelBotoes.SuspendLayout();
@@ -62,7 +60,6 @@
             // 
             this.panelSuperior.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.panelSuperior.Controls.Add(this.labelTitulo);
-            this.panelSuperior.Controls.Add(this.pictureBoxLogo);
             this.panelSuperior.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelSuperior.Location = new System.Drawing.Point(0, 0);
             this.panelSuperior.Name = "panelSuperior";
@@ -76,19 +73,9 @@
             this.labelTitulo.ForeColor = System.Drawing.Color.White;
             this.labelTitulo.Location = new System.Drawing.Point(100, 35);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(295, 32);
+            this.labelTitulo.Size = new System.Drawing.Size(292, 32);
             this.labelTitulo.TabIndex = 1;
             this.labelTitulo.Text = "📚 Login - BookConnect";
-            // 
-            // pictureBoxLogo
-            // 
-            this.pictureBoxLogo.Image = global::gosti2.Properties.Resources.default_book_cover;
-            this.pictureBoxLogo.Location = new System.Drawing.Point(30, 20);
-            this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(60, 60);
-            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxLogo.TabIndex = 0;
-            this.pictureBoxLogo.TabStop = false;
             // 
             // panelConteudo
             // 
@@ -291,7 +278,6 @@
             this.Text = "Login - BookConnect";
             this.panelSuperior.ResumeLayout(false);
             this.panelSuperior.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.panelConteudo.ResumeLayout(false);
             this.panelFormulario.ResumeLayout(false);
             this.panelFormulario.PerformLayout();
@@ -307,7 +293,6 @@
 
         private System.Windows.Forms.Panel panelSuperior;
         private System.Windows.Forms.Label labelTitulo;
-        private System.Windows.Forms.PictureBox pictureBoxLogo;
         private System.Windows.Forms.Panel panelConteudo;
         private System.Windows.Forms.Panel panelFormulario;
         private System.Windows.Forms.TextBox txtSenha;

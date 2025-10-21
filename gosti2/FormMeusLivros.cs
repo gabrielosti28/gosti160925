@@ -16,7 +16,6 @@ namespace gosti2
         {
             InitializeComponent();
 
-            // Verificar se está logado
             if (!AppManager.EstaLogado)
             {
                 MessageBox.Show("É necessário estar logado para acessar esta área.", "Aviso",
@@ -37,16 +36,26 @@ namespace gosti2
             dataGridViewLivros.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewLivros.MultiSelect = false;
             dataGridViewLivros.ReadOnly = true;
+
+            // ADICIONA COLUNA USUARIOID OCULTA LOGO NO INÍCIO
+            if (dataGridViewLivros.Columns["UsuarioId"] == null)
+            {
+                var colUsuarioId = new DataGridViewTextBoxColumn
+                {
+                    Name = "UsuarioId",
+                    HeaderText = "UsuarioId",
+                    Visible = false
+                };
+                dataGridViewLivros.Columns.Add(colUsuarioId);
+            }
         }
 
         private void ConfigurarEventos()
         {
-            // Habilitar/desabilitar botões baseado na seleção
             dataGridViewLivros.SelectionChanged += (s, e) =>
             {
                 if (dataGridViewLivros.SelectedRows.Count > 0)
                 {
-                    // Verifica se o livro selecionado pertence ao usuário logado
                     int livroUsuarioId = Convert.ToInt32(
                         dataGridViewLivros.SelectedRows[0].Cells["UsuarioId"].Value);
 
@@ -61,7 +70,6 @@ namespace gosti2
                 }
             };
 
-            // Duplo clique para abrir detalhes
             dataGridViewLivros.CellDoubleClick += (s, e) =>
             {
                 if (e.RowIndex >= 0)
@@ -70,7 +78,6 @@ namespace gosti2
                 }
             };
 
-            // Pesquisa em tempo real
             txtPesquisa.TextChanged += (s, e) =>
             {
                 if (string.IsNullOrWhiteSpace(txtPesquisa.Text))
@@ -83,7 +90,6 @@ namespace gosti2
                 }
             };
 
-            // Atualizar lista
             btnAtualizar.Click += (s, e) => CarregarLivros();
         }
 
@@ -93,7 +99,6 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // ✅ CARREGA TODOS OS LIVROS DO SISTEMA
                     var livros = context.Livros
                         .Include(l => l.Usuario)
                         .OrderByDescending(l => l.DataAdicao)
@@ -105,25 +110,14 @@ namespace gosti2
                     {
                         int rowIndex = dataGridViewLivros.Rows.Add(
                             livro.LivroId,
-                            null, // Capa
+                            null,
                             livro.Titulo,
                             livro.Autor,
                             livro.Genero,
                             livro.Lido ? "✅ Lido" : "📖 Para Ler",
-                            livro.DataAdicao.ToString("dd/MM/yyyy")
+                            livro.DataAdicao.ToString("dd/MM/yyyy"),
+                            livro.UsuarioId  // ADICIONA USUARIOID AQUI
                         );
-
-                        // Adiciona coluna oculta com UsuarioId para verificação
-                        if (dataGridViewLivros.Columns["UsuarioId"] == null)
-                        {
-                            var col = new DataGridViewTextBoxColumn
-                            {
-                                Name = "UsuarioId",
-                                Visible = false
-                            };
-                            dataGridViewLivros.Columns.Add(col);
-                        }
-                        dataGridViewLivros.Rows[rowIndex].Cells["UsuarioId"].Value = livro.UsuarioId;
 
                         // Destaca livros do usuário logado
                         if (livro.UsuarioId == usuarioLogadoId)
@@ -132,7 +126,6 @@ namespace gosti2
                                 Color.LightCyan;
                         }
 
-                        // Destaca favoritos
                         if (livro.Favorito)
                         {
                             dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
@@ -156,7 +149,6 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // ✅ BUSCA EM TODOS OS LIVROS DO SISTEMA
                     var livros = context.Livros
                         .Include(l => l.Usuario)
                         .Where(l => l.Titulo.Contains(termo) || l.Autor.Contains(termo))
@@ -174,20 +166,9 @@ namespace gosti2
                             livro.Autor,
                             livro.Genero,
                             livro.Lido ? "✅ Lido" : "📖 Para Ler",
-                            livro.DataAdicao.ToString("dd/MM/yyyy")
+                            livro.DataAdicao.ToString("dd/MM/yyyy"),
+                            livro.UsuarioId
                         );
-
-                        // Garante que a coluna existe
-                        if (dataGridViewLivros.Columns["UsuarioId"] == null)
-                        {
-                            var col = new DataGridViewTextBoxColumn
-                            {
-                                Name = "UsuarioId",
-                                Visible = false
-                            };
-                            dataGridViewLivros.Columns.Add(col);
-                        }
-                        dataGridViewLivros.Rows[rowIndex].Cells["UsuarioId"].Value = livro.UsuarioId;
 
                         if (livro.UsuarioId == usuarioLogadoId)
                         {
@@ -216,12 +197,11 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // Estatísticas gerais do sistema
                     var totalLivros = context.Livros.Count();
                     var livrosLidos = context.Livros.Count(l => l.Lido);
                     var livrosFavoritos = context.Livros.Count(l => l.Favorito);
 
-                    lblEstatisticas.Text = $"📚 {totalLivros} Livros no Sistema | ✅ {livrosLidos} Lidos | ⭐ {livrosFavoritos} Favoritos";
+                    lblEstatisticas.Text = $"📚 {totalLivros} Livros | ✅ {livrosLidos} Lidos | ⭐ {livrosFavoritos} Favoritos";
                 }
             }
             catch (Exception ex)

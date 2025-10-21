@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using gosti2.Data;
+using gosti2.Models;
 
 namespace gosti2
 {
     public partial class FormCadastro : Form
     {
+        private byte[] fotoPerfilBytes = null;
+
         public FormCadastro()
         {
             InitializeComponent();
@@ -15,22 +20,53 @@ namespace gosti2
 
         private void ConfigurarInterface()
         {
-            // Configurações de máscara e password
             txtDataNascimento.Mask = "00/00/0000";
             txtSenha.UseSystemPasswordChar = true;
             txtConfirmarSenha.UseSystemPasswordChar = true;
-
-            // Foco no primeiro campo
             txtNomeUsuario.Focus();
+
+            // Imagem padrão (cinza)
+            pictureBoxFotoPerfil.BackColor = Color.LightGray;
+        }
+
+        private void btnSelecionarFoto_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Imagens|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
+                openFileDialog.Title = "Selecionar Foto de Perfil";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Carrega a imagem
+                        Image imagemOriginal = Image.FromFile(openFileDialog.FileName);
+
+                        // Exibe no PictureBox
+                        pictureBoxFotoPerfil.Image = imagemOriginal;
+
+                        // Converte para bytes para salvar no banco
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            imagemOriginal.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            fotoPerfilBytes = ms.ToArray();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erro ao carregar imagem: {ex.Message}", "Erro",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         private void btnCadastrar_Click(object sender, EventArgs e)
         {
-            // Validações básicas
             if (!ValidarCampos())
                 return;
 
-            // Confirmar senhas
             if (txtSenha.Text != txtConfirmarSenha.Text)
             {
                 MessageBox.Show("As senhas não coincidem.", "Aviso",
@@ -39,7 +75,6 @@ namespace gosti2
                 return;
             }
 
-            // Validar data de nascimento
             if (!DateTime.TryParse(txtDataNascimento.Text, out DateTime dataNascimento))
             {
                 MessageBox.Show("Data de nascimento inválida.", "Aviso",
@@ -48,27 +83,66 @@ namespace gosti2
                 return;
             }
 
-            // Cursor de espera
             this.Cursor = Cursors.WaitCursor;
             btnCadastrar.Enabled = false;
 
             try
             {
-                // Realiza cadastro através do AppManager
-                if (AppManager.CadastrarUsuario(
-                    txtNomeUsuario.Text.Trim(),
-                    txtEmail.Text.Trim(),
-                    txtSenha.Text,
-                    dataNascimento,
-                    txtBio.Text.Trim()))
+                using (var db = new ApplicationDbContext())
                 {
+                    // Verificar se email já existe
+                    if (db.Usuarios.Any(u => u.Email == txtEmail.Text.Trim().ToLower()))
+                    {
+                        MessageBox.Show("Este email já está cadastrado.", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Verificar se nome de usuário já existe
+                    if (db.Usuarios.Any(u => u.NomeUsuario == txtNomeUsuario.Text.Trim()))
+                    {
+                        MessageBox.Show("Este nome de usuário já existe.", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Validar idade (mínimo 13 anos)
+                    int idade = DateTime.Today.Year - dataNascimento.Year;
+                    if (dataNascimento.Date > DateTime.Today.AddYears(-idade)) idade--;
+
+                    if (idade < 13)
+                    {
+                        MessageBox.Show("É necessário ter pelo menos 13 anos para se cadastrar.", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Criar novo usuário COM FOTO
+                    var usuario = new Usuario
+                    {
+                        NomeUsuario = txtNomeUsuario.Text.Trim(),
+                        Email = txtEmail.Text.ToLower().Trim(),
+                        Senha = CriptografarSenha(txtSenha.Text),
+                        DataNascimento = dataNascimento,
+                        Bio = txtBio.Text.Trim(),
+                        FotoPerfil = fotoPerfilBytes, // ADICIONA A FOTO
+                        DataCadastro = DateTime.Now,
+                        Ativo = true
+                    };
+
+                    db.Usuarios.Add(usuario);
+                    db.SaveChanges();
+
+                    MessageBox.Show("Cadastro realizado com sucesso!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro inesperado ao cadastrar: {ex.Message}", "Erro",
+                MessageBox.Show($"Erro ao cadastrar usuário: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -80,7 +154,6 @@ namespace gosti2
 
         private bool ValidarCampos()
         {
-            // Validar nome
             if (string.IsNullOrWhiteSpace(txtNomeUsuario.Text) || txtNomeUsuario.Text.Length < 3)
             {
                 MessageBox.Show("Nome de usuário deve ter pelo menos 3 caracteres.", "Aviso",
@@ -89,7 +162,6 @@ namespace gosti2
                 return false;
             }
 
-            // Validar email
             if (string.IsNullOrWhiteSpace(txtEmail.Text) || !txtEmail.Text.Contains("@"))
             {
                 MessageBox.Show("Email inválido.", "Aviso",
@@ -98,7 +170,6 @@ namespace gosti2
                 return false;
             }
 
-            // Validar senha
             if (string.IsNullOrWhiteSpace(txtSenha.Text) || txtSenha.Text.Length < 6)
             {
                 MessageBox.Show("Senha deve ter pelo menos 6 caracteres.", "Aviso",
@@ -107,7 +178,6 @@ namespace gosti2
                 return false;
             }
 
-            // Validar data
             if (string.IsNullOrWhiteSpace(txtDataNascimento.Text) || txtDataNascimento.Text == "  /  /")
             {
                 MessageBox.Show("Data de nascimento é obrigatória.", "Aviso",
@@ -117,6 +187,16 @@ namespace gosti2
             }
 
             return true;
+        }
+
+        private string CriptografarSenha(string senha)
+        {
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(senha + "BookConnect2024");
+                byte[] hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
         }
 
         private void btnSair_Click(object sender, EventArgs e)
@@ -129,7 +209,6 @@ namespace gosti2
             }
         }
 
-        // Eventos para melhorar UX com a máscara de data
         private void txtDataNascimento_Enter(object sender, EventArgs e)
         {
             if (txtDataNascimento.Text == "  /  /")
@@ -144,24 +223,6 @@ namespace gosti2
             {
                 txtDataNascimento.Text = "  /  /";
             }
-        }
-
-        // Mostrar/ocultar senha
-        private void btnMostrarSenha_MouseDown(object sender, MouseEventArgs e)
-        {
-            txtSenha.UseSystemPasswordChar = false;
-            txtConfirmarSenha.UseSystemPasswordChar = false;
-        }
-
-        private void btnMostrarSenha_MouseUp(object sender, MouseEventArgs e)
-        {
-            txtSenha.UseSystemPasswordChar = true;
-            txtConfirmarSenha.UseSystemPasswordChar = true;
-        }
-
-        private void pictureBoxLogo_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

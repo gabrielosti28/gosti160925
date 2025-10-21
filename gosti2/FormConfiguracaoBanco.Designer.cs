@@ -23,7 +23,6 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConfiguracaoBanco));
             this.txtServidor = new System.Windows.Forms.TextBox();
             this.txtBanco = new System.Windows.Forms.TextBox();
             this.btnTestarConexao = new System.Windows.Forms.Button();
@@ -32,7 +31,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.linkAjuda = new System.Windows.Forms.LinkLabel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txtSenha = new System.Windows.Forms.TextBox();
@@ -44,7 +42,6 @@
             this.btnDetectarServidores = new System.Windows.Forms.Button();
             this.panelStatus = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBoxAutenticacao.SuspendLayout();
             this.panelStatus.SuspendLayout();
             this.SuspendLayout();
@@ -122,7 +119,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(20, 83);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 15);
+            this.label1.Size = new System.Drawing.Size(99, 15);
             this.label1.TabIndex = 10;
             this.label1.Text = "🖥️ Servidor SQL:";
             // 
@@ -132,7 +129,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(20, 113);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 15);
+            this.label2.Size = new System.Drawing.Size(97, 15);
             this.label2.TabIndex = 11;
             this.label2.Text = "🗃️ Banco Dados:";
             // 
@@ -143,21 +140,11 @@
             this.linkAjuda.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.linkAjuda.Location = new System.Drawing.Point(320, 360);
             this.linkAjuda.Name = "linkAjuda";
-            this.linkAjuda.Size = new System.Drawing.Size(50, 13);
+            this.linkAjuda.Size = new System.Drawing.Size(49, 13);
             this.linkAjuda.TabIndex = 10;
             this.linkAjuda.TabStop = true;
             this.linkAjuda.Text = "Ajuda 💡";
             this.linkAjuda.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAjuda_LinkClicked);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::gosti2.Properties.Resources.default_book_cover;
-            this.pictureBox1.Location = new System.Drawing.Point(20, 20);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(50, 50);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 8;
-            this.pictureBox1.TabStop = false;
             // 
             // label3
             // 
@@ -165,7 +152,7 @@
             this.label3.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(80, 30);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(290, 25);
+            this.label3.Size = new System.Drawing.Size(283, 25);
             this.label3.TabIndex = 9;
             this.label3.Text = "Configuração do Banco Dados";
             // 
@@ -175,7 +162,7 @@
             this.label4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(40, 243);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(74, 15);
+            this.label4.Size = new System.Drawing.Size(76, 15);
             this.label4.TabIndex = 15;
             this.label4.Text = "🔒 Password:";
             // 
@@ -195,7 +182,7 @@
             this.label5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(40, 213);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(74, 15);
+            this.label5.Size = new System.Drawing.Size(81, 15);
             this.label5.TabIndex = 13;
             this.label5.Text = "👤 Username:";
             // 
@@ -215,7 +202,7 @@
             this.rbWindowsAuth.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rbWindowsAuth.Location = new System.Drawing.Point(20, 20);
             this.rbWindowsAuth.Name = "rbWindowsAuth";
-            this.rbWindowsAuth.Size = new System.Drawing.Size(180, 19);
+            this.rbWindowsAuth.Size = new System.Drawing.Size(177, 19);
             this.rbWindowsAuth.TabIndex = 3;
             this.rbWindowsAuth.TabStop = true;
             this.rbWindowsAuth.Text = "🔓 Autenticação do Windows";
@@ -228,7 +215,7 @@
             this.rbSqlAuth.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rbSqlAuth.Location = new System.Drawing.Point(20, 45);
             this.rbSqlAuth.Name = "rbSqlAuth";
-            this.rbSqlAuth.Size = new System.Drawing.Size(200, 19);
+            this.rbSqlAuth.Size = new System.Drawing.Size(186, 19);
             this.rbSqlAuth.TabIndex = 4;
             this.rbSqlAuth.Text = "🔑 Autenticação do SQL Server";
             this.rbSqlAuth.UseVisualStyleBackColor = true;
@@ -279,7 +266,7 @@
             this.lblStatus.ForeColor = System.Drawing.Color.Gray;
             this.lblStatus.Location = new System.Drawing.Point(5, 5);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(165, 13);
+            this.lblStatus.Size = new System.Drawing.Size(183, 13);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "Configure a conexão com o banco";
             // 
@@ -297,7 +284,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.txtUsuario);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.linkAjuda);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -308,14 +294,11 @@
             this.Controls.Add(this.txtServidor);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormConfiguracaoBanco";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuração do Banco - BookConnect";
-           // this.Load += new System.EventHandler(this.FormConfiguracaoBanco_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBoxAutenticacao.ResumeLayout(false);
             this.groupBoxAutenticacao.PerformLayout();
             this.panelStatus.ResumeLayout(false);
@@ -335,7 +318,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel linkAjuda;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtSenha;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using gosti2.Data;
@@ -11,7 +13,6 @@ namespace gosti2
         {
             InitializeComponent();
 
-            // Verificar se está logado
             if (!AppManager.EstaLogado)
             {
                 MessageBox.Show("É necessário fazer login primeiro.", "Aviso",
@@ -33,7 +34,35 @@ namespace gosti2
                 ? "🌟 Apaixonado por livros..."
                 : usuario.Bio;
 
+            // CARREGA A FOTO DO USUÁRIO
+            CarregarFotoPerfil();
+
             CarregarEstatisticas();
+        }
+
+        private void CarregarFotoPerfil()
+        {
+            var usuario = AppManager.UsuarioLogado;
+
+            try
+            {
+                if (usuario.FotoPerfil != null && usuario.FotoPerfil.Length > 0)
+                {
+                    using (MemoryStream ms = new MemoryStream(usuario.FotoPerfil))
+                    {
+                        pictureBoxPerfil.Image = Image.FromStream(ms);
+                    }
+                }
+                else
+                {
+                    // Foto padrão (cinza)
+                    pictureBoxPerfil.BackColor = Color.LightGray;
+                }
+            }
+            catch
+            {
+                pictureBoxPerfil.BackColor = Color.LightGray;
+            }
         }
 
         private void CarregarEstatisticas()
@@ -44,7 +73,6 @@ namespace gosti2
                     AppManager.ObterEstatisticasUsuario();
 
                 lblLivrosCadastrados.Text = totalLivros.ToString();
-                // Estatísticas adicionais podem ser exibidas aqui
             }
             catch (Exception ex)
             {
@@ -90,6 +118,11 @@ namespace gosti2
                 AppManager.Logout();
                 this.Close();
             }
+        }
+
+        private void listBoxAtividades_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
