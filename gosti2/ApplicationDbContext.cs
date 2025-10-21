@@ -13,8 +13,11 @@ namespace gosti2.Data
             Configuration.ProxyCreationEnabled = false;
             Configuration.AutoDetectChangesEnabled = true;
 
-            // Não criar banco automaticamente - usar o script SQL fornecido
-            Database.SetInitializer<ApplicationDbContext>(null);
+            // CRIAR BANCO AUTOMATICAMENTE SE NÃO EXISTIR
+            Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationDbContext>());
+
+            // Garantir que o banco existe
+            Database.Initialize(force: false);
         }
 
         // DbSets - APENAS O QUE É USADO

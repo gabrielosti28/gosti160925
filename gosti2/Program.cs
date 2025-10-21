@@ -12,21 +12,61 @@ namespace gosti2
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Inicialização direta
             try
             {
-                // Tela de login primeiro
-                using (var login = new FormMenu())
+                // VERIFICAR BANCO ANTES DE INICIAR
+                if (!VerificarOuConfigurarBanco())
                 {
-                    if (login.ShowDialog() == DialogResult.OK)
-                    {
-                        Application.Run(new FormPrincipal());
-                    }
+                    return; // Sai do programa se não conseguir configurar
+                }
+
+                // Tela de menu primeiro
+                using (var menu = new FormMenu())
+                {
+                    Application.Run(menu);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao iniciar: {ex.Message}", "Erro");
+                MessageBox.Show($"Erro ao iniciar o sistema:\n\n{ex.Message}\n\nDetalhes: {ex.InnerException?.Message}",
+                    "Erro Fatal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static bool VerificarOuConfigurarBanco()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    // Tenta conectar e criar o banco se não existir
+                    db.Database.CreateIfNotExists();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                var result = MessageBox.Show(
+                    $"❌ Não foi possível conectar ao banco de dados.\n\n" +
+                    $"Erro: {ex.Message}\n\n" +
+                    $"Deseja configurar a conexão agora?",
+                    "Erro de Conexão",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Error);
+
+                if (result == DialogResult.Yes)
+                {
+                    using (var formConfig = new FormConfiguracaoBanco())
+                    {
+                        if (formConfig.ShowDialog() == DialogResult.OK)
+                        {
+                            // Tenta novamente após configuração
+                            return VerificarOuConfigurarBanco();
+                        }
+                    }
+                }
+
+                return false;
             }
         }
     }
