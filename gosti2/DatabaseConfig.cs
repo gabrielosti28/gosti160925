@@ -16,7 +16,7 @@ namespace gosti2.Data
                     return config.ConnectionString;
 
                 // Fallback seguro
-                return @"Server=.\SQLEXPRESS;Database=CJ3027333PR2;Trusted_Connection=true;TrustServerCertificate=true;";
+                return @"Server=.\SQLEXPRESS;Database=CJ3O27333PR2;Trusted_Connection=true;TrustServerCertificate=true;";
             }
         }
 

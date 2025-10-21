@@ -6,7 +6,7 @@ namespace gosti2
     {
         public static string ConnectionString =>
             ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString
-            ?? @"Server=.\SQLEXPRESS;Database=CJ3027333PR2;Trusted_Connection=true;TrustServerCertificate=true;";
+            ?? @"Server=.\SQLEXPRESS;Database=CJ3O27333PR2;Trusted_Connection=true;TrustServerCertificate=true;";
 
         public static void SalvarConfiguracaoBanco(string servidor, string banco, bool windowsAuth, string usuario = null, string senha = null)
         {
