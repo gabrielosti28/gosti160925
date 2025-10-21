@@ -158,5 +158,10 @@ namespace gosti2
             txtSenha.UseSystemPasswordChar = true;
             txtConfirmarSenha.UseSystemPasswordChar = true;
         }
+
+        private void pictureBoxLogo_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

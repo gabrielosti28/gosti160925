@@ -22,10 +22,14 @@ namespace gosti2
             // Texto detalhado sobre como usar o sistema
             labelComoUsar.Text = "📖 COMO USAR O SISTEMA:\n\n" +
                                 "1. 🔐 Faça login ou crie uma conta\n" +
+                               
                                 "2. 📚 Adicione seus livros favoritos\n" +
-                                "3. ⭐ Crie tier lists personalizadas\n" +
-                                "4. 💬 Converse com outros leitores\n" +
-                                "5. 👥 Compartilhe suas descobertas\n\n" +
+                               
+                                "3. 💬 Converse com outros leitores\n" +
+                               
+                                "4. 👥 Compartilhe suas descobertas\n\n" +
+                                 
+                                "5. Faça seu perfil ser a sua cara\n\n" +
                                 "💡 Dica: Use o menu principal para navegar entre as funcionalidades!";
         }
 

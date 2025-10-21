@@ -25,10 +25,6 @@
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
-            this.linkLogin = new System.Windows.Forms.LinkLabel();
-            this.panelForcaSenha = new System.Windows.Forms.Panel();
-            this.lblForcaSenha = new System.Windows.Forms.Label();
-            this.btnMostrarSenha = new System.Windows.Forms.CheckBox();
             this.txtBio = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtDataNascimento = new System.Windows.Forms.MaskedTextBox();
@@ -100,6 +96,7 @@
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxLogo.TabIndex = 0;
             this.pictureBoxLogo.TabStop = false;
+            this.pictureBoxLogo.Click += new System.EventHandler(this.pictureBoxLogo_Click);
             // 
             // panelConteudo
             // 
@@ -115,10 +112,6 @@
             // 
             // panelFormulario
             // 
-            this.panelFormulario.Controls.Add(this.linkLogin);
-            this.panelFormulario.Controls.Add(this.panelForcaSenha);
-            this.panelFormulario.Controls.Add(this.lblForcaSenha);
-            this.panelFormulario.Controls.Add(this.btnMostrarSenha);
             this.panelFormulario.Controls.Add(this.txtBio);
             this.panelFormulario.Controls.Add(this.label6);
             this.panelFormulario.Controls.Add(this.txtDataNascimento);
@@ -136,51 +129,6 @@
             this.panelFormulario.Name = "panelFormulario";
             this.panelFormulario.Size = new System.Drawing.Size(600, 460);
             this.panelFormulario.TabIndex = 2;
-            // 
-            // linkLogin
-            // 
-            this.linkLogin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.linkLogin.AutoSize = true;
-            this.linkLogin.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLogin.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.linkLogin.Location = new System.Drawing.Point(50, 420);
-            this.linkLogin.Name = "linkLogin";
-            this.linkLogin.Size = new System.Drawing.Size(286, 19);
-            this.linkLogin.TabIndex = 8;
-            this.linkLogin.TabStop = true;
-            this.linkLogin.Text = "Já tem uma conta? ➤ Clique aqui para entrar";
-            // 
-            // panelForcaSenha
-            // 
-            this.panelForcaSenha.BackColor = System.Drawing.Color.Silver;
-            this.panelForcaSenha.Location = new System.Drawing.Point(350, 350);
-            this.panelForcaSenha.Name = "panelForcaSenha";
-            this.panelForcaSenha.Size = new System.Drawing.Size(200, 8);
-            this.panelForcaSenha.TabIndex = 15;
-            // 
-            // lblForcaSenha
-            // 
-            this.lblForcaSenha.AutoSize = true;
-            this.lblForcaSenha.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblForcaSenha.ForeColor = System.Drawing.Color.Gray;
-            this.lblForcaSenha.Location = new System.Drawing.Point(350, 320);
-            this.lblForcaSenha.Name = "lblForcaSenha";
-            this.lblForcaSenha.Size = new System.Drawing.Size(85, 13);
-            this.lblForcaSenha.TabIndex = 14;
-            this.lblForcaSenha.Text = "Força da senha";
-            // 
-            // btnMostrarSenha
-            // 
-            this.btnMostrarSenha.AutoSize = true;
-            this.btnMostrarSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMostrarSenha.Location = new System.Drawing.Point(350, 280);
-            this.btnMostrarSenha.Name = "btnMostrarSenha";
-            this.btnMostrarSenha.Size = new System.Drawing.Size(101, 19);
-            this.btnMostrarSenha.TabIndex = 6;
-            this.btnMostrarSenha.Text = "Mostrar senha";
-            this.btnMostrarSenha.UseVisualStyleBackColor = true;
-            this.btnMostrarSenha.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMostrarSenha_MouseDown);
-            this.btnMostrarSenha.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMostrarSenha_MouseUp);
             // 
             // txtBio
             // 
@@ -431,10 +379,6 @@
         private System.Windows.Forms.TextBox txtNomeUsuario;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ErrorProvider errorProvider;
-        private System.Windows.Forms.LinkLabel linkLogin;
-        private System.Windows.Forms.CheckBox btnMostrarSenha;
-        private System.Windows.Forms.Panel panelForcaSenha;
-        private System.Windows.Forms.Label lblForcaSenha;
         private System.Windows.Forms.Label lblEstatistica;
     }
 }

@@ -30,16 +30,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
             this.panelSuperior = new System.Windows.Forms.Panel();
             this.labelTitulo = new System.Windows.Forms.Label();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.chkMostrarSenha = new System.Windows.Forms.CheckBox();
-            this.chkLembrarUsuario = new System.Windows.Forms.CheckBox();
-            this.linkEsqueciSenha = new System.Windows.Forms.LinkLabel();
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.labelSenha = new System.Windows.Forms.Label();
             this.txtEmail = new System.Windows.Forms.TextBox();
@@ -81,7 +76,7 @@
             this.labelTitulo.ForeColor = System.Drawing.Color.White;
             this.labelTitulo.Location = new System.Drawing.Point(100, 35);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(280, 32);
+            this.labelTitulo.Size = new System.Drawing.Size(295, 32);
             this.labelTitulo.TabIndex = 1;
             this.labelTitulo.Text = "📚 Login - BookConnect";
             // 
@@ -110,10 +105,6 @@
             // 
             // panelFormulario
             // 
-            this.panelFormulario.Controls.Add(this.progressBar);
-            this.panelFormulario.Controls.Add(this.chkMostrarSenha);
-            this.panelFormulario.Controls.Add(this.chkLembrarUsuario);
-            this.panelFormulario.Controls.Add(this.linkEsqueciSenha);
             this.panelFormulario.Controls.Add(this.txtSenha);
             this.panelFormulario.Controls.Add(this.labelSenha);
             this.panelFormulario.Controls.Add(this.txtEmail);
@@ -123,51 +114,6 @@
             this.panelFormulario.Name = "panelFormulario";
             this.panelFormulario.Size = new System.Drawing.Size(400, 320);
             this.panelFormulario.TabIndex = 3;
-            // 
-            // progressBar
-            // 
-            this.progressBar.Location = new System.Drawing.Point(50, 280);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(300, 10);
-            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.progressBar.TabIndex = 8;
-            this.progressBar.Visible = false;
-            // 
-            // chkMostrarSenha
-            // 
-            this.chkMostrarSenha.AutoSize = true;
-            this.chkMostrarSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkMostrarSenha.Location = new System.Drawing.Point(200, 195);
-            this.chkMostrarSenha.Name = "chkMostrarSenha";
-            this.chkMostrarSenha.Size = new System.Drawing.Size(150, 19);
-            this.chkMostrarSenha.TabIndex = 3;
-            this.chkMostrarSenha.Text = "👁️ Mostrar senha";
-            this.chkMostrarSenha.UseVisualStyleBackColor = true;
-            this.chkMostrarSenha.CheckedChanged += new System.EventHandler(this.chkMostrarSenha_CheckedChanged);
-            // 
-            // chkLembrarUsuario
-            // 
-            this.chkLembrarUsuario.AutoSize = true;
-            this.chkLembrarUsuario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkLembrarUsuario.Location = new System.Drawing.Point(50, 195);
-            this.chkLembrarUsuario.Name = "chkLembrarUsuario";
-            this.chkLembrarUsuario.Size = new System.Drawing.Size(144, 19);
-            this.chkLembrarUsuario.TabIndex = 2;
-            this.chkLembrarUsuario.Text = "💾 Lembrar usuário";
-            this.chkLembrarUsuario.UseVisualStyleBackColor = true;
-            // 
-            // linkEsqueciSenha
-            // 
-            this.linkEsqueciSenha.AutoSize = true;
-            this.linkEsqueciSenha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkEsqueciSenha.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.linkEsqueciSenha.Location = new System.Drawing.Point(50, 250);
-            this.linkEsqueciSenha.Name = "linkEsqueciSenha";
-            this.linkEsqueciSenha.Size = new System.Drawing.Size(150, 15);
-            this.linkEsqueciSenha.TabIndex = 4;
-            this.linkEsqueciSenha.TabStop = true;
-            this.linkEsqueciSenha.Text = "🔓 Esqueci minha senha";
-            this.linkEsqueciSenha.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEsqueciSenha_LinkClicked);
             // 
             // txtSenha
             // 
@@ -186,7 +132,7 @@
             this.labelSenha.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelSenha.Location = new System.Drawing.Point(50, 130);
             this.labelSenha.Name = "labelSenha";
-            this.labelSenha.Size = new System.Drawing.Size(103, 20);
+            this.labelSenha.Size = new System.Drawing.Size(106, 20);
             this.labelSenha.TabIndex = 2;
             this.labelSenha.Text = "🔑 Password:";
             // 
@@ -206,9 +152,9 @@
             this.labelEmail.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelEmail.Location = new System.Drawing.Point(50, 40);
             this.labelEmail.Name = "labelEmail";
-            this.labelEmail.Size = new System.Drawing.Size(110, 20);
+            this.labelEmail.Size = new System.Drawing.Size(77, 20);
             this.labelEmail.TabIndex = 0;
-            this.labelEmail.Text = "📧 Username:";
+            this.labelEmail.Text = "📧 Email:";
             // 
             // panelBotoes
             // 
@@ -233,7 +179,7 @@
             this.btnEntrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEntrar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEntrar.ForeColor = System.Drawing.Color.White;
-            this.btnEntrar.Location = new System.Drawing.Point(20, 20);
+            this.btnEntrar.Location = new System.Drawing.Point(20, 80);
             this.btnEntrar.Name = "btnEntrar";
             this.btnEntrar.Size = new System.Drawing.Size(220, 70);
             this.btnEntrar.TabIndex = 5;
@@ -251,7 +197,7 @@
             this.btnCadastro.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCadastro.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCadastro.ForeColor = System.Drawing.Color.White;
-            this.btnCadastro.Location = new System.Drawing.Point(20, 90);
+            this.btnCadastro.Location = new System.Drawing.Point(20, 20);
             this.btnCadastro.Name = "btnCadastro";
             this.btnCadastro.Size = new System.Drawing.Size(220, 60);
             this.btnCadastro.TabIndex = 6;
@@ -338,7 +284,6 @@
             this.Controls.Add(this.panelRodape);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormLogin";
@@ -365,7 +310,6 @@
         private System.Windows.Forms.PictureBox pictureBoxLogo;
         private System.Windows.Forms.Panel panelConteudo;
         private System.Windows.Forms.Panel panelFormulario;
-        private System.Windows.Forms.LinkLabel linkEsqueciSenha;
         private System.Windows.Forms.TextBox txtSenha;
         private System.Windows.Forms.Label labelSenha;
         private System.Windows.Forms.TextBox txtEmail;
@@ -379,8 +323,5 @@
         private System.Windows.Forms.Panel panelRodape;
         private System.Windows.Forms.Label labelCopyright;
         private System.Windows.Forms.ErrorProvider errorProvider;
-        private System.Windows.Forms.CheckBox chkLembrarUsuario;
-        private System.Windows.Forms.CheckBox chkMostrarSenha;
-        private System.Windows.Forms.ProgressBar progressBar;
     }
 }

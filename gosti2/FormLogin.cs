@@ -73,11 +73,7 @@ namespace gosti2
             }
         }
 
-        private void chkMostrarSenha_CheckedChanged(object sender, EventArgs e)
-        {
-            // Alterna visibilidade da senha
-            txtSenha.PasswordChar = chkMostrarSenha.Checked ? '\0' : '•';
-        }
+       
 
         private void linkEsqueciSenha_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -116,5 +112,7 @@ namespace gosti2
             errorProvider.SetError(txtSenha,
                 string.IsNullOrWhiteSpace(txtSenha.Text) ? "Senha é obrigatória" : "");
         }
+
+       
     }
 }
