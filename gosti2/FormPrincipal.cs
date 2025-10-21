@@ -106,8 +106,13 @@ namespace gosti2
 
         private void btnPerfil_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("👤 Funcionalidade de perfil em desenvolvimento!",
-                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Hide();
+            using (var FormMeuPerfil = new FormMeuPerfil())
+            {
+                FormMeuPerfil.ShowDialog();
+            }
+            this.Show();
+            CarregarEstatisticas();
         }
 
         private void btnSair_Click(object sender, EventArgs e)

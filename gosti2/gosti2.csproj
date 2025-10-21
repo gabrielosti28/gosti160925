@@ -101,6 +101,12 @@
     <Compile Include="FormMenu.Designer.cs">
       <DependentUpon>FormMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormMeuPerfil.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMeuPerfil.Designer.cs">
+      <DependentUpon>FormMeuPerfil.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMeusLivros.cs">
       <SubType>Form</SubType>
     </Compile>
