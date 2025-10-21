@@ -44,9 +44,21 @@ namespace gosti2
             // Habilitar/desabilitar botões baseado na seleção
             dataGridViewLivros.SelectionChanged += (s, e) =>
             {
-                bool temSelecao = dataGridViewLivros.SelectedRows.Count > 0;
-                btnEditar.Enabled = temSelecao;
-                btnRemover.Enabled = temSelecao;
+                if (dataGridViewLivros.SelectedRows.Count > 0)
+                {
+                    // Verifica se o livro selecionado pertence ao usuário logado
+                    int livroUsuarioId = Convert.ToInt32(
+                        dataGridViewLivros.SelectedRows[0].Cells["UsuarioId"].Value);
+
+                    bool ehDonoDoLivro = (livroUsuarioId == usuarioLogadoId);
+                    btnEditar.Enabled = ehDonoDoLivro;
+                    btnRemover.Enabled = ehDonoDoLivro;
+                }
+                else
+                {
+                    btnEditar.Enabled = false;
+                    btnRemover.Enabled = false;
+                }
             };
 
             // Duplo clique para abrir detalhes
@@ -81,8 +93,9 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
+                    // ✅ CARREGA TODOS OS LIVROS DO SISTEMA
                     var livros = context.Livros
-                        .Where(l => l.UsuarioId == usuarioLogadoId)
+                        .Include(l => l.Usuario)
                         .OrderByDescending(l => l.DataAdicao)
                         .ToList();
 
@@ -92,13 +105,32 @@ namespace gosti2
                     {
                         int rowIndex = dataGridViewLivros.Rows.Add(
                             livro.LivroId,
-                            null, // Capa (pode ser implementada depois)
+                            null, // Capa
                             livro.Titulo,
                             livro.Autor,
                             livro.Genero,
                             livro.Lido ? "✅ Lido" : "📖 Para Ler",
                             livro.DataAdicao.ToString("dd/MM/yyyy")
                         );
+
+                        // Adiciona coluna oculta com UsuarioId para verificação
+                        if (dataGridViewLivros.Columns["UsuarioId"] == null)
+                        {
+                            var col = new DataGridViewTextBoxColumn
+                            {
+                                Name = "UsuarioId",
+                                Visible = false
+                            };
+                            dataGridViewLivros.Columns.Add(col);
+                        }
+                        dataGridViewLivros.Rows[rowIndex].Cells["UsuarioId"].Value = livro.UsuarioId;
+
+                        // Destaca livros do usuário logado
+                        if (livro.UsuarioId == usuarioLogadoId)
+                        {
+                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
+                                Color.LightCyan;
+                        }
 
                         // Destaca favoritos
                         if (livro.Favorito)
@@ -124,9 +156,10 @@ namespace gosti2
             {
                 using (var context = new ApplicationDbContext())
                 {
+                    // ✅ BUSCA EM TODOS OS LIVROS DO SISTEMA
                     var livros = context.Livros
-                        .Where(l => l.UsuarioId == usuarioLogadoId &&
-                                   (l.Titulo.Contains(termo) || l.Autor.Contains(termo)))
+                        .Include(l => l.Usuario)
+                        .Where(l => l.Titulo.Contains(termo) || l.Autor.Contains(termo))
                         .OrderByDescending(l => l.DataAdicao)
                         .ToList();
 
@@ -143,6 +176,24 @@ namespace gosti2
                             livro.Lido ? "✅ Lido" : "📖 Para Ler",
                             livro.DataAdicao.ToString("dd/MM/yyyy")
                         );
+
+                        // Garante que a coluna existe
+                        if (dataGridViewLivros.Columns["UsuarioId"] == null)
+                        {
+                            var col = new DataGridViewTextBoxColumn
+                            {
+                                Name = "UsuarioId",
+                                Visible = false
+                            };
+                            dataGridViewLivros.Columns.Add(col);
+                        }
+                        dataGridViewLivros.Rows[rowIndex].Cells["UsuarioId"].Value = livro.UsuarioId;
+
+                        if (livro.UsuarioId == usuarioLogadoId)
+                        {
+                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
+                                Color.LightCyan;
+                        }
 
                         if (livro.Favorito)
                         {
@@ -161,8 +212,23 @@ namespace gosti2
 
         private void AtualizarEstatisticas()
         {
-            var (total, lidos, favoritos) = AppManager.ObterEstatisticasUsuario();
-            lblEstatisticas.Text = $"📚 {total} Livros | ✅ {lidos} Lidos | ⭐ {favoritos} Favoritos";
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // Estatísticas gerais do sistema
+                    var totalLivros = context.Livros.Count();
+                    var livrosLidos = context.Livros.Count(l => l.Lido);
+                    var livrosFavoritos = context.Livros.Count(l => l.Favorito);
+
+                    lblEstatisticas.Text = $"📚 {totalLivros} Livros no Sistema | ✅ {livrosLidos} Lidos | ⭐ {livrosFavoritos} Favoritos";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao atualizar estatísticas: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnAdicionar_Click(object sender, EventArgs e)
