@@ -30,7 +30,6 @@
         {
             this.panelSuperior = new System.Windows.Forms.Panel();
             this.lblUsuario = new System.Windows.Forms.Label();
-            this.panelLogo = new System.Windows.Forms.Panel();
             this.panelLateral = new System.Windows.Forms.Panel();
             this.btnPerfil = new System.Windows.Forms.Button();
             this.btnTierList = new System.Windows.Forms.Button();
@@ -48,14 +47,13 @@
             this.panelMensagens = new System.Windows.Forms.Panel();
             this.lblMensagens = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBoxPerfil = new System.Windows.Forms.PictureBox();
             this.lblBio = new System.Windows.Forms.Label();
-            this.lblBemVindo = new System.Windows.Forms.Label();
             this.panelAtividades = new System.Windows.Forms.Panel();
             this.listBoxAtividades = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panelRodape = new System.Windows.Forms.Panel();
             this.labelCopyright = new System.Windows.Forms.Label();
+            this.pictureBoxPerfil = new System.Windows.Forms.PictureBox();
             this.panelSuperior.SuspendLayout();
             this.panelLateral.SuspendLayout();
             this.panelConteudo.SuspendLayout();
@@ -63,16 +61,16 @@
             this.panelLivros.SuspendLayout();
             this.panelAmigos.SuspendLayout();
             this.panelMensagens.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
             this.panelAtividades.SuspendLayout();
             this.panelRodape.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSuperior
             // 
             this.panelSuperior.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.panelSuperior.Controls.Add(this.lblUsuario);
-            this.panelSuperior.Controls.Add(this.panelLogo);
+            this.panelSuperior.Controls.Add(this.pictureBoxPerfil);
             this.panelSuperior.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelSuperior.Location = new System.Drawing.Point(0, 0);
             this.panelSuperior.Name = "panelSuperior";
@@ -89,15 +87,6 @@
             this.lblUsuario.Size = new System.Drawing.Size(236, 32);
             this.lblUsuario.TabIndex = 1;
             this.lblUsuario.Text = "Bem-vindo, Usuário!";
-            // 
-            // panelLogo
-            // 
-            this.panelLogo.BackColor = System.Drawing.Color.White;
-            this.panelLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.panelLogo.Location = new System.Drawing.Point(25, 15);
-            this.panelLogo.Name = "panelLogo";
-            this.panelLogo.Size = new System.Drawing.Size(60, 60);
-            this.panelLogo.TabIndex = 0;
             // 
             // panelLateral
             // 
@@ -219,9 +208,7 @@
             // 
             this.panelConteudo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.panelConteudo.Controls.Add(this.panelEstatisticas);
-            this.panelConteudo.Controls.Add(this.pictureBoxPerfil);
             this.panelConteudo.Controls.Add(this.lblBio);
-            this.panelConteudo.Controls.Add(this.lblBemVindo);
             this.panelConteudo.Controls.Add(this.panelAtividades);
             this.panelConteudo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelConteudo.Location = new System.Drawing.Point(220, 90);
@@ -337,17 +324,6 @@
             this.label2.Text = "✉️ Mensagens";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // pictureBoxPerfil
-            // 
-            this.pictureBoxPerfil.BackColor = System.Drawing.Color.White;
-            this.pictureBoxPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxPerfil.Location = new System.Drawing.Point(33, 33);
-            this.pictureBoxPerfil.Name = "pictureBoxPerfil";
-            this.pictureBoxPerfil.Size = new System.Drawing.Size(60, 60);
-            this.pictureBoxPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxPerfil.TabIndex = 7;
-            this.pictureBoxPerfil.TabStop = false;
-            // 
             // lblBio
             // 
             this.lblBio.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -358,17 +334,6 @@
             this.lblBio.TabIndex = 8;
             this.lblBio.Text = "Bio do usuário será exibida aqui...";
             this.lblBio.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblBemVindo
-            // 
-            this.lblBemVindo.Font = new System.Drawing.Font("Segoe UI Semibold", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBemVindo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.lblBemVindo.Location = new System.Drawing.Point(100, 40);
-            this.lblBemVindo.Name = "lblBemVindo";
-            this.lblBemVindo.Size = new System.Drawing.Size(250, 40);
-            this.lblBemVindo.TabIndex = 9;
-            this.lblBemVindo.Text = "Bem-vindo de volta!";
-            this.lblBemVindo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // panelAtividades
             // 
@@ -438,6 +403,18 @@
             this.labelCopyright.Text = "© 2024 BookConnect - Sua jornada literária começa aqui!";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // pictureBoxPerfil
+            // 
+            this.pictureBoxPerfil.BackColor = System.Drawing.Color.White;
+            this.pictureBoxPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxPerfil.Location = new System.Drawing.Point(12, 12);
+            this.pictureBoxPerfil.Name = "pictureBoxPerfil";
+            this.pictureBoxPerfil.Size = new System.Drawing.Size(82, 72);
+            this.pictureBoxPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxPerfil.TabIndex = 7;
+            this.pictureBoxPerfil.TabStop = false;
+            this.pictureBoxPerfil.Click += new System.EventHandler(this.pictureBoxPerfil_Click);
+            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -463,9 +440,9 @@
             this.panelLivros.ResumeLayout(false);
             this.panelAmigos.ResumeLayout(false);
             this.panelMensagens.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).EndInit();
             this.panelAtividades.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -474,7 +451,6 @@
 
         private System.Windows.Forms.Panel panelSuperior;
         private System.Windows.Forms.Label lblUsuario;
-        private System.Windows.Forms.Panel panelLogo;
         private System.Windows.Forms.Panel panelLateral;
         private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.Panel panelConteudo;
@@ -487,7 +463,6 @@
         private System.Windows.Forms.ListBox listBoxAtividades;
         private System.Windows.Forms.PictureBox pictureBoxPerfil;
         private System.Windows.Forms.Label lblBio;
-        private System.Windows.Forms.Label lblBemVindo;
         private System.Windows.Forms.Panel panelAtividades;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panelEstatisticas;

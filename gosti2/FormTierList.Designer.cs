@@ -1,0 +1,189 @@
+﻿namespace gosti2
+{
+    partial class FormTierList
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+                components.Dispose();
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        private void InitializeComponent()
+        {
+            this.panelTopo = new System.Windows.Forms.Panel();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.panelBotoes = new System.Windows.Forms.Panel();
+            this.btnCriarTier = new System.Windows.Forms.Button();
+            this.btnEditar = new System.Windows.Forms.Button();
+            this.btnRemover = new System.Windows.Forms.Button();
+            this.btnAtualizar = new System.Windows.Forms.Button();
+            this.btnFechar = new System.Windows.Forms.Button();
+            this.flowLayoutPanelTiers = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelTopo.SuspendLayout();
+            this.panelBotoes.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // panelTopo
+            // 
+            this.panelTopo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.panelTopo.Controls.Add(this.lblTitulo);
+            this.panelTopo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTopo.Location = new System.Drawing.Point(0, 0);
+            this.panelTopo.Name = "panelTopo";
+            this.panelTopo.Size = new System.Drawing.Size(1000, 60);
+            this.panelTopo.TabIndex = 0;
+            // 
+            // lblTitulo
+            // 
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblTitulo.ForeColor = System.Drawing.Color.White;
+            this.lblTitulo.Location = new System.Drawing.Point(20, 15);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(144, 32);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "⭐ Tier Lists";
+            // 
+            // panelBotoes
+            // 
+            this.panelBotoes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.panelBotoes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelBotoes.Controls.Add(this.btnCriarTier);
+            this.panelBotoes.Controls.Add(this.btnEditar);
+            this.panelBotoes.Controls.Add(this.btnRemover);
+            this.panelBotoes.Controls.Add(this.btnAtualizar);
+            this.panelBotoes.Controls.Add(this.btnFechar);
+            this.panelBotoes.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBotoes.Location = new System.Drawing.Point(0, 620);
+            this.panelBotoes.Name = "panelBotoes";
+            this.panelBotoes.Size = new System.Drawing.Size(1000, 70);
+            this.panelBotoes.TabIndex = 1;
+            // 
+            // btnCriarTier
+            // 
+            this.btnCriarTier.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.btnCriarTier.FlatAppearance.BorderSize = 0;
+            this.btnCriarTier.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCriarTier.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCriarTier.ForeColor = System.Drawing.Color.White;
+            this.btnCriarTier.Location = new System.Drawing.Point(20, 15);
+            this.btnCriarTier.Name = "btnCriarTier";
+            this.btnCriarTier.Size = new System.Drawing.Size(150, 35);
+            this.btnCriarTier.TabIndex = 0;
+            this.btnCriarTier.Text = "➕ Criar Tier List";
+            this.btnCriarTier.UseVisualStyleBackColor = false;
+            this.btnCriarTier.Click += new System.EventHandler(this.btnCriarTier_Click);
+            // 
+            // btnEditar
+            // 
+            this.btnEditar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(150)))), ((int)(((byte)(200)))));
+            this.btnEditar.Enabled = false;
+            this.btnEditar.FlatAppearance.BorderSize = 0;
+            this.btnEditar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEditar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnEditar.ForeColor = System.Drawing.Color.White;
+            this.btnEditar.Location = new System.Drawing.Point(190, 15);
+            this.btnEditar.Name = "btnEditar";
+            this.btnEditar.Size = new System.Drawing.Size(120, 35);
+            this.btnEditar.TabIndex = 1;
+            this.btnEditar.Text = "✏️ Editar";
+            this.btnEditar.UseVisualStyleBackColor = false;
+            this.btnEditar.Click += new System.EventHandler(this.btnEditar_Click);
+            // 
+            // btnRemover
+            // 
+            this.btnRemover.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.btnRemover.Enabled = false;
+            this.btnRemover.FlatAppearance.BorderSize = 0;
+            this.btnRemover.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRemover.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnRemover.ForeColor = System.Drawing.Color.White;
+            this.btnRemover.Location = new System.Drawing.Point(330, 15);
+            this.btnRemover.Name = "btnRemover";
+            this.btnRemover.Size = new System.Drawing.Size(120, 35);
+            this.btnRemover.TabIndex = 2;
+            this.btnRemover.Text = "🗑️ Remover";
+            this.btnRemover.UseVisualStyleBackColor = false;
+            this.btnRemover.Click += new System.EventHandler(this.btnRemover_Click);
+            // 
+            // btnAtualizar
+            // 
+            this.btnAtualizar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(160)))), ((int)(((byte)(90)))));
+            this.btnAtualizar.FlatAppearance.BorderSize = 0;
+            this.btnAtualizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAtualizar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAtualizar.ForeColor = System.Drawing.Color.White;
+            this.btnAtualizar.Location = new System.Drawing.Point(470, 15);
+            this.btnAtualizar.Name = "btnAtualizar";
+            this.btnAtualizar.Size = new System.Drawing.Size(100, 35);
+            this.btnAtualizar.TabIndex = 3;
+            this.btnAtualizar.Text = "🔄 Atualizar";
+            this.btnAtualizar.UseVisualStyleBackColor = false;
+            this.btnAtualizar.Click += new System.EventHandler(this.btnAtualizar_Click);
+            // 
+            // btnFechar
+            // 
+            this.btnFechar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
+            this.btnFechar.FlatAppearance.BorderSize = 0;
+            this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFechar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnFechar.ForeColor = System.Drawing.Color.White;
+            this.btnFechar.Location = new System.Drawing.Point(850, 15);
+            this.btnFechar.Name = "btnFechar";
+            this.btnFechar.Size = new System.Drawing.Size(120, 35);
+            this.btnFechar.TabIndex = 4;
+            this.btnFechar.Text = "❌ Fechar";
+            this.btnFechar.UseVisualStyleBackColor = false;
+            this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
+            // 
+            // flowLayoutPanelTiers
+            // 
+            this.flowLayoutPanelTiers.AutoScroll = true;
+            this.flowLayoutPanelTiers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.flowLayoutPanelTiers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanelTiers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanelTiers.Location = new System.Drawing.Point(0, 60);
+            this.flowLayoutPanelTiers.Name = "flowLayoutPanelTiers";
+            this.flowLayoutPanelTiers.Padding = new System.Windows.Forms.Padding(20);
+            this.flowLayoutPanelTiers.Size = new System.Drawing.Size(1000, 560);
+            this.flowLayoutPanelTiers.TabIndex = 2;
+            this.flowLayoutPanelTiers.WrapContents = false;
+            // 
+            // FormTierList
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(1000, 690);
+            this.Controls.Add(this.flowLayoutPanelTiers);
+            this.Controls.Add(this.panelBotoes);
+            this.Controls.Add(this.panelTopo);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.MinimumSize = new System.Drawing.Size(900, 600);
+            this.Name = "FormTierList";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Tier Lists - BookConnect";
+            this.panelTopo.ResumeLayout(false);
+            this.panelTopo.PerformLayout();
+            this.panelBotoes.ResumeLayout(false);
+            this.ResumeLayout(false);
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Panel panelTopo;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.Panel panelBotoes;
+        private System.Windows.Forms.Button btnCriarTier;
+        private System.Windows.Forms.Button btnEditar;
+        private System.Windows.Forms.Button btnRemover;
+        private System.Windows.Forms.Button btnAtualizar;
+        private System.Windows.Forms.Button btnFechar;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelTiers;
+    }
+}

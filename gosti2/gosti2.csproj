@@ -63,6 +63,7 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="ApplicationDbContext.cs" />
     <Compile Include="AppManager.cs" />
+    <Compile Include="CategoriaTier.cs" />
     <Compile Include="Comentario.cs" />
     <Compile Include="DatabaseConfig.cs" />
     <Compile Include="FormAdicionarLivro.cs">
@@ -119,6 +120,12 @@
     <Compile Include="FormPrincipal.Designer.cs">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormTierList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTierList.Designer.cs">
+      <DependentUpon>FormTierList.cs</DependentUpon>
+    </Compile>
     <Compile Include="infoTela.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -147,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormMenu.resx">
       <DependentUpon>FormMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMeuPerfil.resx">
+      <DependentUpon>FormMeuPerfil.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMeusLivros.resx">
       <DependentUpon>FormMeusLivros.cs</DependentUpon>

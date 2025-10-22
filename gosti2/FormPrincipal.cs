@@ -29,7 +29,7 @@ namespace gosti2
             var usuario = AppManager.UsuarioLogado;
 
             lblUsuario.Text = $"Bem-vindo, {usuario.NomeUsuario}!";
-            lblBemVindo.Text = $"Olá, {usuario.NomeUsuario.Split(' ')[0]}!";
+            //lblBemVindo.Text = $"Olá, {usuario.NomeUsuario.Split(' ')[0]}!";
             lblBio.Text = string.IsNullOrEmpty(usuario.Bio)
                 ? "🌟 Apaixonado por livros..."
                 : usuario.Bio;
@@ -126,6 +126,11 @@ namespace gosti2
         }
 
         private void listBoxAtividades_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxPerfil_Click(object sender, EventArgs e)
         {
 
         }

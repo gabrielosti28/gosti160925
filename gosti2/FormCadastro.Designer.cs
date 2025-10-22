@@ -24,7 +24,6 @@
             this.labelTitulo = new System.Windows.Forms.Label();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
-            this.pictureBoxFotoPerfil = new System.Windows.Forms.PictureBox();
             this.btnSelecionarFoto = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.txtBio = new System.Windows.Forms.TextBox();
@@ -45,13 +44,14 @@
             this.panelRodape = new System.Windows.Forms.Panel();
             this.labelCopyright = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.pictureBoxFotoPerfil = new System.Windows.Forms.PictureBox();
             this.panelSuperior.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).BeginInit();
             this.panelBotoes.SuspendLayout();
             this.panelRodape.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSuperior
@@ -84,7 +84,7 @@
             this.labelTitulo.ForeColor = System.Drawing.Color.White;
             this.labelTitulo.Location = new System.Drawing.Point(100, 35);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(329, 32);
+            this.labelTitulo.Size = new System.Drawing.Size(332, 32);
             this.labelTitulo.TabIndex = 1;
             this.labelTitulo.Text = "📚 Cadastro - BookConnect";
             // 
@@ -122,17 +122,6 @@
             this.panelFormulario.Name = "panelFormulario";
             this.panelFormulario.Size = new System.Drawing.Size(600, 460);
             this.panelFormulario.TabIndex = 2;
-            // 
-            // pictureBoxFotoPerfil
-            // 
-            this.pictureBoxFotoPerfil.BackColor = System.Drawing.Color.LightGray;
-            this.pictureBoxFotoPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxFotoPerfil.Location = new System.Drawing.Point(402, 240);
-            this.pictureBoxFotoPerfil.Name = "pictureBoxFotoPerfil";
-            this.pictureBoxFotoPerfil.Size = new System.Drawing.Size(100, 100);
-            this.pictureBoxFotoPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxFotoPerfil.TabIndex = 14;
-            this.pictureBoxFotoPerfil.TabStop = false;
             // 
             // btnSelecionarFoto
             // 
@@ -218,7 +207,7 @@
             this.label4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(50, 320);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(143, 20);
+            this.label4.Size = new System.Drawing.Size(147, 20);
             this.label4.TabIndex = 6;
             this.label4.Text = "🔒 Confirmar Senha:";
             // 
@@ -276,7 +265,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(50, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(149, 20);
+            this.label1.Size = new System.Drawing.Size(153, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "👤 Nome de Usuário:";
             // 
@@ -354,6 +343,17 @@
             // 
             this.errorProvider.ContainerControl = this;
             // 
+            // pictureBoxFotoPerfil
+            // 
+            this.pictureBoxFotoPerfil.BackColor = System.Drawing.Color.LightGray;
+            this.pictureBoxFotoPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxFotoPerfil.Location = new System.Drawing.Point(391, 245);
+            this.pictureBoxFotoPerfil.Name = "pictureBoxFotoPerfil";
+            this.pictureBoxFotoPerfil.Size = new System.Drawing.Size(121, 100);
+            this.pictureBoxFotoPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxFotoPerfil.TabIndex = 14;
+            this.pictureBoxFotoPerfil.TabStop = false;
+            // 
             // FormCadastro
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,10 +375,10 @@
             this.panelConteudo.ResumeLayout(false);
             this.panelFormulario.ResumeLayout(false);
             this.panelFormulario.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).EndInit();
             this.panelBotoes.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).EndInit();
             this.ResumeLayout(false);
 
         }

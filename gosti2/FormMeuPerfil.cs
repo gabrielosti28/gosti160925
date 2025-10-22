@@ -193,5 +193,20 @@ namespace gosti2
         {
             this.Close();
         }
+
+        private void pictureBoxPerfil_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxFotoPerfil_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSelecionarFoto_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
