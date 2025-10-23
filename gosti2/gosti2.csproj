@@ -84,6 +84,12 @@
     <Compile Include="FormConfiguracaoBanco.Designer.cs">
       <DependentUpon>FormConfiguracaoBanco.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCriacaoTier.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCriacaoTier.Designer.cs">
+      <DependentUpon>FormCriacaoTier.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormLivroAberto.cs">
       <SubType>Form</SubType>
     </Compile>
