@@ -29,6 +29,14 @@
             this.lblTotalComentarios = new System.Windows.Forms.Label();
             this.lblTotalLivros = new System.Windows.Forms.Label();
             this.lblDataLogin = new System.Windows.Forms.Label();
+            this.panelUltimosLivros = new System.Windows.Forms.Panel();
+            this.picLivro3 = new System.Windows.Forms.PictureBox();
+            this.lblLivro3 = new System.Windows.Forms.Label();
+            this.picLivro2 = new System.Windows.Forms.PictureBox();
+            this.lblLivro2 = new System.Windows.Forms.Label();
+            this.picLivro1 = new System.Windows.Forms.PictureBox();
+            this.lblLivro1 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.panelUltimaTierList = new System.Windows.Forms.Panel();
             this.panelTierContent = new System.Windows.Forms.Panel();
             this.lblSemTier = new System.Windows.Forms.Label();
@@ -45,6 +53,10 @@
             this.panelCentral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
             this.panelEstatisticas.SuspendLayout();
+            this.panelUltimosLivros.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro1)).BeginInit();
             this.panelUltimaTierList.SuspendLayout();
             this.panelTierContent.SuspendLayout();
             this.panelPersonalizacao.SuspendLayout();
@@ -57,7 +69,7 @@
             this.panelTopo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTopo.Location = new System.Drawing.Point(0, 0);
             this.panelTopo.Name = "panelTopo";
-            this.panelTopo.Size = new System.Drawing.Size(900, 60);
+            this.panelTopo.Size = new System.Drawing.Size(891, 60);
             this.panelTopo.TabIndex = 0;
             // 
             // lblTitulo
@@ -67,7 +79,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(174, 32);
+            this.lblTitulo.Size = new System.Drawing.Size(169, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "👤 Meu Perfil";
             // 
@@ -155,7 +167,7 @@
             this.lblTotalTierLists.ForeColor = System.Drawing.Color.Gray;
             this.lblTotalTierLists.Location = new System.Drawing.Point(450, 50);
             this.lblTotalTierLists.Name = "lblTotalTierLists";
-            this.lblTotalTierLists.Size = new System.Drawing.Size(111, 20);
+            this.lblTotalTierLists.Size = new System.Drawing.Size(98, 20);
             this.lblTotalTierLists.TabIndex = 3;
             this.lblTotalTierLists.Text = "⭐ Tier Lists: 0";
             // 
@@ -175,7 +187,7 @@
             this.lblTotalLivros.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblTotalLivros.Location = new System.Drawing.Point(30, 50);
             this.lblTotalLivros.Name = "lblTotalLivros";
-            this.lblTotalLivros.Size = new System.Drawing.Size(172, 20);
+            this.lblTotalLivros.Size = new System.Drawing.Size(170, 20);
             this.lblTotalLivros.TabIndex = 1;
             this.lblTotalLivros.Text = "📚 Livros adicionados: 0";
             // 
@@ -185,19 +197,111 @@
             this.lblDataLogin.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblDataLogin.Location = new System.Drawing.Point(30, 20);
             this.lblDataLogin.Name = "lblDataLogin";
-            this.lblDataLogin.Size = new System.Drawing.Size(200, 20);
+            this.lblDataLogin.Size = new System.Drawing.Size(199, 20);
             this.lblDataLogin.TabIndex = 0;
             this.lblDataLogin.Text = "📅 Último login: 00/00/0000";
+            // 
+            // panelUltimosLivros
+            // 
+            this.panelUltimosLivros.BackColor = System.Drawing.Color.White;
+            this.panelUltimosLivros.Controls.Add(this.picLivro3);
+            this.panelUltimosLivros.Controls.Add(this.lblLivro3);
+            this.panelUltimosLivros.Controls.Add(this.picLivro2);
+            this.panelUltimosLivros.Controls.Add(this.lblLivro2);
+            this.panelUltimosLivros.Controls.Add(this.picLivro1);
+            this.panelUltimosLivros.Controls.Add(this.lblLivro1);
+            this.panelUltimosLivros.Controls.Add(this.label7);
+            this.panelUltimosLivros.Location = new System.Drawing.Point(30, 370);
+            this.panelUltimosLivros.Name = "panelUltimosLivros";
+            this.panelUltimosLivros.Size = new System.Drawing.Size(840, 150);
+            this.panelUltimosLivros.TabIndex = 3;
+            // 
+            // picLivro3
+            // 
+            this.picLivro3.BackColor = System.Drawing.Color.LightGray;
+            this.picLivro3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picLivro3.Location = new System.Drawing.Point(580, 40);
+            this.picLivro3.Name = "picLivro3";
+            this.picLivro3.Size = new System.Drawing.Size(80, 100);
+            this.picLivro3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLivro3.TabIndex = 6;
+            this.picLivro3.TabStop = false;
+            // 
+            // lblLivro3
+            // 
+            this.lblLivro3.AutoSize = true;
+            this.lblLivro3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLivro3.Location = new System.Drawing.Point(677, 70);
+            this.lblLivro3.MaximumSize = new System.Drawing.Size(140, 0);
+            this.lblLivro3.Name = "lblLivro3";
+            this.lblLivro3.Size = new System.Drawing.Size(42, 15);
+            this.lblLivro3.TabIndex = 5;
+            this.lblLivro3.Text = "Livro 3";
+            // 
+            // picLivro2
+            // 
+            this.picLivro2.BackColor = System.Drawing.Color.LightGray;
+            this.picLivro2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picLivro2.Location = new System.Drawing.Point(310, 40);
+            this.picLivro2.Name = "picLivro2";
+            this.picLivro2.Size = new System.Drawing.Size(80, 100);
+            this.picLivro2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLivro2.TabIndex = 4;
+            this.picLivro2.TabStop = false;
+            // 
+            // lblLivro2
+            // 
+            this.lblLivro2.AutoSize = true;
+            this.lblLivro2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLivro2.Location = new System.Drawing.Point(407, 70);
+            this.lblLivro2.MaximumSize = new System.Drawing.Size(140, 0);
+            this.lblLivro2.Name = "lblLivro2";
+            this.lblLivro2.Size = new System.Drawing.Size(42, 15);
+            this.lblLivro2.TabIndex = 3;
+            this.lblLivro2.Text = "Livro 2";
+            // 
+            // picLivro1
+            // 
+            this.picLivro1.BackColor = System.Drawing.Color.LightGray;
+            this.picLivro1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picLivro1.Location = new System.Drawing.Point(40, 40);
+            this.picLivro1.Name = "picLivro1";
+            this.picLivro1.Size = new System.Drawing.Size(80, 100);
+            this.picLivro1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLivro1.TabIndex = 2;
+            this.picLivro1.TabStop = false;
+            // 
+            // lblLivro1
+            // 
+            this.lblLivro1.AutoSize = true;
+            this.lblLivro1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblLivro1.Location = new System.Drawing.Point(137, 70);
+            this.lblLivro1.MaximumSize = new System.Drawing.Size(140, 0);
+            this.lblLivro1.Name = "lblLivro1";
+            this.lblLivro1.Size = new System.Drawing.Size(42, 15);
+            this.lblLivro1.TabIndex = 1;
+            this.lblLivro1.Text = "Livro 1";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+            this.label7.Location = new System.Drawing.Point(20, 15);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(256, 21);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "📚 Últimos 3 Livros Adicionados";
             // 
             // panelUltimaTierList
             // 
             this.panelUltimaTierList.BackColor = System.Drawing.Color.White;
             this.panelUltimaTierList.Controls.Add(this.panelTierContent);
             this.panelUltimaTierList.Controls.Add(this.lblTituloUltimaTier);
-            this.panelUltimaTierList.Location = new System.Drawing.Point(30, 370);
+            this.panelUltimaTierList.Location = new System.Drawing.Point(30, 540);
             this.panelUltimaTierList.Name = "panelUltimaTierList";
             this.panelUltimaTierList.Size = new System.Drawing.Size(840, 150);
-            this.panelUltimaTierList.TabIndex = 3;
+            this.panelUltimaTierList.TabIndex = 4;
             // 
             // panelTierContent
             // 
@@ -214,7 +318,7 @@
             this.lblSemTier.ForeColor = System.Drawing.Color.Gray;
             this.lblSemTier.Location = new System.Drawing.Point(10, 40);
             this.lblSemTier.Name = "lblSemTier";
-            this.lblSemTier.Size = new System.Drawing.Size(243, 19);
+            this.lblSemTier.Size = new System.Drawing.Size(253, 19);
             this.lblSemTier.TabIndex = 0;
             this.lblSemTier.Text = "Você ainda não criou nenhuma tier list";
             // 
@@ -225,7 +329,7 @@
             this.lblTituloUltimaTier.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.lblTituloUltimaTier.Location = new System.Drawing.Point(20, 15);
             this.lblTituloUltimaTier.Name = "lblTituloUltimaTier";
-            this.lblTituloUltimaTier.Size = new System.Drawing.Size(188, 21);
+            this.lblTituloUltimaTier.Size = new System.Drawing.Size(197, 21);
             this.lblTituloUltimaTier.TabIndex = 0;
             this.lblTituloUltimaTier.Text = "⭐ Última Tier List Criada";
             // 
@@ -238,10 +342,10 @@
             this.panelPersonalizacao.Controls.Add(this.btnCorLaranja);
             this.panelPersonalizacao.Controls.Add(this.btnCorVermelho);
             this.panelPersonalizacao.Controls.Add(this.label1);
-            this.panelPersonalizacao.Location = new System.Drawing.Point(30, 540);
+            this.panelPersonalizacao.Location = new System.Drawing.Point(30, 710);
             this.panelPersonalizacao.Name = "panelPersonalizacao";
             this.panelPersonalizacao.Size = new System.Drawing.Size(840, 80);
-            this.panelPersonalizacao.TabIndex = 4;
+            this.panelPersonalizacao.TabIndex = 5;
             // 
             // btnCorAzul
             // 
@@ -309,7 +413,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.label1.Location = new System.Drawing.Point(20, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(213, 20);
+            this.label1.Size = new System.Drawing.Size(217, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "🎨 Cor do Perfil (tema atual):";
             // 
@@ -320,10 +424,10 @@
             this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFechar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnFechar.ForeColor = System.Drawing.Color.White;
-            this.btnFechar.Location = new System.Drawing.Point(750, 640);
+            this.btnFechar.Location = new System.Drawing.Point(750, 810);
             this.btnFechar.Name = "btnFechar";
             this.btnFechar.Size = new System.Drawing.Size(120, 35);
-            this.btnFechar.TabIndex = 4;
+            this.btnFechar.TabIndex = 6;
             this.btnFechar.Text = "✕ Fechar";
             this.btnFechar.UseVisualStyleBackColor = false;
             this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
@@ -334,10 +438,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(900, 700);
+            this.ClientSize = new System.Drawing.Size(908, 726);
             this.Controls.Add(this.btnFechar);
             this.Controls.Add(this.panelPersonalizacao);
             this.Controls.Add(this.panelUltimaTierList);
+            this.Controls.Add(this.panelUltimosLivros);
             this.Controls.Add(this.panelEstatisticas);
             this.Controls.Add(this.panelCentral);
             this.Controls.Add(this.panelTopo);
@@ -355,6 +460,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).EndInit();
             this.panelEstatisticas.ResumeLayout(false);
             this.panelEstatisticas.PerformLayout();
+            this.panelUltimosLivros.ResumeLayout(false);
+            this.panelUltimosLivros.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLivro1)).EndInit();
             this.panelUltimaTierList.ResumeLayout(false);
             this.panelUltimaTierList.PerformLayout();
             this.panelTierContent.ResumeLayout(false);
@@ -373,11 +483,20 @@
         private System.Windows.Forms.PictureBox pictureBoxPerfil;
         private System.Windows.Forms.Label lblNomeUsuario;
         private System.Windows.Forms.TextBox txtBio;
+        private System.Windows.Forms.Button btnAlterarFoto;
         private System.Windows.Forms.Panel panelEstatisticas;
         private System.Windows.Forms.Label lblDataLogin;
         private System.Windows.Forms.Label lblTotalLivros;
         private System.Windows.Forms.Label lblTotalComentarios;
         private System.Windows.Forms.Label lblTotalTierLists;
+        private System.Windows.Forms.Panel panelUltimosLivros;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lblLivro1;
+        private System.Windows.Forms.PictureBox picLivro1;
+        private System.Windows.Forms.PictureBox picLivro2;
+        private System.Windows.Forms.Label lblLivro2;
+        private System.Windows.Forms.PictureBox picLivro3;
+        private System.Windows.Forms.Label lblLivro3;
         private System.Windows.Forms.Panel panelUltimaTierList;
         private System.Windows.Forms.Label lblTituloUltimaTier;
         private System.Windows.Forms.Panel panelTierContent;
@@ -390,6 +509,5 @@
         private System.Windows.Forms.Button btnCorLaranja;
         private System.Windows.Forms.Button btnCorVermelho;
         private System.Windows.Forms.Button btnFechar;
-        private System.Windows.Forms.Button btnAlterarFoto;
     }
 }

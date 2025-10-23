@@ -63,7 +63,16 @@ namespace gosti2
                     lblTitulo.Text = _livro.Titulo;
                     lblAutor.Text = $"Autor: {_livro.Autor}";
                     lblGenero.Text = $"Gênero: {_livro.Genero}";
+
+                    // LABEL DO USUÁRIO COM CURSOR CLICÁVEL
                     lblAdicionadoPor.Text = $"Adicionado por: {_livro.Usuario?.NomeUsuario ?? "Usuário desconhecido"}";
+                    lblAdicionadoPor.Cursor = Cursors.Hand;
+                    lblAdicionadoPor.ForeColor = Color.FromArgb(70, 130, 180);
+                    lblAdicionadoPor.Font = new Font(lblAdicionadoPor.Font, FontStyle.Underline);
+
+                    // ADICIONA EVENTO DE CLIQUE
+                    lblAdicionadoPor.Click += (s, e) => AbrirPerfilUsuario(_livro.UsuarioId);
+
                     txtDescricao.Text = _livro.Descricao ?? "Sem descrição disponível";
 
                     CarregarCapaLivro(_livro.Capa);
@@ -167,15 +176,19 @@ namespace gosti2
                 Padding = new Padding(10)
             };
 
-            // Nome do usuário
+            // Nome do usuário - CLICÁVEL
             var lblUsuario = new Label
             {
                 Text = comentario.Usuario?.NomeUsuario ?? "Usuário desconhecido",
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold | FontStyle.Underline),
                 Location = new Point(10, 10),
                 AutoSize = true,
-                ForeColor = Color.FromArgb(70, 130, 180)
+                ForeColor = Color.FromArgb(70, 130, 180),
+                Cursor = Cursors.Hand
             };
+
+            // ADICIONA EVENTO DE CLIQUE NO NOME DO USUÁRIO
+            lblUsuario.Click += (s, e) => AbrirPerfilUsuario(comentario.UsuarioId);
 
             // Data do comentário
             var lblData = new Label
@@ -206,6 +219,22 @@ namespace gosti2
             panel.Controls.Add(txtComentario);
 
             flowLayoutPanelComentarios.Controls.Add(panel);
+        }
+
+        private void AbrirPerfilUsuario(int usuarioId)
+        {
+            try
+            {
+                using (var formPerfil = new FormMeuPerfil(usuarioId))
+                {
+                    formPerfil.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao abrir perfil: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnComentar_Click(object sender, EventArgs e)
@@ -243,16 +272,6 @@ namespace gosti2
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-
-      
-
-       
-
-      
-
-      
-
-        
 
         private void btnFechar_Click(object sender, EventArgs e)
         {
