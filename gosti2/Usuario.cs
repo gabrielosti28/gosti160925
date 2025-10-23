@@ -46,6 +46,10 @@ namespace gosti2.Models
 
         public bool Ativo { get; set; } = true;
 
+        // NOVO: Cor do perfil (armazena o valor RGB como string, ex: "70,130,180")
+        [MaxLength(50)]
+        public string CorPerfil { get; set; } = "70,130,180"; // Azul padrão
+
         // Navegações
         public virtual ICollection<Livro> Livros { get; set; }
         public virtual ICollection<Comentario> Comentarios { get; set; }
