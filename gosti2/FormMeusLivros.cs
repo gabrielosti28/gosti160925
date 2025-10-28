@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using gosti2.Models;
@@ -36,6 +37,24 @@ namespace gosti2
             dataGridViewLivros.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewLivros.MultiSelect = false;
             dataGridViewLivros.ReadOnly = true;
+
+            // ADICIONA COLUNA PARA CAPA (IMAGEM) COM PROPORÇÃO CORRETA
+            if (dataGridViewLivros.Columns["colCapa"] == null)
+            {
+                var colCapa = new DataGridViewImageColumn
+                {
+                    Name = "colCapa",
+                    HeaderText = "Capa",
+                    ImageLayout = DataGridViewImageCellLayout.Zoom,
+                    Width = 80,
+                    DefaultCellStyle = new DataGridViewCellStyle
+                    {
+                        Alignment = DataGridViewContentAlignment.MiddleCenter,
+                        Padding = new Padding(2)
+                    }
+                };
+                dataGridViewLivros.Columns.Insert(1, colCapa);
+            }
 
             // ADICIONA COLUNA USUARIOID OCULTA LOGO NO INÍCIO
             if (dataGridViewLivros.Columns["UsuarioId"] == null)
@@ -108,16 +127,39 @@ namespace gosti2
 
                     foreach (var livro in livros)
                     {
+                        // CONVERTER BYTES DA CAPA PARA IMAGEM MANTENDO PROPORÇÃO
+                        Image capaImage = null;
+                        if (livro.Capa != null && livro.Capa.Length > 0)
+                        {
+                            try
+                            {
+                                using (var ms = new MemoryStream(livro.Capa))
+                                {
+                                    var originalImage = Image.FromStream(ms);
+                                    // Redimensionar mantendo proporção para melhor visualização
+                                    capaImage = RedimensionarImagemProporcional(originalImage, 70, 100);
+                                }
+                            }
+                            catch
+                            {
+                                capaImage = null;
+                            }
+                        }
+
                         int rowIndex = dataGridViewLivros.Rows.Add(
                             livro.LivroId,
-                            null,
+                            capaImage,
                             livro.Titulo,
                             livro.Autor,
                             livro.Genero,
                             livro.Lido ? "✅ Lido" : "📖 Para Ler",
                             livro.DataAdicao.ToString("dd/MM/yyyy"),
-                            livro.UsuarioId  // ADICIONA USUARIOID AQUI
+                            livro.UsuarioId,
+                            livro.Capa
                         );
+
+                        // Ajustar altura da linha para melhor visualização da capa
+                        dataGridViewLivros.Rows[rowIndex].Height = 110;
 
                         // Destaca livros do usuário logado
                         if (livro.UsuarioId == usuarioLogadoId)
@@ -159,9 +201,28 @@ namespace gosti2
 
                     foreach (var livro in livros)
                     {
+                        // CONVERTER BYTES DA CAPA PARA IMAGEM MANTENDO PROPORÇÃO
+                        Image capaImage = null;
+                        if (livro.Capa != null && livro.Capa.Length > 0)
+                        {
+                            try
+                            {
+                                using (var ms = new MemoryStream(livro.Capa))
+                                {
+                                    var originalImage = Image.FromStream(ms);
+                                    // Redimensionar mantendo proporção para melhor visualização
+                                    capaImage = RedimensionarImagemProporcional(originalImage, 70, 100);
+                                }
+                            }
+                            catch
+                            {
+                                capaImage = null;
+                            }
+                        }
+
                         int rowIndex = dataGridViewLivros.Rows.Add(
                             livro.LivroId,
-                            null,
+                            capaImage,
                             livro.Titulo,
                             livro.Autor,
                             livro.Genero,
@@ -169,6 +230,9 @@ namespace gosti2
                             livro.DataAdicao.ToString("dd/MM/yyyy"),
                             livro.UsuarioId
                         );
+
+                        // Ajustar altura da linha para melhor visualização da capa
+                        dataGridViewLivros.Rows[rowIndex].Height = 110;
 
                         if (livro.UsuarioId == usuarioLogadoId)
                         {
@@ -189,6 +253,31 @@ namespace gosti2
                 MessageBox.Show($"Erro ao buscar livros: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // MÉTODO PARA REDIMENSIONAR IMAGEM MANTENDO A PROPORÇÃO
+        private Image RedimensionarImagemProporcional(Image imagemOriginal, int larguraMax, int alturaMax)
+        {
+            if (imagemOriginal == null) return null;
+
+            var ratioX = (double)larguraMax / imagemOriginal.Width;
+            var ratioY = (double)alturaMax / imagemOriginal.Height;
+            var ratio = Math.Min(ratioX, ratioY);
+
+            var novaLargura = (int)(imagemOriginal.Width * ratio);
+            var novaAltura = (int)(imagemOriginal.Height * ratio);
+
+            var novaImagem = new Bitmap(novaLargura, novaAltura);
+
+            using (var graphics = Graphics.FromImage(novaImagem))
+            {
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.DrawImage(imagemOriginal, 0, 0, novaLargura, novaAltura);
+            }
+
+            return novaImagem;
         }
 
         private void AtualizarEstatisticas()
