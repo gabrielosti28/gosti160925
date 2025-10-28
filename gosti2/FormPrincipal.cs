@@ -139,5 +139,10 @@ namespace gosti2
         {
 
         }
+
+        private void lblLivrosCadastrados_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
