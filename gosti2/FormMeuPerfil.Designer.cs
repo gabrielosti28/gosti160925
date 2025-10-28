@@ -25,7 +25,6 @@
             this.lblNomeUsuario = new System.Windows.Forms.Label();
             this.pictureBoxPerfil = new System.Windows.Forms.PictureBox();
             this.panelEstatisticas = new System.Windows.Forms.Panel();
-            this.lblTotalTierLists = new System.Windows.Forms.Label();
             this.lblTotalComentarios = new System.Windows.Forms.Label();
             this.lblTotalLivros = new System.Windows.Forms.Label();
             this.lblDataLogin = new System.Windows.Forms.Label();
@@ -49,6 +48,7 @@
             this.btnCorVermelho = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnFechar = new System.Windows.Forms.Button();
+            this.lblTotalTierLists = new System.Windows.Forms.Label();
             this.panelTopo.SuspendLayout();
             this.panelCentral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
@@ -71,6 +71,7 @@
             this.panelTopo.Name = "panelTopo";
             this.panelTopo.Size = new System.Drawing.Size(891, 60);
             this.panelTopo.TabIndex = 0;
+            this.panelTopo.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTopo_Paint);
             // 
             // lblTitulo
             // 
@@ -79,7 +80,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(169, 32);
+            this.lblTitulo.Size = new System.Drawing.Size(174, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "👤 Meu Perfil";
             // 
@@ -160,17 +161,6 @@
             this.panelEstatisticas.Size = new System.Drawing.Size(840, 100);
             this.panelEstatisticas.TabIndex = 2;
             // 
-            // lblTotalTierLists
-            // 
-            this.lblTotalTierLists.AutoSize = true;
-            this.lblTotalTierLists.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.lblTotalTierLists.ForeColor = System.Drawing.Color.Gray;
-            this.lblTotalTierLists.Location = new System.Drawing.Point(450, 50);
-            this.lblTotalTierLists.Name = "lblTotalTierLists";
-            this.lblTotalTierLists.Size = new System.Drawing.Size(98, 20);
-            this.lblTotalTierLists.TabIndex = 3;
-            this.lblTotalTierLists.Text = "⭐ Tier Lists: 0";
-            // 
             // lblTotalComentarios
             // 
             this.lblTotalComentarios.AutoSize = true;
@@ -187,7 +177,7 @@
             this.lblTotalLivros.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblTotalLivros.Location = new System.Drawing.Point(30, 50);
             this.lblTotalLivros.Name = "lblTotalLivros";
-            this.lblTotalLivros.Size = new System.Drawing.Size(170, 20);
+            this.lblTotalLivros.Size = new System.Drawing.Size(172, 20);
             this.lblTotalLivros.TabIndex = 1;
             this.lblTotalLivros.Text = "📚 Livros adicionados: 0";
             // 
@@ -197,7 +187,7 @@
             this.lblDataLogin.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblDataLogin.Location = new System.Drawing.Point(30, 20);
             this.lblDataLogin.Name = "lblDataLogin";
-            this.lblDataLogin.Size = new System.Drawing.Size(199, 20);
+            this.lblDataLogin.Size = new System.Drawing.Size(200, 20);
             this.lblDataLogin.TabIndex = 0;
             this.lblDataLogin.Text = "📅 Último login: 00/00/0000";
             // 
@@ -289,7 +279,7 @@
             this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.label7.Location = new System.Drawing.Point(20, 15);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(256, 21);
+            this.label7.Size = new System.Drawing.Size(258, 21);
             this.label7.TabIndex = 0;
             this.label7.Text = "📚 Últimos 3 Livros Adicionados";
             // 
@@ -424,13 +414,24 @@
             this.btnFechar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFechar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnFechar.ForeColor = System.Drawing.Color.White;
-            this.btnFechar.Location = new System.Drawing.Point(750, 810);
+            this.btnFechar.Location = new System.Drawing.Point(750, 796);
             this.btnFechar.Name = "btnFechar";
             this.btnFechar.Size = new System.Drawing.Size(120, 35);
             this.btnFechar.TabIndex = 6;
             this.btnFechar.Text = "✕ Fechar";
             this.btnFechar.UseVisualStyleBackColor = false;
             this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
+            // 
+            // lblTotalTierLists
+            // 
+            this.lblTotalTierLists.AutoSize = true;
+            this.lblTotalTierLists.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.lblTotalTierLists.ForeColor = System.Drawing.Color.Gray;
+            this.lblTotalTierLists.Location = new System.Drawing.Point(450, 50);
+            this.lblTotalTierLists.Name = "lblTotalTierLists";
+            this.lblTotalTierLists.Size = new System.Drawing.Size(98, 20);
+            this.lblTotalTierLists.TabIndex = 3;
+            this.lblTotalTierLists.Text = "⭐ Tier Lists: 0";
             // 
             // FormMeuPerfil
             // 
@@ -488,7 +489,6 @@
         private System.Windows.Forms.Label lblDataLogin;
         private System.Windows.Forms.Label lblTotalLivros;
         private System.Windows.Forms.Label lblTotalComentarios;
-        private System.Windows.Forms.Label lblTotalTierLists;
         private System.Windows.Forms.Panel panelUltimosLivros;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblLivro1;
@@ -509,5 +509,6 @@
         private System.Windows.Forms.Button btnCorLaranja;
         private System.Windows.Forms.Button btnCorVermelho;
         private System.Windows.Forms.Button btnFechar;
+        private System.Windows.Forms.Label lblTotalTierLists;
     }
 }

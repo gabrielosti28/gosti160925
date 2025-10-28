@@ -469,5 +469,10 @@ namespace gosti2
         {
             this.Close();
         }
+
+        private void panelTopo_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
