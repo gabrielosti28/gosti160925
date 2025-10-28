@@ -53,32 +53,36 @@ namespace gosti2
                         return;
                     }
 
-                    // Adiciona opção vazia
-                    var itemVazio = new { LivroId = 0, Titulo = "-- Selecione um livro --" };
-                    var livrosComVazio = new[] { itemVazio }.Concat(
-                        livros.Select(l => new { l.LivroId, l.Titulo })
-                    ).ToList();
+                    // Cria lista com item vazio
+                    var livrosComVazio = new System.Collections.Generic.List<dynamic>();
+                    livrosComVazio.Add(new { LivroId = 0, Titulo = "-- Selecione um livro --" });
+                    livrosComVazio.AddRange(livros.Select(l => new { l.LivroId, l.Titulo }));
 
-                    // Configura os ComboBoxes
+                    // Configura os ComboBoxes - cria nova lista para cada um
                     cmbLivro1.DataSource = livrosComVazio.ToList();
                     cmbLivro1.DisplayMember = "Titulo";
                     cmbLivro1.ValueMember = "LivroId";
+                    cmbLivro1.SelectedIndex = 0;
 
-                    cmbLivro2.DataSource = livrosComVazio.ToList();
+                    cmbLivro2.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
                     cmbLivro2.DisplayMember = "Titulo";
                     cmbLivro2.ValueMember = "LivroId";
+                    cmbLivro2.SelectedIndex = 0;
 
-                    cmbLivro3.DataSource = livrosComVazio.ToList();
+                    cmbLivro3.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
                     cmbLivro3.DisplayMember = "Titulo";
                     cmbLivro3.ValueMember = "LivroId";
+                    cmbLivro3.SelectedIndex = 0;
 
-                    cmbLivro4.DataSource = livrosComVazio.ToList();
+                    cmbLivro4.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
                     cmbLivro4.DisplayMember = "Titulo";
                     cmbLivro4.ValueMember = "LivroId";
+                    cmbLivro4.SelectedIndex = 0;
 
-                    cmbLivro5.DataSource = livrosComVazio.ToList();
+                    cmbLivro5.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
                     cmbLivro5.DisplayMember = "Titulo";
                     cmbLivro5.ValueMember = "LivroId";
+                    cmbLivro5.SelectedIndex = 0;
                 }
             }
             catch (Exception ex)
@@ -311,18 +315,13 @@ namespace gosti2
                         db.Set<CategoriaTier>().Add(tier);
                     }
 
-                    // Atualiza dados
+                    // Atualiza dados - converte para int de forma segura
                     tier.NomeTier = txtNomeTier.Text.Trim();
-                    tier.LivroId1 = cmbLivro1.SelectedValue != null && (int)cmbLivro1.SelectedValue > 0
-                        ? (int?)cmbLivro1.SelectedValue : null;
-                    tier.LivroId2 = cmbLivro2.SelectedValue != null && (int)cmbLivro2.SelectedValue > 0
-                        ? (int?)cmbLivro2.SelectedValue : null;
-                    tier.LivroId3 = cmbLivro3.SelectedValue != null && (int)cmbLivro3.SelectedValue > 0
-                        ? (int?)cmbLivro3.SelectedValue : null;
-                    tier.LivroId4 = cmbLivro4.SelectedValue != null && (int)cmbLivro4.SelectedValue > 0
-                        ? (int?)cmbLivro4.SelectedValue : null;
-                    tier.LivroId5 = cmbLivro5.SelectedValue != null && (int)cmbLivro5.SelectedValue > 0
-                        ? (int?)cmbLivro5.SelectedValue : null;
+                    tier.LivroId1 = ObterLivroId(cmbLivro1);
+                    tier.LivroId2 = ObterLivroId(cmbLivro2);
+                    tier.LivroId3 = ObterLivroId(cmbLivro3);
+                    tier.LivroId4 = ObterLivroId(cmbLivro4);
+                    tier.LivroId5 = ObterLivroId(cmbLivro5);
 
                     db.SaveChanges();
 
@@ -338,6 +337,16 @@ namespace gosti2
                 MessageBox.Show($"Erro ao salvar tier list: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // Adicione este método helper
+        private int? ObterLivroId(ComboBox combo)
+        {
+            if (combo.SelectedValue == null)
+                return null;
+
+            int livroId = Convert.ToInt32(combo.SelectedValue);
+            return livroId > 0 ? (int?)livroId : null;
         }
 
         private bool ValidarCampos()
