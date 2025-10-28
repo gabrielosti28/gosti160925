@@ -20,18 +20,19 @@ namespace gosti2.Data
             Database.Initialize(force: false);
         }
 
-        // DbSets - APENAS O QUE É USADO
+        // DbSets - TODAS AS ENTIDADES DO MODELO
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Livro> Livros { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Mensagem> Mensagens { get; set; }
+        public DbSet<CategoriaTier> CategoriasTier { get; set; } // ✅ ADICIONADO
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Remove convenção de pluralização
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
-            // Configurações específicas se necessário
+            // Configurações de relacionamento para Mensagens
             modelBuilder.Entity<Mensagem>()
                 .HasRequired(m => m.Remetente)
                 .WithMany(u => u.MensagensEnviadas)

@@ -100,8 +100,13 @@ namespace gosti2
 
         private void btnTierList_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("⭐ Funcionalidade de tier lists em desenvolvimento!",
-                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Hide();
+            using (var FormTierList = new FormTierList())
+            {
+                FormTierList.ShowDialog();
+            }
+            this.Show();
+            CarregarEstatisticas();
         }
 
         private void btnPerfil_Click(object sender, EventArgs e)
