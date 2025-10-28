@@ -14,6 +14,18 @@ namespace gosti2
         private int? _tierIdEdicao = null;
         private bool _modoEdicao = false;
 
+        // Classe helper para os ComboBoxes
+        private class LivroComboItem
+        {
+            public int LivroId { get; set; }
+            public string Titulo { get; set; }
+
+            public override string ToString()
+            {
+                return Titulo;
+            }
+        }
+
         // Construtor para CRIAR nova tier list
         public FormCriacaoTier()
         {
@@ -53,36 +65,21 @@ namespace gosti2
                         return;
                     }
 
-                    // Cria lista com item vazio
-                    var livrosComVazio = new System.Collections.Generic.List<dynamic>();
-                    livrosComVazio.Add(new { LivroId = 0, Titulo = "-- Selecione um livro --" });
-                    livrosComVazio.AddRange(livros.Select(l => new { l.LivroId, l.Titulo }));
+                    // Cria lista com item vazio usando a classe helper
+                    var livrosComVazio = new System.Collections.Generic.List<LivroComboItem>();
+                    livrosComVazio.Add(new LivroComboItem { LivroId = 0, Titulo = "-- Selecione um livro --" });
 
-                    // Configura os ComboBoxes - cria nova lista para cada um
-                    cmbLivro1.DataSource = livrosComVazio.ToList();
-                    cmbLivro1.DisplayMember = "Titulo";
-                    cmbLivro1.ValueMember = "LivroId";
-                    cmbLivro1.SelectedIndex = 0;
+                    foreach (var livro in livros)
+                    {
+                        livrosComVazio.Add(new LivroComboItem { LivroId = livro.LivroId, Titulo = livro.Titulo });
+                    }
 
-                    cmbLivro2.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
-                    cmbLivro2.DisplayMember = "Titulo";
-                    cmbLivro2.ValueMember = "LivroId";
-                    cmbLivro2.SelectedIndex = 0;
-
-                    cmbLivro3.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
-                    cmbLivro3.DisplayMember = "Titulo";
-                    cmbLivro3.ValueMember = "LivroId";
-                    cmbLivro3.SelectedIndex = 0;
-
-                    cmbLivro4.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
-                    cmbLivro4.DisplayMember = "Titulo";
-                    cmbLivro4.ValueMember = "LivroId";
-                    cmbLivro4.SelectedIndex = 0;
-
-                    cmbLivro5.DataSource = new System.Collections.Generic.List<dynamic>(livrosComVazio);
-                    cmbLivro5.DisplayMember = "Titulo";
-                    cmbLivro5.ValueMember = "LivroId";
-                    cmbLivro5.SelectedIndex = 0;
+                    // Configura os ComboBoxes - cada um recebe sua própria lista
+                    ConfigurarComboBox(cmbLivro1, livrosComVazio);
+                    ConfigurarComboBox(cmbLivro2, livrosComVazio);
+                    ConfigurarComboBox(cmbLivro3, livrosComVazio);
+                    ConfigurarComboBox(cmbLivro4, livrosComVazio);
+                    ConfigurarComboBox(cmbLivro5, livrosComVazio);
                 }
             }
             catch (Exception ex)
@@ -90,6 +87,21 @@ namespace gosti2
                 MessageBox.Show($"Erro ao carregar livros: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ConfigurarComboBox(ComboBox combo, System.Collections.Generic.List<LivroComboItem> livros)
+        {
+            // Cria uma nova lista para cada ComboBox
+            var novaLista = new System.Collections.Generic.List<LivroComboItem>();
+            foreach (var livro in livros)
+            {
+                novaLista.Add(new LivroComboItem { LivroId = livro.LivroId, Titulo = livro.Titulo });
+            }
+
+            combo.DataSource = novaLista;
+            combo.DisplayMember = "Titulo";
+            combo.ValueMember = "LivroId";
+            combo.SelectedIndex = 0;
         }
 
         private void CarregarDadosTier()
@@ -194,8 +206,9 @@ namespace gosti2
 
         private void cmbLivro1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLivro1.SelectedValue != null && (int)cmbLivro1.SelectedValue > 0)
-                CarregarCapaLivro(picLivro1, (int)cmbLivro1.SelectedValue);
+            var livroId = ObterLivroIdSelecionado(cmbLivro1);
+            if (livroId.HasValue && livroId.Value > 0)
+                CarregarCapaLivro(picLivro1, livroId.Value);
             else
             {
                 picLivro1.Image = null;
@@ -205,8 +218,9 @@ namespace gosti2
 
         private void cmbLivro2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLivro2.SelectedValue != null && (int)cmbLivro2.SelectedValue > 0)
-                CarregarCapaLivro(picLivro2, (int)cmbLivro2.SelectedValue);
+            var livroId = ObterLivroIdSelecionado(cmbLivro2);
+            if (livroId.HasValue && livroId.Value > 0)
+                CarregarCapaLivro(picLivro2, livroId.Value);
             else
             {
                 picLivro2.Image = null;
@@ -216,8 +230,9 @@ namespace gosti2
 
         private void cmbLivro3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLivro3.SelectedValue != null && (int)cmbLivro3.SelectedValue > 0)
-                CarregarCapaLivro(picLivro3, (int)cmbLivro3.SelectedValue);
+            var livroId = ObterLivroIdSelecionado(cmbLivro3);
+            if (livroId.HasValue && livroId.Value > 0)
+                CarregarCapaLivro(picLivro3, livroId.Value);
             else
             {
                 picLivro3.Image = null;
@@ -227,8 +242,9 @@ namespace gosti2
 
         private void cmbLivro4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLivro4.SelectedValue != null && (int)cmbLivro4.SelectedValue > 0)
-                CarregarCapaLivro(picLivro4, (int)cmbLivro4.SelectedValue);
+            var livroId = ObterLivroIdSelecionado(cmbLivro4);
+            if (livroId.HasValue && livroId.Value > 0)
+                CarregarCapaLivro(picLivro4, livroId.Value);
             else
             {
                 picLivro4.Image = null;
@@ -238,8 +254,9 @@ namespace gosti2
 
         private void cmbLivro5_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLivro5.SelectedValue != null && (int)cmbLivro5.SelectedValue > 0)
-                CarregarCapaLivro(picLivro5, (int)cmbLivro5.SelectedValue);
+            var livroId = ObterLivroIdSelecionado(cmbLivro5);
+            if (livroId.HasValue && livroId.Value > 0)
+                CarregarCapaLivro(picLivro5, livroId.Value);
             else
             {
                 picLivro5.Image = null;
@@ -315,13 +332,13 @@ namespace gosti2
                         db.Set<CategoriaTier>().Add(tier);
                     }
 
-                    // Atualiza dados - converte para int de forma segura
+                    // Atualiza dados
                     tier.NomeTier = txtNomeTier.Text.Trim();
-                    tier.LivroId1 = ObterLivroId(cmbLivro1);
-                    tier.LivroId2 = ObterLivroId(cmbLivro2);
-                    tier.LivroId3 = ObterLivroId(cmbLivro3);
-                    tier.LivroId4 = ObterLivroId(cmbLivro4);
-                    tier.LivroId5 = ObterLivroId(cmbLivro5);
+                    tier.LivroId1 = ObterLivroIdSelecionado(cmbLivro1);
+                    tier.LivroId2 = ObterLivroIdSelecionado(cmbLivro2);
+                    tier.LivroId3 = ObterLivroIdSelecionado(cmbLivro3);
+                    tier.LivroId4 = ObterLivroIdSelecionado(cmbLivro4);
+                    tier.LivroId5 = ObterLivroIdSelecionado(cmbLivro5);
 
                     db.SaveChanges();
 
@@ -339,14 +356,17 @@ namespace gosti2
             }
         }
 
-        // Adicione este método helper
-        private int? ObterLivroId(ComboBox combo)
+        // Método helper corrigido para obter LivroId do ComboBox
+        private int? ObterLivroIdSelecionado(ComboBox combo)
         {
-            if (combo.SelectedValue == null)
+            if (combo.SelectedItem == null)
                 return null;
 
-            int livroId = Convert.ToInt32(combo.SelectedValue);
-            return livroId > 0 ? (int?)livroId : null;
+            var item = combo.SelectedItem as LivroComboItem;
+            if (item == null || item.LivroId == 0)
+                return null;
+
+            return item.LivroId;
         }
 
         private bool ValidarCampos()
@@ -360,11 +380,11 @@ namespace gosti2
             }
 
             // Verifica se pelo menos um livro foi selecionado
-            bool temLivro = (cmbLivro1.SelectedValue != null && (int)cmbLivro1.SelectedValue > 0) ||
-                           (cmbLivro2.SelectedValue != null && (int)cmbLivro2.SelectedValue > 0) ||
-                           (cmbLivro3.SelectedValue != null && (int)cmbLivro3.SelectedValue > 0) ||
-                           (cmbLivro4.SelectedValue != null && (int)cmbLivro4.SelectedValue > 0) ||
-                           (cmbLivro5.SelectedValue != null && (int)cmbLivro5.SelectedValue > 0);
+            bool temLivro = ObterLivroIdSelecionado(cmbLivro1).HasValue ||
+                           ObterLivroIdSelecionado(cmbLivro2).HasValue ||
+                           ObterLivroIdSelecionado(cmbLivro3).HasValue ||
+                           ObterLivroIdSelecionado(cmbLivro4).HasValue ||
+                           ObterLivroIdSelecionado(cmbLivro5).HasValue;
 
             if (!temLivro)
             {
