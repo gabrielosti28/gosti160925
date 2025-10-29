@@ -19,10 +19,12 @@ namespace gosti2
         {
             public int LivroId { get; set; }
             public string Titulo { get; set; }
+            public string NomeUsuario { get; set; } // ADICIONADO: para mostrar o dono do livro
 
             public override string ToString()
             {
-                return Titulo;
+                // MODIFICADO: mostra título e dono do livro
+                return $"{Titulo} (por {NomeUsuario})";
             }
         }
 
@@ -31,7 +33,8 @@ namespace gosti2
         {
             InitializeComponent();
             _modoEdicao = false;
-            lblTitulo.Text = "⭐ Criar Tier List";
+            this.Text = "Adicionar Novo Livro";
+            lblTitulo.Text = "Adicionar Novo Livro";
             CarregarLivros();
         }
 
@@ -41,7 +44,8 @@ namespace gosti2
             InitializeComponent();
             _tierIdEdicao = tierListId;
             _modoEdicao = true;
-            lblTitulo.Text = "⭐ Editar Tier List";
+            this.Text = "Editar Livro";
+            lblTitulo.Text = "Editar Livro";
             CarregarLivros();
             CarregarDadosTier();
         }
@@ -52,14 +56,15 @@ namespace gosti2
             {
                 using (var db = new ApplicationDbContext())
                 {
+                    // MODIFICADO: busca TODOS os livros do sistema (removido o Where)
                     var livros = db.Livros
-                        .Where(l => l.UsuarioId == AppManager.UsuarioLogado.UsuarioId)
+                        .Include(l => l.Usuario) // ADICIONADO: inclui dados do usuário
                         .OrderBy(l => l.Titulo)
                         .ToList();
 
                     if (livros.Count == 0)
                     {
-                        MessageBox.Show("Você não possui livros cadastrados.\nAdicione livros antes de criar uma tier list.",
+                        MessageBox.Show("Não há livros cadastrados no sistema.\nAdicione livros antes de criar uma tier list.",
                             "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         this.Close();
                         return;
@@ -67,11 +72,16 @@ namespace gosti2
 
                     // Cria lista com item vazio usando a classe helper
                     var livrosComVazio = new System.Collections.Generic.List<LivroComboItem>();
-                    livrosComVazio.Add(new LivroComboItem { LivroId = 0, Titulo = "-- Selecione um livro --" });
+                    livrosComVazio.Add(new LivroComboItem { LivroId = 0, Titulo = "-- Selecione um livro --", NomeUsuario = "" });
 
                     foreach (var livro in livros)
                     {
-                        livrosComVazio.Add(new LivroComboItem { LivroId = livro.LivroId, Titulo = livro.Titulo });
+                        livrosComVazio.Add(new LivroComboItem
+                        {
+                            LivroId = livro.LivroId,
+                            Titulo = livro.Titulo,
+                            NomeUsuario = livro.Usuario?.NomeUsuario ?? "Desconhecido" // ADICIONADO
+                        });
                     }
 
                     // Configura os ComboBoxes - cada um recebe sua própria lista
@@ -95,7 +105,12 @@ namespace gosti2
             var novaLista = new System.Collections.Generic.List<LivroComboItem>();
             foreach (var livro in livros)
             {
-                novaLista.Add(new LivroComboItem { LivroId = livro.LivroId, Titulo = livro.Titulo });
+                novaLista.Add(new LivroComboItem
+                {
+                    LivroId = livro.LivroId,
+                    Titulo = livro.Titulo,
+                    NomeUsuario = livro.NomeUsuario
+                });
             }
 
             combo.DataSource = novaLista;

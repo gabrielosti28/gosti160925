@@ -38,25 +38,13 @@ namespace gosti2
             dataGridViewLivros.MultiSelect = false;
             dataGridViewLivros.ReadOnly = true;
 
-            // ADICIONA COLUNA PARA CAPA (IMAGEM) COM PROPORÇÃO CORRETA
-            if (dataGridViewLivros.Columns["colCapa"] == null)
+            // CORRIGIDO: Garante que a coluna LivroId existe e está visível (mas pode ficar escondida)
+            if (dataGridViewLivros.Columns["colLivroId"] != null)
             {
-                var colCapa = new DataGridViewImageColumn
-                {
-                    Name = "colCapa",
-                    HeaderText = "Capa",
-                    ImageLayout = DataGridViewImageCellLayout.Zoom,
-                    Width = 80,
-                    DefaultCellStyle = new DataGridViewCellStyle
-                    {
-                        Alignment = DataGridViewContentAlignment.MiddleCenter,
-                        Padding = new Padding(2)
-                    }
-                };
-                dataGridViewLivros.Columns.Insert(1, colCapa);
+                dataGridViewLivros.Columns["colLivroId"].Visible = false; // Mantém invisível para o usuário
             }
 
-            // ADICIONA COLUNA USUARIOID OCULTA LOGO NO INÍCIO
+            // Verifica se a coluna UsuarioId já existe antes de adicionar
             if (dataGridViewLivros.Columns["UsuarioId"] == null)
             {
                 var colUsuarioId = new DataGridViewTextBoxColumn
@@ -75,8 +63,9 @@ namespace gosti2
             {
                 if (dataGridViewLivros.SelectedRows.Count > 0)
                 {
-                    int livroUsuarioId = Convert.ToInt32(
-                        dataGridViewLivros.SelectedRows[0].Cells["UsuarioId"].Value);
+                    // CORRIGIDO: Usa índice da coluna em vez do nome
+                    var row = dataGridViewLivros.SelectedRows[0];
+                    int livroUsuarioId = Convert.ToInt32(row.Cells["UsuarioId"].Value);
 
                     bool ehDonoDoLivro = (livroUsuarioId == usuarioLogadoId);
                     btnEditar.Enabled = ehDonoDoLivro;
@@ -136,7 +125,6 @@ namespace gosti2
                                 using (var ms = new MemoryStream(livro.Capa))
                                 {
                                     var originalImage = Image.FromStream(ms);
-                                    // Redimensionar mantendo proporção para melhor visualização
                                     capaImage = RedimensionarImagemProporcional(originalImage, 70, 100);
                                 }
                             }
@@ -146,32 +134,32 @@ namespace gosti2
                             }
                         }
 
-                        int rowIndex = dataGridViewLivros.Rows.Add(
-                            livro.LivroId,
-                            capaImage,
-                            livro.Titulo,
-                            livro.Autor,
-                            livro.Genero,
-                            livro.Lido ? "✅ Lido" : "📖 Para Ler",
-                            livro.DataAdicao.ToString("dd/MM/yyyy"),
-                            livro.UsuarioId,
-                            livro.Capa
-                        );
+                        // CORRIGIDO: Adiciona células na ordem correta das colunas
+                        int rowIndex = dataGridViewLivros.Rows.Add();
+                        var row = dataGridViewLivros.Rows[rowIndex];
+
+                        // Preenche as células pelos nomes das colunas
+                        row.Cells["colLivroId"].Value = livro.LivroId;
+                        row.Cells["colCapa"].Value = capaImage;
+                        row.Cells["colTitulo"].Value = livro.Titulo;
+                        row.Cells["colAutor"].Value = livro.Autor;
+                        row.Cells["colGenero"].Value = livro.Genero;
+                        row.Cells["colStatus"].Value = livro.Lido ? "✅ Lido" : "📖 Para Ler";
+                        row.Cells["colDataAdicao"].Value = livro.DataAdicao.ToString("dd/MM/yyyy");
+                        row.Cells["UsuarioId"].Value = livro.UsuarioId;
 
                         // Ajustar altura da linha para melhor visualização da capa
-                        dataGridViewLivros.Rows[rowIndex].Height = 110;
+                        row.Height = 110;
 
                         // Destaca livros do usuário logado
                         if (livro.UsuarioId == usuarioLogadoId)
                         {
-                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
-                                Color.LightCyan;
+                            row.DefaultCellStyle.BackColor = Color.LightCyan;
                         }
 
                         if (livro.Favorito)
                         {
-                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
-                                Color.LightYellow;
+                            row.DefaultCellStyle.BackColor = Color.LightYellow;
                         }
                     }
 
@@ -210,7 +198,6 @@ namespace gosti2
                                 using (var ms = new MemoryStream(livro.Capa))
                                 {
                                     var originalImage = Image.FromStream(ms);
-                                    // Redimensionar mantendo proporção para melhor visualização
                                     capaImage = RedimensionarImagemProporcional(originalImage, 70, 100);
                                 }
                             }
@@ -220,30 +207,29 @@ namespace gosti2
                             }
                         }
 
-                        int rowIndex = dataGridViewLivros.Rows.Add(
-                            livro.LivroId,
-                            capaImage,
-                            livro.Titulo,
-                            livro.Autor,
-                            livro.Genero,
-                            livro.Lido ? "✅ Lido" : "📖 Para Ler",
-                            livro.DataAdicao.ToString("dd/MM/yyyy"),
-                            livro.UsuarioId
-                        );
+                        // CORRIGIDO: Adiciona células na ordem correta
+                        int rowIndex = dataGridViewLivros.Rows.Add();
+                        var row = dataGridViewLivros.Rows[rowIndex];
 
-                        // Ajustar altura da linha para melhor visualização da capa
-                        dataGridViewLivros.Rows[rowIndex].Height = 110;
+                        row.Cells["colLivroId"].Value = livro.LivroId;
+                        row.Cells["colCapa"].Value = capaImage;
+                        row.Cells["colTitulo"].Value = livro.Titulo;
+                        row.Cells["colAutor"].Value = livro.Autor;
+                        row.Cells["colGenero"].Value = livro.Genero;
+                        row.Cells["colStatus"].Value = livro.Lido ? "✅ Lido" : "📖 Para Ler";
+                        row.Cells["colDataAdicao"].Value = livro.DataAdicao.ToString("dd/MM/yyyy");
+                        row.Cells["UsuarioId"].Value = livro.UsuarioId;
+
+                        row.Height = 110;
 
                         if (livro.UsuarioId == usuarioLogadoId)
                         {
-                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
-                                Color.LightCyan;
+                            row.DefaultCellStyle.BackColor = Color.LightCyan;
                         }
 
                         if (livro.Favorito)
                         {
-                            dataGridViewLivros.Rows[rowIndex].DefaultCellStyle.BackColor =
-                                Color.LightYellow;
+                            row.DefaultCellStyle.BackColor = Color.LightYellow;
                         }
                     }
                 }
@@ -320,7 +306,9 @@ namespace gosti2
                 return;
             }
 
-            var livroId = Convert.ToInt32(dataGridViewLivros.SelectedRows[0].Cells["colLivroId"].Value);
+            // CORRIGIDO: Obtém o LivroId corretamente
+            var row = dataGridViewLivros.SelectedRows[0];
+            var livroId = Convert.ToInt32(row.Cells["colLivroId"].Value);
 
             using (var formEditar = new FormAdicionarLivro(livroId))
             {
@@ -340,8 +328,10 @@ namespace gosti2
                 return;
             }
 
-            var livroId = Convert.ToInt32(dataGridViewLivros.SelectedRows[0].Cells["colLivroId"].Value);
-            var titulo = dataGridViewLivros.SelectedRows[0].Cells["colTitulo"].Value.ToString();
+            // CORRIGIDO: Obtém dados corretamente
+            var row = dataGridViewLivros.SelectedRows[0];
+            var livroId = Convert.ToInt32(row.Cells["colLivroId"].Value);
+            var titulo = row.Cells["colTitulo"].Value.ToString();
 
             if (MessageBox.Show($"Deseja realmente remover '{titulo}'?", "Confirmação",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -358,7 +348,9 @@ namespace gosti2
             if (dataGridViewLivros.SelectedRows.Count == 0)
                 return;
 
-            var livroId = Convert.ToInt32(dataGridViewLivros.SelectedRows[0].Cells["colLivroId"].Value);
+            // CORRIGIDO: Obtém o LivroId corretamente
+            var row = dataGridViewLivros.SelectedRows[0];
+            var livroId = Convert.ToInt32(row.Cells["colLivroId"].Value);
 
             using (var formDetalhes = new FormLivroAberto(livroId, usuarioLogadoId))
             {
