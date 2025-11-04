@@ -353,6 +353,7 @@
             this.panelAtividades.Padding = new System.Windows.Forms.Padding(15);
             this.panelAtividades.Size = new System.Drawing.Size(914, 340);
             this.panelAtividades.TabIndex = 10;
+            this.panelAtividades.Paint += new System.Windows.Forms.PaintEventHandler(this.panelAtividades_Paint);
             // 
             // panelRodape
             // 

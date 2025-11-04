@@ -144,5 +144,10 @@ namespace gosti2
         {
 
         }
+
+        private void panelAtividades_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

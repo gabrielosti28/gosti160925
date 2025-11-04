@@ -26,7 +26,7 @@ namespace gosti2.Data
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<Mensagem> Mensagens { get; set; }
         public DbSet<CategoriaTier> CategoriasTier { get; set; } // ✅ ADICIONADO
-
+        public DbSet<MensagemGlobal> MensagensGlobais { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Remove convenção de pluralização
@@ -48,4 +48,5 @@ namespace gosti2.Data
             base.OnModelCreating(modelBuilder);
         }
     }
+
 }

@@ -2,15 +2,19 @@
 using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Data.Entity;
 using gosti2.Data;
 using gosti2.Models;
+
 namespace gosti2
 {
     public partial class FormAdicionarLivro : Form
     {
         private int _livroId;
         private bool _modoEdicao = false;
+        private byte[] _imagemBytes = null; // NOVO: Armazena os bytes da imagem
 
         // Construtor para ADICIONAR novo livro
         public FormAdicionarLivro()
@@ -65,12 +69,17 @@ namespace gosti2
                     checkBoxLido.Checked = livro.Lido;
                     checkBoxFavorito.Checked = livro.Favorito;
 
-                    // Carregar imagem se existir
+                    // CORRIGIDO: Armazena os bytes e carrega a imagem de forma segura
                     if (livro.Capa != null && livro.Capa.Length > 0)
                     {
-                        using (var ms = new System.IO.MemoryStream(livro.Capa))
+                        _imagemBytes = livro.Capa; // Guarda os bytes originais
+
+                        using (var ms = new MemoryStream(livro.Capa))
                         {
-                            pictureBoxCapa.Image = Image.FromStream(ms);
+                            // Cria uma cópia independente da imagem
+                            Image imagemOriginal = Image.FromStream(ms);
+                            pictureBoxCapa.Image = new Bitmap(imagemOriginal);
+                            imagemOriginal.Dispose(); // Libera a imagem original
                         }
                     }
                 }
@@ -136,14 +145,16 @@ namespace gosti2
                     livro.Lido = checkBoxLido.Checked;
                     livro.Favorito = checkBoxFavorito.Checked;
 
-                    // Salvar imagem se houver
-                    if (pictureBoxCapa.Image != null)
+                    // CORRIGIDO: Salvar imagem de forma segura
+                    if (_imagemBytes != null)
                     {
-                        using (var ms = new System.IO.MemoryStream())
-                        {
-                            pictureBoxCapa.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                            livro.Capa = ms.ToArray();
-                        }
+                        // Usa os bytes armazenados (seja da nova imagem ou da original)
+                        livro.Capa = _imagemBytes;
+                    }
+                    else if (pictureBoxCapa.Image == null)
+                    {
+                        // Se não há imagem, define como null
+                        livro.Capa = null;
                     }
 
                     context.SaveChanges();
@@ -210,7 +221,26 @@ namespace gosti2
                 {
                     try
                     {
-                        pictureBoxCapa.Image = Image.FromFile(openFileDialog.FileName);
+                        // Libera a imagem anterior se existir
+                        if (pictureBoxCapa.Image != null)
+                        {
+                            pictureBoxCapa.Image.Dispose();
+                            pictureBoxCapa.Image = null;
+                        }
+
+                        // Carrega a nova imagem e converte para bytes
+                        using (Image imagemOriginal = Image.FromFile(openFileDialog.FileName))
+                        {
+                            // Exibe no PictureBox (cria uma cópia)
+                            pictureBoxCapa.Image = new Bitmap(imagemOriginal);
+
+                            // Converte para bytes para salvar no banco
+                            using (var ms = new MemoryStream())
+                            {
+                                imagemOriginal.Save(ms, ImageFormat.Jpeg);
+                                _imagemBytes = ms.ToArray(); // ARMAZENA OS BYTES
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -229,6 +259,17 @@ namespace gosti2
                 this.DialogResult = DialogResult.Cancel;
                 this.Close();
             }
+        }
+
+        // Libera recursos ao fechar o formulário
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (pictureBoxCapa.Image != null)
+            {
+                pictureBoxCapa.Image.Dispose();
+                pictureBoxCapa.Image = null;
+            }
+            base.OnFormClosing(e);
         }
     }
 }
