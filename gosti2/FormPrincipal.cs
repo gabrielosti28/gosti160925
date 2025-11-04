@@ -436,5 +436,15 @@ namespace gosti2
         {
             // Evento mantido para compatibilidade
         }
+
+        private void panelLivros_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            btnTierList_Click(sender, e);
+        }
     }
 }

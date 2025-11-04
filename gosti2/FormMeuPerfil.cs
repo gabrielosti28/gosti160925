@@ -474,5 +474,10 @@ namespace gosti2
         {
 
         }
+
+        private void lblTotalTierLists_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

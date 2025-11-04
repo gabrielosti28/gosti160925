@@ -25,6 +25,7 @@
             this.lblNomeUsuario = new System.Windows.Forms.Label();
             this.pictureBoxPerfil = new System.Windows.Forms.PictureBox();
             this.panelEstatisticas = new System.Windows.Forms.Panel();
+            this.lblTotalTierLists = new System.Windows.Forms.Label();
             this.lblTotalComentarios = new System.Windows.Forms.Label();
             this.lblTotalLivros = new System.Windows.Forms.Label();
             this.lblDataLogin = new System.Windows.Forms.Label();
@@ -48,7 +49,6 @@
             this.btnCorVermelho = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnFechar = new System.Windows.Forms.Button();
-            this.lblTotalTierLists = new System.Windows.Forms.Label();
             this.panelTopo.SuspendLayout();
             this.panelCentral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
@@ -160,6 +160,18 @@
             this.panelEstatisticas.Name = "panelEstatisticas";
             this.panelEstatisticas.Size = new System.Drawing.Size(840, 100);
             this.panelEstatisticas.TabIndex = 2;
+            // 
+            // lblTotalTierLists
+            // 
+            this.lblTotalTierLists.AutoSize = true;
+            this.lblTotalTierLists.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.lblTotalTierLists.ForeColor = System.Drawing.Color.Gray;
+            this.lblTotalTierLists.Location = new System.Drawing.Point(450, 50);
+            this.lblTotalTierLists.Name = "lblTotalTierLists";
+            this.lblTotalTierLists.Size = new System.Drawing.Size(98, 20);
+            this.lblTotalTierLists.TabIndex = 3;
+            this.lblTotalTierLists.Text = "⭐ Tier Lists: 0";
+            this.lblTotalTierLists.Click += new System.EventHandler(this.lblTotalTierLists_Click);
             // 
             // lblTotalComentarios
             // 
@@ -421,17 +433,6 @@
             this.btnFechar.Text = "✕ Fechar";
             this.btnFechar.UseVisualStyleBackColor = false;
             this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
-            // 
-            // lblTotalTierLists
-            // 
-            this.lblTotalTierLists.AutoSize = true;
-            this.lblTotalTierLists.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.lblTotalTierLists.ForeColor = System.Drawing.Color.Gray;
-            this.lblTotalTierLists.Location = new System.Drawing.Point(450, 50);
-            this.lblTotalTierLists.Name = "lblTotalTierLists";
-            this.lblTotalTierLists.Size = new System.Drawing.Size(98, 20);
-            this.lblTotalTierLists.TabIndex = 3;
-            this.lblTotalTierLists.Text = "⭐ Tier Lists: 0";
             // 
             // FormMeuPerfil
             // 
