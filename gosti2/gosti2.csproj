@@ -141,6 +141,7 @@
     <Compile Include="Livro.cs" />
     <Compile Include="Mensagem.cs" />
     <Compile Include="MensagemGlobal.cs" />
+    <Compile Include="MensagemGlobalManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Usuario.cs" />
