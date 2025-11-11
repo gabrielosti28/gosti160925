@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Data.Entity;
 using gosti2.Data;
 using gosti2.Models;
+using System.Collections.Generic;
 
 namespace gosti2
 {
@@ -384,6 +385,8 @@ namespace gosti2
             return item.LivroId;
         }
 
+        // SUBSTITUA o método ValidarCampos no FormCriacaoTier.cs
+
         private bool ValidarCampos()
         {
             if (string.IsNullOrWhiteSpace(txtNomeTier.Text))
@@ -404,6 +407,26 @@ namespace gosti2
             if (!temLivro)
             {
                 MessageBox.Show("Selecione pelo menos um livro para a tier list.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            // ✅ NOVO: Verifica se há livros duplicados
+            var livrosSelecionados = new List<int?>();
+            livrosSelecionados.Add(ObterLivroIdSelecionado(cmbLivro1));
+            livrosSelecionados.Add(ObterLivroIdSelecionado(cmbLivro2));
+            livrosSelecionados.Add(ObterLivroIdSelecionado(cmbLivro3));
+            livrosSelecionados.Add(ObterLivroIdSelecionado(cmbLivro4));
+            livrosSelecionados.Add(ObterLivroIdSelecionado(cmbLivro5));
+
+            // Remove valores nulos para verificação
+            var livrosNaoNulos = livrosSelecionados.Where(id => id.HasValue && id.Value > 0).ToList();
+
+            // Verifica duplicados
+            if (livrosNaoNulos.Count != livrosNaoNulos.Distinct().Count())
+            {
+                MessageBox.Show("⚠️ Você selecionou o mesmo livro mais de uma vez!\n\nCada livro só pode aparecer uma vez na tier list.",
+                    "Livro Duplicado",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }

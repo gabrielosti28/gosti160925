@@ -55,6 +55,9 @@ namespace gosti2
             this.panelLivros.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
+            
+            
+            
             // 
             // panelSuperior
             // 

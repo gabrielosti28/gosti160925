@@ -25,6 +25,7 @@ namespace gosti2
             CarregarComentarios();
         }
 
+
         private void ConfigureUI()
         {
             flowLayoutPanelComentarios.AutoScroll = true;
@@ -48,6 +49,34 @@ namespace gosti2
                 {
                     txtNovoComentario.Text = "Digite seu comentário aqui...";
                     txtNovoComentario.ForeColor = Color.Gray;
+                }
+            };
+
+            // ✅ NOVO: Contador de caracteres em tempo real
+            txtNovoComentario.TextChanged += (s, e) =>
+            {
+                // Ignora se for o placeholder
+                if (txtNovoComentario.ForeColor == Color.Gray)
+                {
+                    lblContadorCaracteres.Text = "0/2000";
+                    return;
+                }
+
+                int caracteres = txtNovoComentario.Text.Length;
+                lblContadorCaracteres.Text = $"{caracteres}/2000";
+
+                // Muda cor se ultrapassar o limite
+                if (caracteres > 2000)
+                {
+                    lblContadorCaracteres.ForeColor = Color.Red;
+                }
+                else if (caracteres > 1800)
+                {
+                    lblContadorCaracteres.ForeColor = Color.Orange;
+                }
+                else
+                {
+                    lblContadorCaracteres.ForeColor = Color.Gray;
                 }
             };
         }

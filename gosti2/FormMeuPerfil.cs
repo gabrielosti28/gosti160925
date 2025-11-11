@@ -406,6 +406,151 @@ namespace gosti2
             }
         }
 
+        private void AdicionarBotaoEditarBio()
+        {
+            // Cria botão para editar bio
+            var btnEditarBio = new Button
+            {
+                Text = "✏️ Editar Bio",
+                Size = new Size(100, 25),
+                Location = new Point(txtBio.Right - 100, txtBio.Bottom + 5),
+                BackColor = Color.FromArgb(70, 130, 180),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                Visible = !_modoVisualizacao // Só visível no próprio perfil
+            };
+            btnEditarBio.FlatAppearance.BorderSize = 0;
+            btnEditarBio.Click += btnEditarBio_Click;
+
+            panelCentral.Controls.Add(btnEditarBio);
+        }
+
+        // 2. ADICIONE este evento handler:
+        private void btnEditarBio_Click(object sender, EventArgs e)
+        {
+            if (_modoVisualizacao)
+                return;
+
+            // Abre diálogo para editar biografia
+            using (var formEditar = new Form())
+            {
+                formEditar.Text = "Editar Biografia";
+                formEditar.Size = new Size(500, 300);
+                formEditar.StartPosition = FormStartPosition.CenterParent;
+                formEditar.FormBorderStyle = FormBorderStyle.FixedDialog;
+                formEditar.MaximizeBox = false;
+                formEditar.MinimizeBox = false;
+
+                var lblTitulo = new Label
+                {
+                    Text = "✏️ Editar sua biografia",
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                    Location = new Point(20, 20),
+                    AutoSize = true
+                };
+                formEditar.Controls.Add(lblTitulo);
+
+                var txtNovaBio = new TextBox
+                {
+                    Text = txtBio.Text == "📝 Este usuário ainda não adicionou uma biografia..." ? "" : txtBio.Text,
+                    Location = new Point(20, 60),
+                    Size = new Size(440, 120),
+                    Multiline = true,
+                    Font = new Font("Segoe UI", 10),
+                    ScrollBars = ScrollBars.Vertical,
+                    MaxLength = 500
+                };
+                formEditar.Controls.Add(txtNovaBio);
+
+                var lblContador = new Label
+                {
+                    Text = $"{txtNovaBio.Text.Length}/500 caracteres",
+                    Location = new Point(20, 185),
+                    ForeColor = Color.Gray,
+                    Font = new Font("Segoe UI", 8),
+                    AutoSize = true
+                };
+                formEditar.Controls.Add(lblContador);
+
+                txtNovaBio.TextChanged += (s, ev) =>
+                {
+                    lblContador.Text = $"{txtNovaBio.Text.Length}/500 caracteres";
+                    lblContador.ForeColor = txtNovaBio.Text.Length > 500 ? Color.Red : Color.Gray;
+                };
+
+                var btnSalvar = new Button
+                {
+                    Text = "💾 Salvar",
+                    Location = new Point(250, 210),
+                    Size = new Size(100, 35),
+                    BackColor = Color.FromArgb(60, 179, 113),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                };
+                btnSalvar.FlatAppearance.BorderSize = 0;
+                btnSalvar.Click += (s, ev) =>
+                {
+                    if (txtNovaBio.Text.Length > 500)
+                    {
+                        MessageBox.Show("Biografia muito longa (máximo 500 caracteres).", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    try
+                    {
+                        using (var db = new ApplicationDbContext())
+                        {
+                            var usuario = db.Usuarios.Find(AppManager.UsuarioLogado.UsuarioId);
+                            if (usuario != null)
+                            {
+                                usuario.Bio = string.IsNullOrWhiteSpace(txtNovaBio.Text) ? null : txtNovaBio.Text.Trim();
+                                db.SaveChanges();
+
+                                // Atualiza o usuário logado em memória
+                                AppManager.UsuarioLogado.Bio = usuario.Bio;
+
+                                // Atualiza a interface
+                                txtBio.Text = string.IsNullOrWhiteSpace(usuario.Bio)
+                                    ? "📝 Este usuário ainda não adicionou uma biografia..."
+                                    : usuario.Bio;
+
+                                MessageBox.Show("Biografia atualizada com sucesso!", "Sucesso",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                formEditar.Close();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erro ao salvar biografia: {ex.Message}", "Erro",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+                formEditar.Controls.Add(btnSalvar);
+
+                var btnCancelar = new Button
+                {
+                    Text = "❌ Cancelar",
+                    Location = new Point(360, 210),
+                    Size = new Size(100, 35),
+                    BackColor = Color.Gray,
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                };
+                btnCancelar.FlatAppearance.BorderSize = 0;
+                btnCancelar.Click += (s, ev) => formEditar.Close();
+                formEditar.Controls.Add(btnCancelar);
+
+                formEditar.ShowDialog();
+            }
+        }
+
+
         // BOTÕES DE CORES
         private void btnCorAzul_Click(object sender, EventArgs e)
         {
@@ -570,6 +715,27 @@ namespace gosti2
         private void lblTotalTierLists_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Cria botão para editar bio
+            var btnEditarBio = new Button
+            {
+                Text = "✏️ Editar Bio",
+                Size = new Size(100, 25),
+                Location = new Point(txtBio.Right - 100, txtBio.Bottom + 5),
+                BackColor = Color.FromArgb(70, 130, 180),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                Visible = !_modoVisualizacao // Só visível no próprio perfil
+            };
+            btnEditarBio.FlatAppearance.BorderSize = 0;
+            btnEditarBio.Click += btnEditarBio_Click;
+
+            panelCentral.Controls.Add(btnEditarBio);
         }
     }
 }
