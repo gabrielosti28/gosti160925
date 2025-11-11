@@ -112,6 +112,29 @@
             this.btnAlterarFoto.UseVisualStyleBackColor = false;
             this.btnAlterarFoto.Click += new System.EventHandler(this.btnAlterarFoto_Click);
             // 
+            // btnEnviarMensagem
+            // 
+            this.btnEnviarMensagem = new System.Windows.Forms.Button();
+            this.btnEnviarMensagem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
+            this.btnEnviarMensagem.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnEnviarMensagem.FlatAppearance.BorderSize = 0;
+            this.btnEnviarMensagem.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEnviarMensagem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnEnviarMensagem.ForeColor = System.Drawing.Color.White;
+            this.btnEnviarMensagem.Location = new System.Drawing.Point(160, 115);
+            this.btnEnviarMensagem.Name = "btnEnviarMensagem";
+            this.btnEnviarMensagem.Size = new System.Drawing.Size(140, 25);
+            this.btnEnviarMensagem.TabIndex = 4;
+            this.btnEnviarMensagem.Text = "✉️ Enviar Mensagem";
+            this.btnEnviarMensagem.UseVisualStyleBackColor = false;
+            this.btnEnviarMensagem.Click += new System.EventHandler(this.btnEnviarMensagem_Click);
+
+            // Adicionar ao panelCentral
+            this.panelCentral.Controls.Add(this.btnEnviarMensagem);
+
+
+
+            // 
             // txtBio
             // 
             this.txtBio.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -478,7 +501,7 @@
         }
 
         #endregion
-
+        private System.Windows.Forms.Button btnEnviarMensagem;
         private System.Windows.Forms.Panel panelTopo;
         private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Panel panelCentral;

@@ -18,6 +18,7 @@ namespace gosti2
         public FormMeuPerfil()
         {
             InitializeComponent();
+            btnEnviarMensagem.Visible = false;
 
             if (!AppManager.EstaLogado)
             {
@@ -61,7 +62,8 @@ namespace gosti2
             // Desabilita botões de edição
             btnAlterarFoto.Visible = false;
             panelPersonalizacao.Visible = false;
-
+            // Mostra botão de mensagem para outros perfis
+            btnEnviarMensagem.Visible = true;
             // Ajusta título
             lblTitulo.Text = "👤 Perfil do Usuário";
         }
@@ -464,7 +466,19 @@ namespace gosti2
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        private void btnEnviarMensagem_Click(object sender, EventArgs e)
+        {
+            if (_modoVisualizacao)
+            {
+                this.Hide();
+                using (var FormMensagens = new FormMensagens())
+                {
+                    FormMensagens.ShowDialog();
+                }
+                this.Show();
+                CarregarEstatisticas();
+            }
+        }
         private void btnFechar_Click(object sender, EventArgs e)
         {
             this.Close();

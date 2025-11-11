@@ -384,10 +384,19 @@ namespace gosti2
             CarregarEstatisticas();
         }
 
+        // SUBSTITUIR o método btnMensagens_Click no FormPrincipal.cs por:
+
         private void btnMensagens_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("✉️ Funcionalidade de mensagens privadas em desenvolvimento!",
-                "Em Breve", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Hide();
+            using (var formMensagens = new FormMensagens())
+            {
+                formMensagens.ShowDialog();
+            }
+            this.Show();
+
+            // Atualiza estatísticas caso necessário
+            CarregarEstatisticas();
         }
 
         private void btnTierList_Click(object sender, EventArgs e)
