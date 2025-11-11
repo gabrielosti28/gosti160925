@@ -466,19 +466,97 @@ namespace gosti2
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+       
+        // ADICIONAR este método no FormMeuPerfil.cs existente:
+
         private void btnEnviarMensagem_Click(object sender, EventArgs e)
         {
-            if (_modoVisualizacao)
+            if (_modoVisualizacao && _usuarioId != AppManager.UsuarioLogado.UsuarioId)
             {
-                this.Hide();
-                using (var FormMensagens = new FormMensagens())
+                // Abre diálogo para enviar mensagem
+                using (var formEnviar = new Form())
                 {
-                    FormMensagens.ShowDialog();
+                    formEnviar.Text = "Enviar Mensagem";
+                    formEnviar.Size = new Size(500, 300);
+                    formEnviar.StartPosition = FormStartPosition.CenterParent;
+                    formEnviar.FormBorderStyle = FormBorderStyle.FixedDialog;
+                    formEnviar.MaximizeBox = false;
+                    formEnviar.MinimizeBox = false;
+
+                    var lblTitulo = new Label
+                    {
+                        Text = $"📧 Enviar mensagem para {lblNomeUsuario.Text}",
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                        Location = new Point(20, 20),
+                        AutoSize = true
+                    };
+                    formEnviar.Controls.Add(lblTitulo);
+
+                    var txtMensagem = new TextBox
+                    {
+                        Location = new Point(20, 60),
+                        Size = new Size(440, 120),
+                        Multiline = true,
+                        Font = new Font("Segoe UI", 10),
+                        ScrollBars = ScrollBars.Vertical
+                    };
+                    formEnviar.Controls.Add(txtMensagem);
+
+                    var btnEnviar = new Button
+                    {
+                        Text = "📤 Enviar",
+                        Location = new Point(250, 200),
+                        Size = new Size(100, 35),
+                        BackColor = Color.FromArgb(60, 179, 113),
+                        ForeColor = Color.White,
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    };
+                    btnEnviar.FlatAppearance.BorderSize = 0;
+                    btnEnviar.Click += (s, ev) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(txtMensagem.Text))
+                        {
+                            MessageBox.Show("Digite uma mensagem.", "Aviso",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        if (MensagemPrivadaManager.EnviarMensagem(_usuarioId, txtMensagem.Text))
+                        {
+                            MessageBox.Show("Mensagem enviada com sucesso!", "Sucesso",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            formEnviar.DialogResult = DialogResult.OK;
+                            formEnviar.Close();
+                        }
+                    };
+                    formEnviar.Controls.Add(btnEnviar);
+
+                    var btnCancelar = new Button
+                    {
+                        Text = "❌ Cancelar",
+                        Location = new Point(360, 200),
+                        Size = new Size(100, 35),
+                        BackColor = Color.Gray,
+                        ForeColor = Color.White,
+                        FlatStyle = FlatStyle.Flat,
+                        Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    };
+                    btnCancelar.FlatAppearance.BorderSize = 0;
+                    btnCancelar.Click += (s, ev) =>
+                    {
+                        formEnviar.DialogResult = DialogResult.Cancel;
+                        formEnviar.Close();
+                    };
+                    formEnviar.Controls.Add(btnCancelar);
+
+                    formEnviar.ShowDialog();
                 }
-                this.Show();
-                CarregarEstatisticas();
             }
         }
+
+
+
         private void btnFechar_Click(object sender, EventArgs e)
         {
             this.Close();
