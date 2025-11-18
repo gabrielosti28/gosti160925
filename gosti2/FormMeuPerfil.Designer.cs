@@ -108,7 +108,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(570, 125);
+            this.button1.Location = new System.Drawing.Point(426, 106);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(140, 25);
             this.button1.TabIndex = 5;
@@ -138,7 +138,7 @@
             this.txtBio.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtBio.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic);
             this.txtBio.ForeColor = System.Drawing.Color.Gray;
-            this.txtBio.Location = new System.Drawing.Point(450, 20);
+            this.txtBio.Location = new System.Drawing.Point(440, 3);
             this.txtBio.Multiline = true;
             this.txtBio.Name = "txtBio";
             this.txtBio.ReadOnly = true;

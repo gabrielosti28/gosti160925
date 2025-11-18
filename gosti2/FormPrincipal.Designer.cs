@@ -42,9 +42,6 @@ namespace gosti2
             this.lblLivrosCadastrados = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lblBio = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.panelSuperior.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
             this.panelLateral.SuspendLayout();
@@ -53,11 +50,7 @@ namespace gosti2
             this.panelPostarMensagem.SuspendLayout();
             this.panelEstatisticas.SuspendLayout();
             this.panelLivros.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
-            
-            
-            
             // 
             // panelSuperior
             // 
@@ -209,14 +202,13 @@ namespace gosti2
             // panelConteudo
             // 
             this.panelConteudo.BackColor = System.Drawing.Color.White;
-            this.panelConteudo.Controls.Add(this.panel1);
             this.panelConteudo.Controls.Add(this.panelFeedGlobal);
             this.panelConteudo.Controls.Add(this.panelEstatisticas);
             this.panelConteudo.Controls.Add(this.lblBio);
             this.panelConteudo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelConteudo.Location = new System.Drawing.Point(171, 69);
             this.panelConteudo.Name = "panelConteudo";
-            this.panelConteudo.Padding = new System.Windows.Forms.Padding(17, 17, 17, 17);
+            this.panelConteudo.Padding = new System.Windows.Forms.Padding(17);
             this.panelConteudo.Size = new System.Drawing.Size(914, 590);
             this.panelConteudo.TabIndex = 2;
             // 
@@ -239,7 +231,7 @@ namespace gosti2
             this.flowLayoutPanelFeed.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanelFeed.Location = new System.Drawing.Point(0, 87);
             this.flowLayoutPanelFeed.Name = "flowLayoutPanelFeed";
-            this.flowLayoutPanelFeed.Padding = new System.Windows.Forms.Padding(9, 9, 9, 9);
+            this.flowLayoutPanelFeed.Padding = new System.Windows.Forms.Padding(9);
             this.flowLayoutPanelFeed.Size = new System.Drawing.Size(850, 333);
             this.flowLayoutPanelFeed.TabIndex = 1;
             this.flowLayoutPanelFeed.WrapContents = false;
@@ -255,7 +247,7 @@ namespace gosti2
             this.panelPostarMensagem.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelPostarMensagem.Location = new System.Drawing.Point(0, 0);
             this.panelPostarMensagem.Name = "panelPostarMensagem";
-            this.panelPostarMensagem.Padding = new System.Windows.Forms.Padding(9, 9, 9, 9);
+            this.panelPostarMensagem.Padding = new System.Windows.Forms.Padding(9);
             this.panelPostarMensagem.Size = new System.Drawing.Size(850, 87);
             this.panelPostarMensagem.TabIndex = 0;
             // 
@@ -380,41 +372,6 @@ namespace gosti2
             this.lblBio.TabIndex = 10;
             this.lblBio.Text = "🌟 Apaixonado por livros...";
             // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.panel1.Location = new System.Drawing.Point(219, 52);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(171, 87);
-            this.panel1.TabIndex = 7;
-            // 
-            // label2
-            // 
-            this.label2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-            this.label2.Location = new System.Drawing.Point(3, 35);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(171, 35);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "0";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // label3
-            // 
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.label3.ForeColor = System.Drawing.Color.Gray;
-            this.label3.Location = new System.Drawing.Point(0, 13);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(171, 22);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "📚 Tier Lists criadas";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -437,7 +394,6 @@ namespace gosti2
             this.panelPostarMensagem.PerformLayout();
             this.panelEstatisticas.ResumeLayout(false);
             this.panelLivros.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -467,8 +423,5 @@ namespace gosti2
         private Label lblLivrosCadastrados;
         private Label label4;
         private Label lblBio;
-        private Panel panel1;
-        private Label label3;
-        private Label label2;
     }
 }
