@@ -20,6 +20,7 @@
             this.panelTopo = new System.Windows.Forms.Panel();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.panelCentral = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnAlterarFoto = new System.Windows.Forms.Button();
             this.txtBio = new System.Windows.Forms.TextBox();
             this.lblNomeUsuario = new System.Windows.Forms.Label();
@@ -50,7 +51,6 @@
             this.btnCorVermelho = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnFechar = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.panelTopo.SuspendLayout();
             this.panelCentral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPerfil)).BeginInit();
@@ -82,7 +82,7 @@
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(20, 15);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(169, 32);
+            this.lblTitulo.Size = new System.Drawing.Size(174, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "👤 Meu Perfil";
             // 
@@ -99,6 +99,22 @@
             this.panelCentral.Name = "panelCentral";
             this.panelCentral.Size = new System.Drawing.Size(840, 150);
             this.panelCentral.TabIndex = 1;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(570, 125);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(140, 25);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "✉️ editar perfil";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnAlterarFoto
             // 
@@ -209,7 +225,7 @@
             this.lblTotalLivros.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblTotalLivros.Location = new System.Drawing.Point(30, 50);
             this.lblTotalLivros.Name = "lblTotalLivros";
-            this.lblTotalLivros.Size = new System.Drawing.Size(170, 20);
+            this.lblTotalLivros.Size = new System.Drawing.Size(172, 20);
             this.lblTotalLivros.TabIndex = 1;
             this.lblTotalLivros.Text = "📚 Livros adicionados: 0";
             // 
@@ -219,7 +235,7 @@
             this.lblDataLogin.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblDataLogin.Location = new System.Drawing.Point(30, 20);
             this.lblDataLogin.Name = "lblDataLogin";
-            this.lblDataLogin.Size = new System.Drawing.Size(199, 20);
+            this.lblDataLogin.Size = new System.Drawing.Size(200, 20);
             this.lblDataLogin.TabIndex = 0;
             this.lblDataLogin.Text = "📅 Último login: 00/00/0000";
             // 
@@ -311,7 +327,7 @@
             this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
             this.label7.Location = new System.Drawing.Point(20, 15);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(256, 21);
+            this.label7.Size = new System.Drawing.Size(258, 21);
             this.label7.TabIndex = 0;
             this.label7.Text = "📚 Últimos 3 Livros Adicionados";
             // 
@@ -453,22 +469,6 @@
             this.btnFechar.Text = "✕ Fechar";
             this.btnFechar.UseVisualStyleBackColor = false;
             this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(570, 125);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(140, 25);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "✉️ editar perfil";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // FormMeuPerfil
             // 
