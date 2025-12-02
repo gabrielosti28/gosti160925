@@ -48,5 +48,10 @@ namespace gosti2
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        private void labelCopyright_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

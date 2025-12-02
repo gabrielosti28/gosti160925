@@ -24,6 +24,7 @@
             this.labelTitulo = new System.Windows.Forms.Label();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.panelFormulario = new System.Windows.Forms.Panel();
+            this.pictureBoxFotoPerfil = new System.Windows.Forms.PictureBox();
             this.btnSelecionarFoto = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.txtBio = new System.Windows.Forms.TextBox();
@@ -44,14 +45,13 @@
             this.panelRodape = new System.Windows.Forms.Panel();
             this.labelCopyright = new System.Windows.Forms.Label();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.pictureBoxFotoPerfil = new System.Windows.Forms.PictureBox();
             this.panelSuperior.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.panelFormulario.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).BeginInit();
             this.panelBotoes.SuspendLayout();
             this.panelRodape.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSuperior
@@ -122,6 +122,17 @@
             this.panelFormulario.Name = "panelFormulario";
             this.panelFormulario.Size = new System.Drawing.Size(600, 460);
             this.panelFormulario.TabIndex = 2;
+            // 
+            // pictureBoxFotoPerfil
+            // 
+            this.pictureBoxFotoPerfil.BackColor = System.Drawing.Color.LightGray;
+            this.pictureBoxFotoPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxFotoPerfil.Location = new System.Drawing.Point(391, 245);
+            this.pictureBoxFotoPerfil.Name = "pictureBoxFotoPerfil";
+            this.pictureBoxFotoPerfil.Size = new System.Drawing.Size(121, 100);
+            this.pictureBoxFotoPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxFotoPerfil.TabIndex = 14;
+            this.pictureBoxFotoPerfil.TabStop = false;
             // 
             // btnSelecionarFoto
             // 
@@ -336,23 +347,12 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(900, 40);
             this.labelCopyright.TabIndex = 0;
-            this.labelCopyright.Text = "© 2024 BookConnect - Sua rede social literária favorita";
+            this.labelCopyright.Text = "© 2025 BookConnect - Sua rede social literária favorita";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // errorProvider
             // 
             this.errorProvider.ContainerControl = this;
-            // 
-            // pictureBoxFotoPerfil
-            // 
-            this.pictureBoxFotoPerfil.BackColor = System.Drawing.Color.LightGray;
-            this.pictureBoxFotoPerfil.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxFotoPerfil.Location = new System.Drawing.Point(391, 245);
-            this.pictureBoxFotoPerfil.Name = "pictureBoxFotoPerfil";
-            this.pictureBoxFotoPerfil.Size = new System.Drawing.Size(121, 100);
-            this.pictureBoxFotoPerfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxFotoPerfil.TabIndex = 14;
-            this.pictureBoxFotoPerfil.TabStop = false;
             // 
             // FormCadastro
             // 
@@ -375,10 +375,10 @@
             this.panelConteudo.ResumeLayout(false);
             this.panelFormulario.ResumeLayout(false);
             this.panelFormulario.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).EndInit();
             this.panelBotoes.ResumeLayout(false);
             this.panelRodape.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFotoPerfil)).EndInit();
             this.ResumeLayout(false);
 
         }

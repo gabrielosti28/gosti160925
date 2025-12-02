@@ -231,8 +231,9 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(800, 40);
             this.labelCopyright.TabIndex = 0;
-            this.labelCopyright.Text = "© 2024 BookConnect - Desenvolvido com 💙 para a comunidade literária";
+            this.labelCopyright.Text = "© 2025 BookConnect - Desenvolvido com 💙 para a comunidade literária";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelCopyright.Click += new System.EventHandler(this.labelCopyright_Click);
             // 
             // infoTela
             // 

@@ -38,6 +38,12 @@ namespace gosti2
             this.txtMensagem = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panelEstatisticas = new System.Windows.Forms.Panel();
+            this.panelNotifMensagens = new System.Windows.Forms.Panel();
+            this.lblMensagensCount = new System.Windows.Forms.Label();
+            this.lblNotifMensagens = new System.Windows.Forms.Label();
+            this.panelNotifComentarios = new System.Windows.Forms.Panel();
+            this.lblComentariosCount = new System.Windows.Forms.Label();
+            this.lblNotifComentarios = new System.Windows.Forms.Label();
             this.panelLivros = new System.Windows.Forms.Panel();
             this.lblLivrosCadastrados = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -49,6 +55,8 @@ namespace gosti2
             this.panelFeedGlobal.SuspendLayout();
             this.panelPostarMensagem.SuspendLayout();
             this.panelEstatisticas.SuspendLayout();
+            this.panelNotifMensagens.SuspendLayout();
+            this.panelNotifComentarios.SuspendLayout();
             this.panelLivros.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -324,26 +332,47 @@ namespace gosti2
             this.panelEstatisticas.Controls.Add(this.panelLivros);
             this.panelEstatisticas.Location = new System.Drawing.Point(20, 52);
             this.panelEstatisticas.Name = "panelEstatisticas";
-            this.panelEstatisticas.Size = new System.Drawing.Size(646, 87);
+            this.panelEstatisticas.Size = new System.Drawing.Size(528, 87);
             this.panelEstatisticas.TabIndex = 11;
             // 
-            // panelLivros
+            // panelNotifMensagens
             // 
-            this.panelLivros.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panelLivros.Controls.Add(this.lblLivrosCadastrados);
-            this.panelLivros.Controls.Add(this.label4);
-            this.panelLivros.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.panelLivros.Location = new System.Drawing.Point(0, 0);
-            this.panelLivros.Name = "panelLivros";
-            this.panelLivros.Size = new System.Drawing.Size(171, 87);
-            this.panelLivros.TabIndex = 6;
-            this.panelLivros.Paint += new System.Windows.Forms.PaintEventHandler(this.panelLivros_Paint);
+            this.panelNotifMensagens.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelNotifMensagens.Controls.Add(this.lblMensagensCount);
+            this.panelNotifMensagens.Controls.Add(this.lblNotifMensagens);
+            this.panelNotifMensagens.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelNotifMensagens.Location = new System.Drawing.Point(354, 0);
+            this.panelNotifMensagens.Name = "panelNotifMensagens";
+            this.panelNotifMensagens.Size = new System.Drawing.Size(171, 87);
+            this.panelNotifMensagens.TabIndex = 8;
+            this.panelNotifMensagens.Click += new System.EventHandler(this.panelNotifMensagens_Click);
+            // 
+            // lblMensagensCount
+            // 
+            this.lblMensagensCount.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblMensagensCount.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblMensagensCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
+            this.lblMensagensCount.Location = new System.Drawing.Point(0, 35);
+            this.lblMensagensCount.Name = "lblMensagensCount";
+            this.lblMensagensCount.Size = new System.Drawing.Size(171, 35);
+            this.lblMensagensCount.TabIndex = 5;
+            this.lblMensagensCount.Text = "0";
+            this.lblMensagensCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMensagensCount.Click += new System.EventHandler(this.lblMensagensCount_Click);
+            // 
+            // lblNotifMensagens
+            // 
+            this.lblNotifMensagens.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblNotifMensagens.ForeColor = System.Drawing.Color.Gray;
+            this.lblNotifMensagens.Location = new System.Drawing.Point(0, 13);
+            this.lblNotifMensagens.Name = "lblNotifMensagens";
+            this.lblNotifMensagens.Size = new System.Drawing.Size(171, 22);
+            this.lblNotifMensagens.TabIndex = 2;
+            this.lblNotifMensagens.Text = "✉️ Mensagens";
+            this.lblNotifMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panelNotifComentarios
             // 
-            this.panelNotifComentarios = new System.Windows.Forms.Panel();
-            this.lblNotifComentarios = new System.Windows.Forms.Label();
-            this.lblComentariosCount = new System.Windows.Forms.Label();
             this.panelNotifComentarios.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.panelNotifComentarios.Controls.Add(this.lblComentariosCount);
             this.panelNotifComentarios.Controls.Add(this.lblNotifComentarios);
@@ -378,48 +407,17 @@ namespace gosti2
             this.lblNotifComentarios.Text = "💬 Comentários";
             this.lblNotifComentarios.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // panelNotifMensagens
+            // panelLivros
             // 
-            this.panelNotifMensagens = new System.Windows.Forms.Panel();
-            this.lblNotifMensagens = new System.Windows.Forms.Label();
-            this.lblMensagensCount = new System.Windows.Forms.Label();
-            this.panelNotifMensagens.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panelNotifMensagens.Controls.Add(this.lblMensagensCount);
-            this.panelNotifMensagens.Controls.Add(this.lblNotifMensagens);
-            this.panelNotifMensagens.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.panelNotifMensagens.Location = new System.Drawing.Point(354, 0);
-            this.panelNotifMensagens.Name = "panelNotifMensagens";
-            this.panelNotifMensagens.Size = new System.Drawing.Size(171, 87);
-            this.panelNotifMensagens.TabIndex = 8;
-            this.panelNotifMensagens.Click += new System.EventHandler(this.panelNotifMensagens_Click);
-            // 
-            // lblMensagensCount
-            // 
-            this.lblMensagensCount.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lblMensagensCount.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
-            this.lblMensagensCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
-            this.lblMensagensCount.Location = new System.Drawing.Point(0, 35);
-            this.lblMensagensCount.Name = "lblMensagensCount";
-            this.lblMensagensCount.Size = new System.Drawing.Size(171, 35);
-            this.lblMensagensCount.TabIndex = 5;
-            this.lblMensagensCount.Text = "0";
-            this.lblMensagensCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblMensagensCount.Click += new System.EventHandler(this.lblMensagensCount_Click);
-            // 
-            // lblNotifMensagens
-            // 
-            this.lblNotifMensagens.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblNotifMensagens.ForeColor = System.Drawing.Color.Gray;
-            this.lblNotifMensagens.Location = new System.Drawing.Point(0, 13);
-            this.lblNotifMensagens.Name = "lblNotifMensagens";
-            this.lblNotifMensagens.Size = new System.Drawing.Size(171, 22);
-            this.lblNotifMensagens.TabIndex = 2;
-            this.lblNotifMensagens.Text = "✉️ Mensagens";
-            this.lblNotifMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-
-
-
-
+            this.panelLivros.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelLivros.Controls.Add(this.lblLivrosCadastrados);
+            this.panelLivros.Controls.Add(this.label4);
+            this.panelLivros.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelLivros.Location = new System.Drawing.Point(0, 0);
+            this.panelLivros.Name = "panelLivros";
+            this.panelLivros.Size = new System.Drawing.Size(171, 87);
+            this.panelLivros.TabIndex = 6;
+            this.panelLivros.Paint += new System.Windows.Forms.PaintEventHandler(this.panelLivros_Paint);
             // 
             // lblLivrosCadastrados
             // 
@@ -477,6 +475,8 @@ namespace gosti2
             this.panelPostarMensagem.ResumeLayout(false);
             this.panelPostarMensagem.PerformLayout();
             this.panelEstatisticas.ResumeLayout(false);
+            this.panelNotifMensagens.ResumeLayout(false);
+            this.panelNotifComentarios.ResumeLayout(false);
             this.panelLivros.ResumeLayout(false);
             this.ResumeLayout(false);
 

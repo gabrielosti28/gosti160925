@@ -73,7 +73,7 @@
             this.labelTitulo.ForeColor = System.Drawing.Color.White;
             this.labelTitulo.Location = new System.Drawing.Point(100, 35);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(292, 32);
+            this.labelTitulo.Size = new System.Drawing.Size(295, 32);
             this.labelTitulo.TabIndex = 1;
             this.labelTitulo.Text = "📚 Login - BookConnect";
             // 
@@ -252,7 +252,7 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(700, 40);
             this.labelCopyright.TabIndex = 0;
-            this.labelCopyright.Text = "© 2024 BookConnect - Sua comunidade literária favorita";
+            this.labelCopyright.Text = "© 2025 BookConnect - Sua comunidade literária favorita";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // errorProvider

@@ -24,6 +24,7 @@ namespace gosti2
 
             CarregarDadosUsuario();
             CarregarFeedGlobal();
+            CarregarNotificacoes();
         }
 
         private void CarregarDadosUsuario()
@@ -38,6 +39,7 @@ namespace gosti2
             CarregarFotoPerfil();
             CarregarEstatisticas();
             CarregarNotificacoes();
+
         }
 
         private void CarregarFotoPerfil()

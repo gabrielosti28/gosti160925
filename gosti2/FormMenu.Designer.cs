@@ -52,7 +52,7 @@
             this.labelTitulo.ForeColor = System.Drawing.Color.White;
             this.labelTitulo.Location = new System.Drawing.Point(257, 39);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(328, 37);
+            this.labelTitulo.Size = new System.Drawing.Size(331, 37);
             this.labelTitulo.TabIndex = 1;
             this.labelTitulo.Text = "📚 BookConnect - Menu";
             // 
@@ -86,7 +86,7 @@
             this.lblBoasVindas.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBoasVindas.Location = new System.Drawing.Point(218, 30);
             this.lblBoasVindas.Name = "lblBoasVindas";
-            this.lblBoasVindas.Size = new System.Drawing.Size(343, 30);
+            this.lblBoasVindas.Size = new System.Drawing.Size(344, 30);
             this.lblBoasVindas.TabIndex = 1;
             this.lblBoasVindas.Text = "🌟 Bem-vindo ao BookConnect!";
             // 
@@ -191,7 +191,7 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(800, 50);
             this.labelCopyright.TabIndex = 0;
-            this.labelCopyright.Text = "© 2024 BookConnect - Sua rede social literária favorita | Desenvolvido com 💙 par" +
+            this.labelCopyright.Text = "© 2025 BookConnect - Sua rede social literária favorita | Desenvolvido com 💙 par" +
     "a amantes de livros";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
