@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Data.Entity;
 using gosti2.Models;
+using System.Collections.Generic;
 
 namespace gosti2.Data
 {
@@ -620,7 +621,69 @@ namespace gosti2.Data
                 return (0, 0, 0);
             }
         }
+        /// <summary>
+        /// Obtém comentários recentes nos livros do usuário (últimos 10)
+        /// </summary>
+        public static List<dynamic> ObterComentariosNosLivrosDoUsuario(int? usuarioId = null)
+        {
+            try
+            {
+                int idBusca = usuarioId ?? UsuarioLogado?.UsuarioId ?? 0;
+                if (idBusca == 0) return new List<dynamic>();
 
+                using (var db = new ApplicationDbContext())
+                {
+                    var comentarios = db.Comentarios
+                        .Include(c => c.Usuario)
+                        .Include(c => c.Livro)
+                        .Where(c => c.Livro.UsuarioId == idBusca && c.UsuarioId != idBusca)
+                        .OrderByDescending(c => c.DataComentario)
+                        .Take(10)
+                        .ToList()
+                        .Select(c => new
+                        {
+                            c.ComentarioId,
+                            c.Texto,
+                            c.DataComentario,
+                            NomeUsuario = c.Usuario.NomeUsuario,
+                            FotoPerfil = c.Usuario.FotoPerfil,
+                            UsuarioId = c.UsuarioId,
+                            TituloLivro = c.Livro.Titulo,
+                            LivroId = c.LivroId,
+                            TempoRelativo = c.TempoRelativo
+                        })
+                        .ToList<dynamic>();
+
+                    return comentarios;
+                }
+            }
+            catch
+            {
+                return new List<dynamic>();
+            }
+        }
+
+        /// <summary>
+        /// Conta total de comentários não lidos nos livros do usuário
+        /// </summary>
+        public static int ContarComentariosNaoLidos(int? usuarioId = null)
+        {
+            try
+            {
+                int idBusca = usuarioId ?? UsuarioLogado?.UsuarioId ?? 0;
+                if (idBusca == 0) return 0;
+
+                using (var db = new ApplicationDbContext())
+                {
+                    return db.Comentarios
+                        .Count(c => c.Livro.UsuarioId == idBusca && c.UsuarioId != idBusca);
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
         #endregion
 
         #region ===== VERIFICAÇÕES E UTILIDADES =====

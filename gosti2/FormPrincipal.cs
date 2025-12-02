@@ -37,6 +37,7 @@ namespace gosti2
 
             CarregarFotoPerfil();
             CarregarEstatisticas();
+            CarregarNotificacoes();
         }
 
         private void CarregarFotoPerfil()
@@ -455,5 +456,193 @@ namespace gosti2
         {
             btnTierList_Click(sender, e);
         }
+
+        private void CarregarNotificacoes()
+        {
+            // Comentários nos livros do usuário
+            int totalComentarios = AppManager.ContarComentariosNaoLidos();
+            lblComentariosCount.Text = totalComentarios.ToString();
+
+            // Mensagens não lidas
+            int totalMensagens = MensagemPrivadaManager.ContarNaoLidas();
+            lblMensagensCount.Text = totalMensagens.ToString();
+        }
+
+        private void panelNotifComentarios_Click(object sender, EventArgs e)
+        {
+            MostrarDetalhesComentarios();
+        }
+
+        private void lblComentariosCount_Click(object sender, EventArgs e)
+        {
+            MostrarDetalhesComentarios();
+        }
+
+        private void MostrarDetalhesComentarios()
+        {
+            try
+            {
+                var comentarios = AppManager.ObterComentariosNosLivrosDoUsuario();
+
+                if (comentarios.Count == 0)
+                {
+                    MessageBox.Show("📭 Nenhum comentário novo em seus livros.", "Notificações",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Criar formulário de detalhes
+                using (var formDetalhes = new Form())
+                {
+                    formDetalhes.Text = "Comentários nos seus Livros";
+                    formDetalhes.Size = new Size(600, 500);
+                    formDetalhes.StartPosition = FormStartPosition.CenterParent;
+                    formDetalhes.FormBorderStyle = FormBorderStyle.FixedDialog;
+                    formDetalhes.MaximizeBox = false;
+
+                    // FlowLayoutPanel para lista de comentários
+                    var flowPanel = new FlowLayoutPanel
+                    {
+                        Dock = DockStyle.Fill,
+                        AutoScroll = true,
+                        FlowDirection = FlowDirection.TopDown,
+                        WrapContents = false,
+                        Padding = new Padding(10)
+                    };
+
+                    foreach (var comentario in comentarios)
+                    {
+                        var panelComentario = CriarPanelComentario(comentario);
+                        flowPanel.Controls.Add(panelComentario);
+                    }
+
+                    formDetalhes.Controls.Add(flowPanel);
+
+                    // Botão fechar
+                    var btnFechar = new Button
+                    {
+                        Text = "Fechar",
+                        Dock = DockStyle.Bottom,
+                        Height = 40,
+                        BackColor = Color.FromArgb(70, 130, 180),
+                        ForeColor = Color.White,
+                        FlatStyle = FlatStyle.Flat
+                    };
+                    btnFechar.FlatAppearance.BorderSize = 0;
+                    btnFechar.Click += (s, ev) => formDetalhes.Close();
+                    formDetalhes.Controls.Add(btnFechar);
+
+                    formDetalhes.ShowDialog();
+
+                    // Atualiza contadores após visualizar
+                    CarregarNotificacoes();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar comentários: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private Panel CriarPanelComentario(dynamic comentario)
+        {
+            var panel = new Panel
+            {
+                Width = 560,
+                Height = 80,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                Margin = new Padding(5),
+                Cursor = Cursors.Hand
+            };
+
+            // Foto do usuário
+            var picFoto = new PictureBox
+            {
+                Location = new Point(10, 10),
+                Size = new Size(50, 50),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.LightGray
+            };
+
+            if (comentario.FotoPerfil != null && ((byte[])comentario.FotoPerfil).Length > 0)
+            {
+                try
+                {
+                    using (var ms = new System.IO.MemoryStream((byte[])comentario.FotoPerfil))
+                    {
+                        picFoto.Image = Image.FromStream(ms);
+                    }
+                }
+                catch { }
+            }
+
+            panel.Controls.Add(picFoto);
+
+            // Nome do usuário
+            var lblNome = new Label
+            {
+                Text = comentario.NomeUsuario,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(70, 10),
+                AutoSize = true
+            };
+            panel.Controls.Add(lblNome);
+
+            // Livro comentado
+            var lblLivro = new Label
+            {
+                Text = $"comentou em: {comentario.TituloLivro}",
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.Gray,
+                Location = new Point(70, 30),
+                AutoSize = true
+            };
+            panel.Controls.Add(lblLivro);
+
+            // Tempo
+            var lblTempo = new Label
+            {
+                Text = comentario.TempoRelativo,
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.Gray,
+                Location = new Point(70, 50),
+                AutoSize = true
+            };
+            panel.Controls.Add(lblTempo);
+
+            // Clique para abrir livro
+            panel.Click += (s, e) =>
+            {
+                using (var formLivro = new FormLivroAberto((int)comentario.LivroId, AppManager.UsuarioLogado.UsuarioId))
+                {
+                    formLivro.ShowDialog();
+                }
+            };
+
+            return panel;
+        }
+
+        private void panelNotifMensagens_Click(object sender, EventArgs e)
+        {
+            btnMensagens_Click(sender, e);
+        }
+
+        private void lblMensagensCount_Click(object sender, EventArgs e)
+        {
+            btnMensagens_Click(sender, e);
+        }
+
+
+
+
+
+
     }
+
+
+
+
 }

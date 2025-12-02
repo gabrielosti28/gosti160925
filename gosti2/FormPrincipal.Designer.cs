@@ -319,6 +319,8 @@ namespace gosti2
             // panelEstatisticas
             // 
             this.panelEstatisticas.BackColor = System.Drawing.Color.Transparent;
+            this.panelEstatisticas.Controls.Add(this.panelNotifMensagens);
+            this.panelEstatisticas.Controls.Add(this.panelNotifComentarios);
             this.panelEstatisticas.Controls.Add(this.panelLivros);
             this.panelEstatisticas.Location = new System.Drawing.Point(20, 52);
             this.panelEstatisticas.Name = "panelEstatisticas";
@@ -336,6 +338,88 @@ namespace gosti2
             this.panelLivros.Size = new System.Drawing.Size(171, 87);
             this.panelLivros.TabIndex = 6;
             this.panelLivros.Paint += new System.Windows.Forms.PaintEventHandler(this.panelLivros_Paint);
+            // 
+            // panelNotifComentarios
+            // 
+            this.panelNotifComentarios = new System.Windows.Forms.Panel();
+            this.lblNotifComentarios = new System.Windows.Forms.Label();
+            this.lblComentariosCount = new System.Windows.Forms.Label();
+            this.panelNotifComentarios.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelNotifComentarios.Controls.Add(this.lblComentariosCount);
+            this.panelNotifComentarios.Controls.Add(this.lblNotifComentarios);
+            this.panelNotifComentarios.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelNotifComentarios.Location = new System.Drawing.Point(177, 0);
+            this.panelNotifComentarios.Name = "panelNotifComentarios";
+            this.panelNotifComentarios.Size = new System.Drawing.Size(171, 87);
+            this.panelNotifComentarios.TabIndex = 7;
+            this.panelNotifComentarios.Click += new System.EventHandler(this.panelNotifComentarios_Click);
+            // 
+            // lblComentariosCount
+            // 
+            this.lblComentariosCount.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblComentariosCount.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblComentariosCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.lblComentariosCount.Location = new System.Drawing.Point(0, 35);
+            this.lblComentariosCount.Name = "lblComentariosCount";
+            this.lblComentariosCount.Size = new System.Drawing.Size(171, 35);
+            this.lblComentariosCount.TabIndex = 5;
+            this.lblComentariosCount.Text = "0";
+            this.lblComentariosCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblComentariosCount.Click += new System.EventHandler(this.lblComentariosCount_Click);
+            // 
+            // lblNotifComentarios
+            // 
+            this.lblNotifComentarios.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblNotifComentarios.ForeColor = System.Drawing.Color.Gray;
+            this.lblNotifComentarios.Location = new System.Drawing.Point(0, 13);
+            this.lblNotifComentarios.Name = "lblNotifComentarios";
+            this.lblNotifComentarios.Size = new System.Drawing.Size(171, 22);
+            this.lblNotifComentarios.TabIndex = 2;
+            this.lblNotifComentarios.Text = "💬 Comentários";
+            this.lblNotifComentarios.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panelNotifMensagens
+            // 
+            this.panelNotifMensagens = new System.Windows.Forms.Panel();
+            this.lblNotifMensagens = new System.Windows.Forms.Label();
+            this.lblMensagensCount = new System.Windows.Forms.Label();
+            this.panelNotifMensagens.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelNotifMensagens.Controls.Add(this.lblMensagensCount);
+            this.panelNotifMensagens.Controls.Add(this.lblNotifMensagens);
+            this.panelNotifMensagens.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelNotifMensagens.Location = new System.Drawing.Point(354, 0);
+            this.panelNotifMensagens.Name = "panelNotifMensagens";
+            this.panelNotifMensagens.Size = new System.Drawing.Size(171, 87);
+            this.panelNotifMensagens.TabIndex = 8;
+            this.panelNotifMensagens.Click += new System.EventHandler(this.panelNotifMensagens_Click);
+            // 
+            // lblMensagensCount
+            // 
+            this.lblMensagensCount.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblMensagensCount.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblMensagensCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(179)))), ((int)(((byte)(113)))));
+            this.lblMensagensCount.Location = new System.Drawing.Point(0, 35);
+            this.lblMensagensCount.Name = "lblMensagensCount";
+            this.lblMensagensCount.Size = new System.Drawing.Size(171, 35);
+            this.lblMensagensCount.TabIndex = 5;
+            this.lblMensagensCount.Text = "0";
+            this.lblMensagensCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMensagensCount.Click += new System.EventHandler(this.lblMensagensCount_Click);
+            // 
+            // lblNotifMensagens
+            // 
+            this.lblNotifMensagens.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblNotifMensagens.ForeColor = System.Drawing.Color.Gray;
+            this.lblNotifMensagens.Location = new System.Drawing.Point(0, 13);
+            this.lblNotifMensagens.Name = "lblNotifMensagens";
+            this.lblNotifMensagens.Size = new System.Drawing.Size(171, 22);
+            this.lblNotifMensagens.TabIndex = 2;
+            this.lblNotifMensagens.Text = "✉️ Mensagens";
+            this.lblNotifMensagens.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+
+
+
+
             // 
             // lblLivrosCadastrados
             // 
@@ -400,6 +484,12 @@ namespace gosti2
 
         #endregion
 
+        private System.Windows.Forms.Panel panelNotifComentarios;
+        private System.Windows.Forms.Label lblNotifComentarios;
+        private System.Windows.Forms.Label lblComentariosCount;
+        private System.Windows.Forms.Panel panelNotifMensagens;
+        private System.Windows.Forms.Label lblNotifMensagens;
+        private System.Windows.Forms.Label lblMensagensCount;
         private Panel panelSuperior;
         private Label lblUsuario;
         private PictureBox pictureBoxPerfil;
